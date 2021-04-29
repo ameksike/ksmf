@@ -1,0 +1,28 @@
+{
+  "name": "ksmf",
+  "version": "1.0.0",
+  "description": "Modular Microframework for create minimalistic web application or REST API",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest "
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ameksike/ksmf.git"
+  },
+  "keywords": [
+    "Microframework",
+    "Ksike",
+    "REST",
+    "API"
+  ],
+  "author": "Antonio Membrides Espinosa",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ameksike/ksmf/issues"
+  },
+  "homepage": "https://github.com/ameksike/ksmf#readme",
+  "dependencies": {
+    "ksdp": "^1.0.0"
+  }
+}
