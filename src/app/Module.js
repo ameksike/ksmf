@@ -38,7 +38,10 @@ class Module {
     }
 
     initRoutesREST(opt) {
-        if (!this.app || this.helper) return null;
+        if (!this.app || !this.helper) {
+            console.log('Warning: app or helper on Module');
+            return null;
+        }
 
         const _prefix = opt.route;
         const _controller = this.helper.get({

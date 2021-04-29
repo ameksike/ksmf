@@ -136,39 +136,55 @@ class AppWEB {
 
     initModules() {
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
-            this.cfg.srv.module.load.forEach(name => {
+            this.cfg.srv.module.load.forEach(item => {
 
-                const obj = this.helper.get({
-                    name,
-                    type: 'module',
-                    options: {
-                        // ... EXPRESS APP
-                        app: this.web,
-                        // ... DATA ACCESS OBJECT 
-                        dao: this.dao,
-                        opt: {
-                            // ... CONFIGURE 
-                            'cfg': this.cfg.app,
-                            'srv': this.cfg.srv,
-                            // ... ENV
-                            'env': this.cfg.env,
-                            'envid': this.cfg.envid,
-                            // ... PATH
-                            'path': {
-                                'prj': this.path,
-                                'mod': this.cfg.srv.module.path + name + "/",
-                                'app': this.cfg.srv.module.path + "app/",
-                            },
-                            // ... NAME
-                            'name': name
-                        }
-                    },
-                    dependency: {
-                        'helper': 'helper',
-                        'dao': 'dao'
+                const name = (typeof (item) === 'string') ? item : item.name;
+                const options = {
+                    // ... EXPRESS APP
+                    app: this.web,
+                    // ... DATA ACCESS OBJECT 
+                    opt: {
+                        // ... CONFIGURE 
+                        'cfg': this.cfg.app,
+                        'srv': this.cfg.srv,
+                        // ... ENV
+                        'env': this.cfg.env,
+                        'envid': this.cfg.envid,
+                        // ... PATH
+                        'path': {
+                            'prj': this.path,
+                            'mod': this.cfg.srv.module.path + name + "/",
+                            'app': this.cfg.srv.module.path + "app/",
+                        },
+                        // ... NAME
+                        'name': name
                     }
-                });
+                };
 
+                const dependency = {
+                    'helper': 'helper',
+                    'dao': 'dao'
+                };
+
+                if (typeof (item) === 'string') {
+                    item = {
+                        options,
+                        dependency,
+                        name,
+                        type: 'module'
+                    };
+                } else {
+                    item.options = {
+                        ...item.options,
+                        ...options
+                    };
+
+                    item.dependency = {
+                        ...item.dependency,
+                        ...dependency
+                    };
+                }
+                const obj = this.helper.get(item);
                 if (obj && this.dao) {
                     this.dao.load(this.cfg.srv.module.path + name + "/model/");
                 }

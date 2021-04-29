@@ -37,7 +37,11 @@ class DAOSequelize {
             this.driver = new Sequelize(this.option.url, {
                 dialect: this.option.dialect,
                 protocol: this.option.protocol,
-                logging: this.option.logging,
+                logging: (str) => {
+                    if (this.option.logging) {
+                        console.log('DAO >>>', str);
+                    }
+                },
                 "dialectOptions": {
                     "ssl": {
                         "rejectUnauthorized": false
@@ -48,9 +52,12 @@ class DAOSequelize {
             this.driver = new Sequelize(
                 this.option.database,
                 this.option.username,
-                this.option.password,
-                {
-                    logging: this.option.logging,
+                this.option.password, {
+                    logging: (str) => {
+                        if (this.option.logging) {
+                            console.log('DAO >>>', str);
+                        }
+                    },
                     ...this.option,
                 }
             );
@@ -60,12 +67,14 @@ class DAOSequelize {
 
     connect() {
         this.driver.authenticate().then((error) => {
-            if (!!error) {
-                this.onError(error);
-            } else {
-                this.onConnect(this.option);
-            }
-        });
+                if (!!error) {
+                    this.onError(error);
+                } else {
+                    this.onConnect(this.option);
+                }
+            })
+            .catch((error) => this.onError(error));
+
         return this;
     }
 

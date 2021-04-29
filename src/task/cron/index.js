@@ -11,7 +11,6 @@ class CronModule extends Module {
     init() {
         this.schedule = this.opt.srv.cron || [];
         this.task = {};
-
         for (let i in this.schedule) {
             this.booking(this.schedule[i], i);
         }
