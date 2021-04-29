@@ -107,7 +107,6 @@ class AppWEB {
     }
 
     setLog(data) {
-        console.log('<<<<<<<<< ', data);
         const handler = this.helper.get('logger');
         if (handler && handler.log) {
             if (handler.configure) {
@@ -120,7 +119,6 @@ class AppWEB {
     }
 
     setError(error, req = null, res = null, next = null) {
-        console.log('<<<<<<<<< ', error);
         const handler = this.helper.get('error');
         if (handler && handler.on) {
             handler.on(error, req, res, next);

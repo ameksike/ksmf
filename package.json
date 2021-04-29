@@ -1,6 +1,6 @@
 {
   "name": "ksmf",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "Modular Microframework for create minimalistic web application or REST API",
   "main": "index.js",
   "scripts": {
@@ -23,6 +23,6 @@
   },
   "homepage": "https://github.com/ameksike/ksmf#readme",
   "dependencies": {
-    "ksdp": "^1.0.0"
+    "ksdp": "^1.0.5"
   }
 }

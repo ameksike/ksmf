@@ -18,7 +18,6 @@ class ErrorHandler {
     }
 
     on(err, req = null, res = null, next = null) {
-        console.log(err);
         if (this.cfg && this.cfg.level === 1) {
             console.log("Error <<< ", err);
         }

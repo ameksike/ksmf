@@ -33,8 +33,7 @@ class DAOSequelize {
 
     configure(payload = null) {
         this.option = payload || this.option;
-        console.log( this.option);
-        
+
         if (this.option.url) {
             this.driver = new Sequelize(this.option.url, {
                 dialect: this.option.dialect,
