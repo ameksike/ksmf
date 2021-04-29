@@ -33,6 +33,8 @@ class DAOSequelize {
 
     configure(payload = null) {
         this.option = payload || this.option;
+        console.log( this.option);
+        
         if (this.option.url) {
             this.driver = new Sequelize(this.option.url, {
                 dialect: this.option.dialect,
@@ -112,9 +114,9 @@ class DAOSequelize {
 
     onError(error) {
         const message = error.message ? error.message : error;
-        if (this.option.logging) {
+        //if (this.option.logging) {
             console.log('>>> DAO ERROR: data base connect error : ' + message);
-        }
+        //}
 
     }
 

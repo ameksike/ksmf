@@ -16,6 +16,9 @@ class Module {
         this.name = this.opt.name;
         this.prefix = "/" + this.name;
         this.routes = [];
+
+        
+        console.log('load <<<<<<<<< ', this.name);
     }
 
     init() {

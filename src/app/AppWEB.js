@@ -107,6 +107,7 @@ class AppWEB {
     }
 
     setLog(data) {
+        console.log('<<<<<<<<< ', data);
         const handler = this.helper.get('logger');
         if (handler && handler.log) {
             if (handler.configure) {
@@ -119,6 +120,7 @@ class AppWEB {
     }
 
     setError(error, req = null, res = null, next = null) {
+        console.log('<<<<<<<<< ', error);
         const handler = this.helper.get('error');
         if (handler && handler.on) {
             handler.on(error, req, res, next);
@@ -202,7 +204,7 @@ class AppWEB {
                         route.name = route.name || route.controller;
                         const controller = this.helper.get(route);
                         if (!controller || !controller[route.action]) {
-                            throw `Error << '${route.module}:${route.controller}:${route.action}'`;
+                            this.setError(`Error << '${route.module}:${route.controller}:${route.action}'`, req, res);
                         }
                         controller[route.action](req, res);
                     });
