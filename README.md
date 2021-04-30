@@ -49,6 +49,13 @@ Modular Microframework for create minimalistic web application or REST API.
 * **src:** would be the source code that is grouped by modules, where the app should be the main module although this is not mandatory. Each module has a main file that responds to the actions of the module, this is composed as required by controllers, services, models, etc.
 * **db:** it contain the models and migrations, it is not mandatory.
 
+### Module design
+The design of a module can be as complex or simple as it is needed, all its parts are not mandatory, but it is required the main class of the module and at least one controller is required to respond to the requests, even the controllers can be avoid and the module itself responds to HTTP requests, although the latter option is not recommended.
+
+![Screenshot](doc/module.svg)
+
+
+
 ### Common example of module definition
 
 ```js
