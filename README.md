@@ -211,3 +211,33 @@ module.exports = Mod2Module;
 ```
 
 Note that the Module :: web property has the express app instance.
+
+### Load Services or Libs
+### Common example of controller definition
+```js
+const KsMf = require('ksmf');
+
+class DefaultController extends KsMf.app.Controller {
+
+    list(req, res) {
+        const externalController = this.helper.get({
+            name: 'AddressController',
+            path: 'controller',
+            module: 'person',
+            options: {
+                opt: this.opt,
+                dao: this.dao
+            },
+            dependency: {
+                'helper': 'helper'
+            }
+        });
+        const data = externalController.list(req, res);
+        res.json({ data });
+    }
+}
+
+module.exports = RegisterController;
+```
+
+This microframework uses [KsDp](https://github.com/ameksike/ksdp) allowing you to make use of integration patterns such as the [IoC](https://github.com/ameksike/ksdp/wiki/IoC-from-Integration-Group), in this way you can access any library or service of the project without having to load it or explicitly intanciate it.
