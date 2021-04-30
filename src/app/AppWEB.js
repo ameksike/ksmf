@@ -142,6 +142,7 @@ class AppWEB {
                 const options = {
                     // ... EXPRESS APP
                     app: this.web,
+                    web: this.web,
                     // ... DATA ACCESS OBJECT 
                     opt: {
                         // ... CONFIGURE 

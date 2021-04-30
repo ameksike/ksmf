@@ -11,6 +11,7 @@ class Module {
 
     constructor(payload) {
         this.app = payload ? payload.app : null;
+        this.web = payload ? payload.web : null;
         this.opt = payload ? payload.opt : {};
 
         this.name = this.opt.name;
@@ -20,8 +21,11 @@ class Module {
 
     init() {
         this.initConfig();
+        this.initApp();
         this.initRoutes();
     }
+
+    initApp() { }
 
     initConfig() {
         this.routes.push({
@@ -34,8 +38,11 @@ class Module {
     initRoutes() {
         for (const i in this.routes) {
             this.initRoutesREST(this.routes[i]);
+            this.initRoutesWeb(this.routes[i]);
         }
     }
+
+    initRoutesWeb(opt) { }
 
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
