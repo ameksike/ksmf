@@ -213,7 +213,6 @@ module.exports = Mod2Module;
 Note that the Module :: web property has the express app instance.
 
 ### Load Services or Libs
-### Common example of controller definition
 ```js
 const KsMf = require('ksmf');
 
