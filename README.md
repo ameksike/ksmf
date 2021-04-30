@@ -43,6 +43,11 @@ Modular Microframework for create minimalistic web application or REST API.
 
 ```
 
+### Description by directories
+* **bin:** it contain the web server executable.
+* **cfg:** it contain the configurations files, config.json for app configurations and core.json for framework.
+* **src:** would be the source code that is grouped by modules, where the app should be the main module although this is not mandatory. Each module has a main file that responds to the actions of the module, this is composed as required by controllers, services, models, etc.
+* **db:** it contain the models and migrations, it is not mandatory.
 
 ### Common example of module definition
 
@@ -82,7 +87,7 @@ class DefaultController extends KsMf.app.Controller {
     }
 }
 
-module.exports = RegisterController;
+module.exports = DefaultController;
 ```
 
 
@@ -157,7 +162,7 @@ class PersonModule extends KsMf.app.Module {
         super.initRoutesREST(opt);
     }
 }
-module.exports = Mod2Module;
+module.exports = PersonModule;
 
 ```
 
@@ -236,7 +241,7 @@ class DefaultController extends KsMf.app.Controller {
     }
 }
 
-module.exports = RegisterController;
+module.exports = DefaultController;
 ```
 
 This microframework uses [KsDp](https://github.com/ameksike/ksdp) allowing you to make use of integration patterns such as the [IoC](https://github.com/ameksike/ksdp/wiki/IoC-from-Integration-Group), in this way you can access any library or service of the project without having to load it or explicitly intanciate it.
