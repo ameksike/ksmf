@@ -6,40 +6,40 @@ Modular Microframework for create minimalistic web application or REST API.
 
 ```
 + bin/
-|----+ server.js
+|    - server.js
 + cfg/
-|----+ config.json
-|----+ core.json
-+ src
-|----+ app/
-|    |----+ controller/
-|    |    |----+ DefaultController.js
-|    |    |----+ DefaultController.spec.js
-|    |----+ service/
-|    |----+ model/
-|    |----+ index.js
-|----+ mod1/
-|    |----+ controller/
-|    |    |----+ DefaultController.js
-|    |    |----+ DefaultController.spec.js
-|    |----+ service/
-|    |----+ model/
-|    |----+ index.js
-|----+ mod2/
-|    |----+ controller/
-|    |----+ service/
-|    |    |----+ DefaultService.js
-|    |    |----+ DefaultService.spec.js
-|    |----+ model/
-|    |    |----+ Store.js
-|    |----+ index.js
+|    - config.json
+|    - core.json
++ src/
+|    + app/
+|    |    + controller/
+|    |    |    - DefaultController.js
+|    |    |    - DefaultController.spec.js
+|    |    + service/
+|    |    + model/
+|    |    - index.js
+|    + mod1/
+|    |    + controller/
+|    |    |    - DefaultController.js
+|    |    |    - DefaultController.spec.js
+|    |    + service/
+|    |    + model/
+|    |    - index.js
+|    + mod2/
+|    |    + controller/
+|    |    + service/
+|    |    |    - DefaultService.js
+|    |    |    - DefaultService.spec.js
+|    |    + model/
+|    |    |    - Store.js
+|    |    - index.js
 + db/
-|----+ migrations/
-|----+ models/
-+ package.json
-+ .env
-+ .gitignore
-+ README.md
+|    + migrations/
+|    + models/
+- package.json
+- .env
+- .gitignore
+- README.md
 
 ```
 
