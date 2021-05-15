@@ -208,7 +208,6 @@ class AppWEB {
                 const obj = this.helper.get(item);
                 if (obj && this.dao) {
                     this.event.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
-                    //this.dao.load(this.cfg.srv.module.path + name + "/model/");
                 }
             });
         }
