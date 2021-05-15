@@ -18,7 +18,6 @@ class DAOWrapper {
     }
 
     onInitModules() {
-        console.log(">>>>onInitModules>>>>>", arguments);
         this.dao = this.helper.get('dao');
         if (this.dao) {
             this.dao.configure(this.cfg.app);
