@@ -25,6 +25,7 @@ class AppWEB {
         this.mod = [];
         this.cfg = {};
         this.helper = new KsDp.integration.IoC();
+        this.event = new KsDp.behavioral.Observer();
     }
 
     init() {
@@ -74,19 +75,31 @@ class AppWEB {
         this.cfg.srv.module.path = this.path + 'src/';
         this.cfg.srv.log = this.cfg.env.LOGGER_DB === 'true' ? 1 : this.cfg.srv.log;
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
+        this.cfg.srv.event = this.cfg.srv.event || {};
 
         this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
+
+        // ... configure Helper ...
         this.helper.configure({
             path: this.cfg.srv.module.path,
             src: this.cfg.srv.helper,
             name: 'helper'
         });
+
+        // ... configure Events ...
+        for (let i in this.cfg.srv.event) {
+            const subscriber = this.cfg.srv.event[i];
+            this.event.add(this.helper.get(subscriber), i);
+        }
+        this.event.emit('onInitConfig');
     }
 
     initApp() {
+        this.event.emit('onInitApp', [this.web]);
         //... Set Error Handler
         this.web.use((err, req, res, next) => {
+            this.event.emit('onError', [err, req, res, next]);
             this.setError(err, req, res, next);
         });
 
@@ -102,6 +115,7 @@ class AppWEB {
 
         //... Log requests 
         this.web.use((req, res, next) => {
+            this.event.emit('onRequest', [req, res, next]);
             this.setLog(`>>> ${req.method} : ${req.path} `);
             return next();
         })
@@ -136,6 +150,7 @@ class AppWEB {
     }
 
     initModules() {
+        this.event.emit('onInitModules', [this.cfg.srv.module.load]);
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
             this.cfg.srv.module.load.forEach(item => {
 
@@ -188,6 +203,7 @@ class AppWEB {
                 }
                 const obj = this.helper.get(item);
                 if (obj && this.dao) {
+                    this.event.emit('onLoadModule', [obj, name, this.cfg.srv.module.path + name + "/model/"]);
                     this.dao.load(this.cfg.srv.module.path + name + "/model/");
                 }
             });
@@ -195,6 +211,7 @@ class AppWEB {
     }
 
     initRoutes() {
+        this.event.emit('onInitRoutes', [this.cfg.srv.route]);
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
@@ -208,11 +225,13 @@ class AppWEB {
                         }
                         controller[route.action](req, res);
                     });
+                    this.event.emit('onLoadRoutes', [i, route, this.web]);
                 }
             }
         }
 
         this.web.get('*', (req, res) => {
+            this.event.emit('on404', [req, res]);
             this.setLog(`>>! ${req.method} : ${req.path} `);
             res.json({
                 status: 'faild',
