@@ -96,7 +96,7 @@ class AppWEB {
 
         // ... configure Events ...
         this.initEvents();
-        this.event.emit('onInitConfig');
+        this.event.emit('onInitConfig', [this.cfg]);
     }
 
     initEvents() {
