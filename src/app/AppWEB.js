@@ -68,6 +68,7 @@ class AppWEB {
         this.cfg.envid = envid;
         this.cfg.app = app[envid] || {};
         this.cfg.srv = srv[envid] || {};
+        this.cfg.path = this.path;
 
         this.cfg.srv.module = this.cfg.srv.module || {};
         this.cfg.srv.module.path = this.path + 'src/';
