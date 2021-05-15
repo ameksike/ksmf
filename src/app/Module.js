@@ -25,7 +25,7 @@ class Module {
         this.initRoutes();
     }
 
-    initApp() { }
+    initApp() {}
 
     initConfig() {
         this.routes.push({
@@ -42,7 +42,7 @@ class Module {
         }
     }
 
-    initRoutesWeb(opt) { }
+    initRoutesWeb(opt) {}
 
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
@@ -60,8 +60,7 @@ class Module {
                 module: this.name
             },
             dependency: {
-                'helper': 'helper',
-                'dao': 'dao'
+                'helper': 'helper'
             }
         });
 

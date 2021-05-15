@@ -25,13 +25,13 @@ class AppWEB {
         this.mod = [];
         this.cfg = {};
         this.helper = new KsDp.integration.IoC();
+        this.event = new KsDp.behavioral.Observer();
     }
 
     init() {
         try {
             this.initConfig();
             this.initApp();
-            this.initModels();
             this.initModules();
             this.initRoutes();
         } catch (error) {
@@ -42,14 +42,21 @@ class AppWEB {
 
     run() {
         return this.web.listen(this.cfg.srv.port, () => {
-            this.setLog(`>>> SERVER: ${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`);
+            const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
+            this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
+            this.setLog(`>>> SERVER: ${url}`);
             if (this.cfg.srv.log === 1) {
                 this.logRoutes();
             }
         });
     }
 
+    start() {
+        this.run();
+    }
+
     stop() {
+        this.event.emit('onStop', "ksmf", [this.web]);
         if (this.dao) {
             this.dao.disconnect();
         }
@@ -68,24 +75,44 @@ class AppWEB {
         this.cfg.envid = envid;
         this.cfg.app = app[envid] || {};
         this.cfg.srv = srv[envid] || {};
+        this.cfg.path = this.path;
 
         this.cfg.srv.module = this.cfg.srv.module || {};
         this.cfg.srv.module.path = this.path + 'src/';
         this.cfg.srv.log = this.cfg.env.LOGGER_DB === 'true' ? 1 : this.cfg.srv.log;
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
+        this.cfg.srv.event = this.cfg.srv.event || {};
 
         this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
+
+        // ... configure Helper ...
         this.helper.configure({
             path: this.cfg.srv.module.path,
             src: this.cfg.srv.helper,
             name: 'helper'
         });
+
+        // ... configure Events ...
+        this.initEvents();
+        this.event.emit('onInitConfig', "ksmf", [this.cfg]);
+    }
+
+    initEvents() {
+        for (let event in this.cfg.srv.event) {
+            const eventList = this.cfg.srv.event[event];
+            for (let elm in eventList) {
+                const subscriber = eventList[elm];
+                this.event.add(this.helper.get(subscriber), event, "ksmf");
+            }
+        }
     }
 
     initApp() {
+        this.event.emit('onInitApp', "ksmf", [this.web]);
         //... Set Error Handler
         this.web.use((err, req, res, next) => {
+            this.event.emit('onError', "ksmf", [err, req, res, next]);
             this.setError(err, req, res, next);
         });
 
@@ -101,6 +128,7 @@ class AppWEB {
 
         //... Log requests 
         this.web.use((req, res, next) => {
+            this.event.emit('onRequest', "ksmf", [req, res, next]);
             this.setLog(`>>> ${req.method} : ${req.path} `);
             return next();
         })
@@ -125,16 +153,8 @@ class AppWEB {
         }
     }
 
-    initModels() {
-        this.dao = this.helper.get('dao');
-        if (this.dao) {
-            this.dao.configure(this.cfg.app);
-            this.dao.connect();
-            this.dao.load(this.path + 'db/models/');
-        }
-    }
-
     initModules() {
+        this.event.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
             this.cfg.srv.module.load.forEach(item => {
 
@@ -163,8 +183,7 @@ class AppWEB {
                 };
 
                 const dependency = {
-                    'helper': 'helper',
-                    'dao': 'dao'
+                    'helper': 'helper'
                 };
 
                 if (typeof (item) === 'string') {
@@ -186,14 +205,16 @@ class AppWEB {
                     };
                 }
                 const obj = this.helper.get(item);
-                if (obj && this.dao) {
-                    this.dao.load(this.cfg.srv.module.path + name + "/model/");
+                if (obj) {
+                    this.event.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
                 }
             });
         }
     }
 
     initRoutes() {
+        this.event.emit('onInitRoutes', "ksmf", [this.cfg.srv.route]);
+
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
@@ -207,11 +228,13 @@ class AppWEB {
                         }
                         controller[route.action](req, res);
                     });
+                    this.event.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
                 }
             }
         }
 
         this.web.get('*', (req, res) => {
+            this.event.emit('on404', "ksmf", [req, res]);
             this.setLog(`>>! ${req.method} : ${req.path} `);
             res.json({
                 status: 'faild',
@@ -248,8 +271,9 @@ class AppWEB {
                     '<complex:' + thing.toString() + '>'
             }
         }
-
-        this.web._router.stack.forEach(print.bind(null, []))
+        if (this.web && this.web._router && this.web._router.stack) {
+            this.web._router.stack.forEach(print.bind(null, []));
+        }
     }
 }
 
