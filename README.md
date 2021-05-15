@@ -2,6 +2,10 @@
 Modular Microframework for create minimalistic web application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki).
 
 
+### Install from [npm package](https://www.npmjs.com/package/ksmf)
+``` npm install ksmf ```
+
+
 ## Project Skeleton
 
 ```
