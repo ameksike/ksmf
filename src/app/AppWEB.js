@@ -32,7 +32,6 @@ class AppWEB {
         try {
             this.initConfig();
             this.initApp();
-            this.initModels();
             this.initModules();
             this.initRoutes();
         } catch (error) {
@@ -107,7 +106,6 @@ class AppWEB {
                 this.event.add(this.helper.get(subscriber), event, "ksmf");
             }
         }
-        console.log(this.event);
     }
 
     initApp() {
@@ -152,15 +150,6 @@ class AppWEB {
         const handler = this.helper.get('error');
         if (handler && handler.on) {
             handler.on(error, req, res, next);
-        }
-    }
-
-    initModels() {
-        this.dao = this.helper.get('dao');
-        if (this.dao) {
-            this.dao.configure(this.cfg.app);
-            this.dao.connect();
-            this.dao.load(this.path + 'db/models/');
         }
     }
 
@@ -219,7 +208,7 @@ class AppWEB {
                 const obj = this.helper.get(item);
                 if (obj && this.dao) {
                     this.event.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
-                    this.dao.load(this.cfg.srv.module.path + name + "/model/");
+                    //this.dao.load(this.cfg.srv.module.path + name + "/model/");
                 }
             });
         }
