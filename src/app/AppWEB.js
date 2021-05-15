@@ -43,14 +43,21 @@ class AppWEB {
 
     run() {
         return this.web.listen(this.cfg.srv.port, () => {
-            this.setLog(`>>> SERVER: ${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`);
+            const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
+            this.event.emit('onStart', [this.cfg.srv, url]);
+            this.setLog(`>>> SERVER: ${url}`);
             if (this.cfg.srv.log === 1) {
                 this.logRoutes();
             }
         });
     }
 
+    start() {
+        this.run();
+    }
+
     stop() {
+        this.event.emit('onStop', [this.web]);
         if (this.dao) {
             this.dao.disconnect();
         }
@@ -221,6 +228,7 @@ class AppWEB {
 
     initRoutes() {
         this.event.emit('onInitRoutes', [this.cfg.srv.route]);
+
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
