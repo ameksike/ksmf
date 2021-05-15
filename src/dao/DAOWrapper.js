@@ -27,7 +27,6 @@ class DAOWrapper {
     }
 
     onLoadModule(mod) {
-        console.log(">>>>onLoadModule>>>>>", arguments);
         if (!this.dao) {
             return null;
         }
