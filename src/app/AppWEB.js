@@ -183,8 +183,7 @@ class AppWEB {
                 };
 
                 const dependency = {
-                    'helper': 'helper',
-                    'dao': 'dao'
+                    'helper': 'helper'
                 };
 
                 if (typeof (item) === 'string') {
@@ -206,7 +205,7 @@ class AppWEB {
                     };
                 }
                 const obj = this.helper.get(item);
-                if (obj && this.dao) {
+                if (obj) {
                     this.event.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
                 }
             });
