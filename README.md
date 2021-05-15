@@ -1,5 +1,5 @@
 # KsMf
-Modular Microframework for create minimalistic web application or REST API.
+Modular Microframework for create minimalistic web application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki).
 
 
 ## Project Skeleton
