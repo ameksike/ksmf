@@ -12,7 +12,7 @@ const Cron = require('./src/task/cron');
 const Base = require('./src/dao/DAO');
 const Sequelize = require('./src/dao/DAOSequelize');
 const Redis = require('./src/dao/DAORedis');
-const DAOWrapper = require('./src/dao/DAOWrapper');
+const Wrapper = require('./src/dao/DAOWrapper');
 
 // ... EXPORTS ...
 module.exports = {
@@ -27,7 +27,7 @@ module.exports = {
         Base,
         Sequelize,
         Redis,
-        DAOWrapper
+        Wrapper
     },
     task: {
         Cron
