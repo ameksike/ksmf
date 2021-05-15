@@ -88,11 +88,20 @@ class AppWEB {
         });
 
         // ... configure Events ...
-        for (let i in this.cfg.srv.event) {
-            const subscriber = this.cfg.srv.event[i];
-            this.event.add(this.helper.get(subscriber), i);
-        }
+        this.initEvents();
         this.event.emit('onInitConfig');
+    }
+
+    initEvents() {
+        console.log(">>>>>>>>>>", this.cfg.srv.event);
+        for (let event in this.cfg.srv.event) {
+            const eventList = this.cfg.srv.event[event];
+            for (let elm in eventList) {
+                const subscriber = eventList[elm];
+                this.event.add(this.helper.get(subscriber), event);
+            }
+        }
+        console.log(this.event);
     }
 
     initApp() {
@@ -268,8 +277,9 @@ class AppWEB {
                     '<complex:' + thing.toString() + '>'
             }
         }
-
-        this.web._router.stack.forEach(print.bind(null, []))
+        if (this.web && this.web._router && this.web._router.stack) {
+            this.web._router.stack.forEach(print.bind(null, []));
+        }
     }
 }
 

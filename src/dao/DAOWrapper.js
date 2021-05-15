@@ -14,10 +14,12 @@ class DAOWrapper {
     }
 
     onInitConfig(cfg) {
+        console.log(">>>>onInitConfig>>>>>", arguments);
         this.cfg = cfg;
     }
 
     onInitModules() {
+        console.log(">>>>onInitModules>>>>>", arguments);
         this.dao = this.helper.get('dao');
         if (this.dao) {
             this.dao.configure(this.cfg.app);
@@ -27,6 +29,7 @@ class DAOWrapper {
     }
 
     onLoadModule(mod) {
+        console.log(">>>>onLoadModule>>>>>", arguments);
         if (!this.dao) {
             return null;
         }
