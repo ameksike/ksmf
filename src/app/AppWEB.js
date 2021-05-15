@@ -44,7 +44,7 @@ class AppWEB {
     run() {
         return this.web.listen(this.cfg.srv.port, () => {
             const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
-            this.event.emit('onStart', [this.cfg.srv, url]);
+            this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
             this.setLog(`>>> SERVER: ${url}`);
             if (this.cfg.srv.log === 1) {
                 this.logRoutes();
@@ -57,7 +57,7 @@ class AppWEB {
     }
 
     stop() {
-        this.event.emit('onStop', [this.web]);
+        this.event.emit('onStop', "ksmf", [this.web]);
         if (this.dao) {
             this.dao.disconnect();
         }
@@ -96,26 +96,25 @@ class AppWEB {
 
         // ... configure Events ...
         this.initEvents();
-        this.event.emit('onInitConfig', [this.cfg]);
+        this.event.emit('onInitConfig', "ksmf", [this.cfg]);
     }
 
     initEvents() {
-        console.log(">>>>>>>>>>", this.cfg.srv.event);
         for (let event in this.cfg.srv.event) {
             const eventList = this.cfg.srv.event[event];
             for (let elm in eventList) {
                 const subscriber = eventList[elm];
-                this.event.add(this.helper.get(subscriber), event);
+                this.event.add(this.helper.get(subscriber), event, "ksmf");
             }
         }
         console.log(this.event);
     }
 
     initApp() {
-        this.event.emit('onInitApp', [this.web]);
+        this.event.emit('onInitApp', "ksmf", [this.web]);
         //... Set Error Handler
         this.web.use((err, req, res, next) => {
-            this.event.emit('onError', [err, req, res, next]);
+            this.event.emit('onError', "ksmf", [err, req, res, next]);
             this.setError(err, req, res, next);
         });
 
@@ -131,7 +130,7 @@ class AppWEB {
 
         //... Log requests 
         this.web.use((req, res, next) => {
-            this.event.emit('onRequest', [req, res, next]);
+            this.event.emit('onRequest', "ksmf", [req, res, next]);
             this.setLog(`>>> ${req.method} : ${req.path} `);
             return next();
         })
@@ -166,7 +165,7 @@ class AppWEB {
     }
 
     initModules() {
-        this.event.emit('onInitModules', [this.cfg.srv.module.load]);
+        this.event.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
             this.cfg.srv.module.load.forEach(item => {
 
@@ -219,7 +218,7 @@ class AppWEB {
                 }
                 const obj = this.helper.get(item);
                 if (obj && this.dao) {
-                    this.event.emit('onLoadModule', [obj, name, this.cfg.srv.module.path + name + "/model/"]);
+                    this.event.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
                     this.dao.load(this.cfg.srv.module.path + name + "/model/");
                 }
             });
@@ -227,7 +226,7 @@ class AppWEB {
     }
 
     initRoutes() {
-        this.event.emit('onInitRoutes', [this.cfg.srv.route]);
+        this.event.emit('onInitRoutes', "ksmf", [this.cfg.srv.route]);
 
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
@@ -242,13 +241,13 @@ class AppWEB {
                         }
                         controller[route.action](req, res);
                     });
-                    this.event.emit('onLoadRoutes', [i, route, this.web]);
+                    this.event.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
                 }
             }
         }
 
         this.web.get('*', (req, res) => {
-            this.event.emit('on404', [req, res]);
+            this.event.emit('on404', "ksmf", [req, res]);
             this.setLog(`>>! ${req.method} : ${req.path} `);
             res.json({
                 status: 'faild',

@@ -14,7 +14,6 @@ class DAOWrapper {
     }
 
     onInitConfig(cfg) {
-        console.log(">>>>onInitConfig>>>>>", arguments);
         this.cfg = cfg;
     }
 
