@@ -46,7 +46,7 @@ class AppWEB {
             this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
             this.setLog(`>>> SERVER: ${url}`);
             if (this.cfg.srv.log === 1) {
-                this.logRoutes();
+                this.setLog(this.getRoutes());
             }
         });
     }
@@ -90,7 +90,12 @@ class AppWEB {
         this.helper.configure({
             path: this.cfg.srv.module.path,
             src: this.cfg.srv.helper,
-            name: 'helper'
+            name: 'helper',
+            error: {
+                on: (error) => {
+                    this.setError(error);
+                }
+            }
         });
 
         // ... configure Events ...
@@ -147,6 +152,7 @@ class AppWEB {
     }
 
     setError(error, req = null, res = null, next = null) {
+        this.event.emit('onError', "ksmf", [error, req, res, next]);
         const handler = this.helper.get('error');
         if (handler && handler.on) {
             handler.on(error, req, res, next);
@@ -219,22 +225,22 @@ class AppWEB {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
                 if (this.web[route.method]) {
-                    this.web[route.method](i, (req, res) => {
+                    this.web[route.method](i, (req, res, next) => {
                         route.path = route.path || 'controller';
                         route.name = route.name || route.controller;
                         const controller = this.helper.get(route);
                         if (!controller || !controller[route.action]) {
-                            this.setError(`Error << '${route.module}:${route.controller}:${route.action}'`, req, res);
+                            this.setError(`Error << '${route.module}:${route.controller}:${route.action}'`, req, res, next);
                         }
-                        controller[route.action](req, res);
+                        controller[route.action](req, res, next);
                     });
                     this.event.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
                 }
             }
         }
 
-        this.web.get('*', (req, res) => {
-            this.event.emit('on404', "ksmf", [req, res]);
+        this.web.get('*', (req, res, next) => {
+            this.event.emit('on404', "ksmf", [req, res, next]);
             this.setLog(`>>! ${req.method} : ${req.path} `);
             res.json({
                 status: 'faild',
@@ -243,16 +249,21 @@ class AppWEB {
         });
     }
 
-    logRoutes() {
+    getRoutes() {
+        const list = [];
+        const epss = [];
+
         function print(path, layer) {
             if (layer.route) {
                 layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))))
             } else if (layer.name === 'router' && layer.handle.stack) {
                 layer.handle.stack.forEach(print.bind(null, path.concat(split(layer.regexp))))
             } else if (layer.method) {
-                console.log('%s /%s',
-                    layer.method.toUpperCase(),
-                    path.concat(split(layer.regexp)).filter(Boolean).join('/'))
+                const endpoint = `${layer.method.toUpperCase()} ${path.concat(split(layer.regexp)).filter(Boolean).join('/')}`;
+                if (epss.indexOf(endpoint) === -1) {
+                    epss.push(endpoint);
+                    list.push([layer.method.toUpperCase(), path.concat(split(layer.regexp)).filter(Boolean).join('/')]);
+                }
             }
         }
 
@@ -274,6 +285,7 @@ class AppWEB {
         if (this.web && this.web._router && this.web._router.stack) {
             this.web._router.stack.forEach(print.bind(null, []));
         }
+        return list;
     }
 }
 

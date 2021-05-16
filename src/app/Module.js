@@ -6,7 +6,6 @@
  * @license    	GPL
  * @version    	1.0
  * */
-
 class Module {
 
     constructor(payload) {
@@ -15,8 +14,9 @@ class Module {
         this.opt = payload ? payload.opt : {};
 
         this.name = this.opt.name;
-        this.prefix = "/" + this.name;
+        this.prefix = "/" + this.name; 
         this.routes = [];
+        this.middleware = this.initRestMiddleware(this.middleware);
     }
 
     init() {
@@ -25,7 +25,7 @@ class Module {
         this.initRoutes();
     }
 
-    initApp() {}
+    initApp() { }
 
     initConfig() {
         this.routes.push({
@@ -42,14 +42,14 @@ class Module {
         }
     }
 
-    initRoutesWeb(opt) {}
+    initRoutesWeb(opt) { }
 
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
-            console.log('Warning: app or helper on Module');
             return null;
         }
 
+        // ... load controller 
         const _prefix = opt.route;
         const _controller = this.helper.get({
             name: opt.controller,
@@ -64,24 +64,75 @@ class Module {
             }
         });
 
-        this.app.get(_prefix, (req, res, next) => {
-            _controller.list(req, res, next);
-        });
-        this.app.get(_prefix + "/:id", (req, res, next) => {
-            _controller.select(req, res, next);
-        });
-        this.app.post(_prefix, (req, res, next) => {
-            _controller.insert(req, res, next);
-        });
-        this.app.put(_prefix + "/:id", (req, res, next) => {
-            _controller.update(req, res, next);
-        });
-        this.app.patch(_prefix + "/:id", (req, res, next) => {
-            _controller.update(req, res, next);
-        });
-        this.app.delete(_prefix + "/:id", (req, res, next) => {
-            _controller.delete(req, res, next);
-        });
+        // ... load middlewares  
+        this.middleware = this.initRestMiddleware(this.middleware);
+        _controller.middleware = this.initRestMiddleware(_controller.middleware);
+
+        // ... define routes  
+        this.app.get.apply(this.app, [_prefix,
+            ...this.middleware.global,
+            ...this.middleware.list,
+            ..._controller.middleware.global,
+            ..._controller.middleware.list,
+            (req, res, next) => {
+                _controller.list(req, res, next);
+            }]);
+
+        this.app.get.apply(this.app, [_prefix + "/:id",
+            ...this.middleware.global,
+            ...this.middleware.select,
+            ..._controller.middleware.global,
+            ..._controller.middleware.select,
+            (req, res, next) => {
+                _controller.select(req, res, next);
+            }]);
+
+        this.app.post.apply(this.app, [_prefix,
+            ...this.middleware.global,
+            ...this.middleware.insert,
+            ..._controller.middleware.global,
+            ..._controller.middleware.insert,
+            (req, res, next) => {
+                _controller.insert(req, res, next);
+            }]);
+
+        this.app.put.apply(this.app, [_prefix + "/:id",
+            ...this.middleware.global,
+            ...this.middleware.update,
+            ..._controller.middleware.global,
+            ..._controller.middleware.update,
+            (req, res, next) => {
+                _controller.update(req, res, next);
+            }]);
+
+        this.app.patch.apply(this.app, [_prefix + "/:id",
+            ...this.middleware.global,
+            ...this.middleware.update,
+            ..._controller.middleware.global,
+            ..._controller.middleware.update,
+            (req, res, next) => {
+                _controller.update(req, res, next);
+            }]);
+
+        this.app.delete.apply(this.app, [_prefix + "/:id",
+            ...this.middleware.global,
+            ...this.middleware.delete,
+            ..._controller.middleware.global,
+            ..._controller.middleware.delete,
+            (req, res, next) => {
+                _controller.delete(req, res, next);
+            }]);
+    }
+
+    initRestMiddleware(middleware) {
+        middleware = middleware || {};
+        middleware.global = middleware.global instanceof Array ? middleware.global : [];
+        middleware.list = middleware.list instanceof Array ? middleware.list : [];
+        middleware.select = middleware.select instanceof Array ? middleware.select : [];
+        middleware.insert = middleware.insert instanceof Array ? middleware.insert : [];
+        middleware.update = middleware.update instanceof Array ? middleware.update : [];
+        middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
+        return middleware;
     }
 }
 module.exports = Module;
