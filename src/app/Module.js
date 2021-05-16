@@ -6,7 +6,6 @@
  * @license    	GPL
  * @version    	1.0
  * */
-
 class Module {
 
     constructor(payload) {
@@ -16,7 +15,7 @@ class Module {
 
         this.name = this.opt.name;
         this.prefix = "/" + this.name;
-        this.routes = [];
+        this.initSrc();
     }
 
     init() {
@@ -25,7 +24,18 @@ class Module {
         this.initRoutes();
     }
 
-    initApp() {}
+    initSrc() {
+        this.middleware = this.middleware || {};
+        this.middleware.global = this.middleware.global instanceof Array ? this.middleware.global : [];
+        this.middleware.list = this.middleware.list instanceof Array ? this.middleware.list : [];
+        this.middleware.select = this.middleware.select instanceof Array ? this.middleware.select : [];
+        this.middleware.insert = this.middleware.insert instanceof Array ? this.middleware.insert : [];
+        this.middleware.update = this.middleware.update instanceof Array ? this.middleware.update : [];
+        this.middleware.delete = this.middleware.delete instanceof Array ? this.middleware.delete : [];
+        this.routes = this.routes instanceof Array ? this.routes : [];
+    }
+
+    initApp() { }
 
     initConfig() {
         this.routes.push({
@@ -42,11 +52,11 @@ class Module {
         }
     }
 
-    initRoutesWeb(opt) {}
+    initRoutesWeb(opt) { }
 
     initRoutesREST(opt) {
+        this.initSrc();
         if (!this.app || !this.helper) {
-            console.log('Warning: app or helper on Module');
             return null;
         }
 
@@ -64,24 +74,29 @@ class Module {
             }
         });
 
-        this.app.get(_prefix, (req, res, next) => {
+        this.app.get.apply(this.app, [_prefix, ...this.middleware.global, ...this.middleware.list, (req, res, next) => {
             _controller.list(req, res, next);
-        });
-        this.app.get(_prefix + "/:id", (req, res, next) => {
+        }]);
+
+        this.app.get.apply(this.app, [_prefix + "/:id", ...this.middleware.global, ...this.middleware.select, (req, res, next) => {
             _controller.select(req, res, next);
-        });
-        this.app.post(_prefix, (req, res, next) => {
+        }]);
+
+        this.app.post.apply(this.app, [_prefix, ...this.middleware.global, ...this.middleware.insert, (req, res, next) => {
             _controller.insert(req, res, next);
-        });
-        this.app.put(_prefix + "/:id", (req, res, next) => {
+        }]);
+
+        this.app.put.apply(this.app, [_prefix + "/:id", ...this.middleware.global, ...this.middleware.update, (req, res, next) => {
             _controller.update(req, res, next);
-        });
-        this.app.patch(_prefix + "/:id", (req, res, next) => {
+        }]);
+
+        this.app.patch.apply(this.app, [_prefix + "/:id", ...this.middleware.global, ...this.middleware.update, (req, res, next) => {
             _controller.update(req, res, next);
-        });
-        this.app.delete(_prefix + "/:id", (req, res, next) => {
+        }]);
+
+        this.app.delete.apply(this.app, [_prefix + "/:id", ...this.middleware.global, ...this.middleware.delete, (req, res, next) => {
             _controller.delete(req, res, next);
-        });
+        }]);
     }
 }
 module.exports = Module;
