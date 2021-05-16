@@ -11,6 +11,7 @@ class Controller {
     constructor(payload) {
         this.opt = payload && payload.opt ? payload.opt : {};
         this.module = payload && payload.module ? payload.module : {};
+        this.middleware = this.initRestMiddleware(this.middleware);
     }
 
     init() { }
@@ -39,6 +40,17 @@ class Controller {
             'name': req.body['name']
         }
         res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
+    }
+
+    initRestMiddleware(middleware) {
+        middleware = middleware || {};
+        middleware.global = middleware.global instanceof Array ? middleware.global : [];
+        middleware.list = middleware.list instanceof Array ? middleware.list : [];
+        middleware.select = middleware.select instanceof Array ? middleware.select : [];
+        middleware.insert = middleware.insert instanceof Array ? middleware.insert : [];
+        middleware.update = middleware.update instanceof Array ? middleware.update : [];
+        middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
+        return middleware;
     }
 }
 module.exports = Controller;
