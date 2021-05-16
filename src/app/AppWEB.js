@@ -97,7 +97,7 @@ class AppWEB {
                 }
             }
         });
-
+        this.helper.set(this, 'app');
         // ... configure Events ...
         this.initEvents();
         this.event.emit('onInitConfig', "ksmf", [this.cfg]);
