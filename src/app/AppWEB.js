@@ -243,7 +243,7 @@ class AppWEB {
             this.event.emit('on404', "ksmf", [req, res, next]);
             this.setLog(`>>! ${req.method} : ${req.path} `);
             res.json({
-                status: 'faild',
+                status: 'failed',
                 data: "404"
             });
         });
