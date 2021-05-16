@@ -46,7 +46,7 @@ class AppWEB {
             this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
             this.setLog(`>>> SERVER: ${url}`);
             if (this.cfg.srv.log === 1) {
-                this.logRoutes();
+                this.setLog(this.getRoutes());
             }
         });
     }
@@ -249,16 +249,21 @@ class AppWEB {
         });
     }
 
-    logRoutes() {
+    getRoutes() {
+        const list = [];
+        const epss = [];
+
         function print(path, layer) {
             if (layer.route) {
                 layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))))
             } else if (layer.name === 'router' && layer.handle.stack) {
                 layer.handle.stack.forEach(print.bind(null, path.concat(split(layer.regexp))))
             } else if (layer.method) {
-                console.log('%s /%s',
-                    layer.method.toUpperCase(),
-                    path.concat(split(layer.regexp)).filter(Boolean).join('/'))
+                const endpoint = `${layer.method.toUpperCase()} ${path.concat(split(layer.regexp)).filter(Boolean).join('/')}`;
+                if (epss.indexOf(endpoint) === -1) {
+                    epss.push(endpoint);
+                    list.push([layer.method.toUpperCase(), path.concat(split(layer.regexp)).filter(Boolean).join('/')]);
+                }
             }
         }
 
@@ -280,6 +285,7 @@ class AppWEB {
         if (this.web && this.web._router && this.web._router.stack) {
             this.web._router.stack.forEach(print.bind(null, []));
         }
+        return list;
     }
 }
 
