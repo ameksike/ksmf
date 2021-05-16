@@ -147,6 +147,7 @@ class AppWEB {
     }
 
     setError(error, req = null, res = null, next = null) {
+        this.event.emit('onError', "ksmf", [error, req, res, next]);
         const handler = this.helper.get('error');
         if (handler && handler.on) {
             handler.on(error, req, res, next);
@@ -219,22 +220,22 @@ class AppWEB {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
                 if (this.web[route.method]) {
-                    this.web[route.method](i, (req, res) => {
+                    this.web[route.method](i, (req, res, next) => {
                         route.path = route.path || 'controller';
                         route.name = route.name || route.controller;
                         const controller = this.helper.get(route);
                         if (!controller || !controller[route.action]) {
-                            this.setError(`Error << '${route.module}:${route.controller}:${route.action}'`, req, res);
+                            this.setError(`Error << '${route.module}:${route.controller}:${route.action}'`, req, res, next);
                         }
-                        controller[route.action](req, res);
+                        controller[route.action](req, res, next);
                     });
                     this.event.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
                 }
             }
         }
 
-        this.web.get('*', (req, res) => {
-            this.event.emit('on404', "ksmf", [req, res]);
+        this.web.get('*', (req, res, next) => {
+            this.event.emit('on404', "ksmf", [req, res, next]);
             this.setLog(`>>! ${req.method} : ${req.path} `);
             res.json({
                 status: 'faild',
