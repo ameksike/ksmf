@@ -90,7 +90,12 @@ class AppWEB {
         this.helper.configure({
             path: this.cfg.srv.module.path,
             src: this.cfg.srv.helper,
-            name: 'helper'
+            name: 'helper',
+            error: {
+                on: (error) => {
+                    this.setError(error);
+                }
+            }
         });
 
         // ... configure Events ...
