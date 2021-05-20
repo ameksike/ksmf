@@ -6,7 +6,7 @@
  * @license    	GPL
  * @version    	1.0
  * */
-class DAO {
+class DAOBase {
 
     constructor(opt) {
         this.driver = null;
@@ -55,4 +55,4 @@ class DAO {
     onConnect(option) {}
     onDisconnect(option) {}
 }
-module.exports = DAO;
+module.exports = DAOBase;
