@@ -60,7 +60,8 @@ class Module {
                 module: this.name
             },
             dependency: {
-                'helper': 'helper'
+                'helper': 'helper',
+                'app': 'app'
             }
         });
 
