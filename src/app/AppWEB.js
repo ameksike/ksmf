@@ -44,8 +44,8 @@ class AppWEB {
         return this.web.listen(this.cfg.srv.port, () => {
             const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
             this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
-            this.setLog(`>>> SERVER: ${url}`);
-            if (this.cfg.srv.log === 1) {
+            this.setLog('SERVER', `${url}`);
+            if (this.cfg.srv.log >= 1) {
                 this.setLog(this.getRoutes());
             }
         });
@@ -134,12 +134,12 @@ class AppWEB {
         //... Log requests 
         this.web.use((req, res, next) => {
             this.event.emit('onRequest', "ksmf", [req, res, next]);
-            this.setLog(`>>> ${req.method} : ${req.path} `);
+            this.setLog(`${req.method} : ${req.path}`);
             return next();
         })
     }
 
-    setLog(data) {
+    setLog() {
         const handler = this.helper.get('logger');
         if (handler && handler.log) {
             if (handler.configure) {
@@ -147,7 +147,7 @@ class AppWEB {
                     level: this.cfg.srv.log
                 });
             }
-            handler.log(data);
+            handler.log(...arguments);
         }
     }
 
@@ -241,7 +241,7 @@ class AppWEB {
 
         this.web.get('*', (req, res, next) => {
             this.event.emit('on404', "ksmf", [req, res, next]);
-            this.setLog(`>>! ${req.method} : ${req.path} `);
+            this.setLog('404', `${req.method} : ${req.path}`);
             res.json({
                 status: 'failed',
                 data: "404"
