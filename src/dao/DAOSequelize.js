@@ -38,11 +38,7 @@ class DAOSequelize {
             this.driver = new Sequelize(this.option.url, {
                 dialect: this.option.dialect,
                 protocol: this.option.protocol,
-                logging: (str) => {
-                    if (this.option.logging) {
-                        console.log('DAO >>>', str);
-                    }
-                },
+                logging: (str) => this.log(str),
                 "dialectOptions": {
                     "ssl": {
                         "rejectUnauthorized": false
@@ -53,12 +49,9 @@ class DAOSequelize {
             this.driver = new Sequelize(
                 this.option.database,
                 this.option.username,
-                this.option.password, {
-                    logging: (str) => {
-                        if (this.option.logging) {
-                            console.log('DAO >>>', str);
-                        }
-                    },
+                this.option.password,
+                {
+                    logging: (str) => this.log(str),
                     ...this.option,
                 }
             );
@@ -68,12 +61,12 @@ class DAOSequelize {
 
     connect() {
         this.driver.authenticate().then((error) => {
-                if (!!error) {
-                    this.onError(error);
-                } else {
-                    this.onConnect(this.option);
-                }
-            })
+            if (!!error) {
+                this.onError(error);
+            } else {
+                this.onConnect(this.option);
+            }
+        })
             .catch((error) => this.onError(error));
 
         return this;
@@ -111,18 +104,19 @@ class DAOSequelize {
         return this;
     }
 
+    log() {
+        if (this.option.logging) {
+            console.log('[KsMk.DAO.Sequelize]', ...arguments);
+        }
+    }
+
     onError(error) {
         const message = error.message ? error.message : error;
-        if (this.option.logging) {
-            console.log('>>> DAO ERROR: data base connect error : ' + message);
-        }
-
+        this.log('[ERROR]', message);
     }
 
     onConnect(option) {
-        if (this.option.logging) {
-            console.log('>>> DAO data base connect success');
-        }
+        this.log('[INFO]', 'Data Base connect Success');
     }
 }
 module.exports = DAOSequelize;
