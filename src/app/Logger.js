@@ -18,7 +18,9 @@ class Logger {
                 error: 'ERROR',
                 info: 'INFO',
                 warn: 'WARN',
-            }
+            },
+            action: console.log,
+            scope: console,
         };
         this.configure(opt);
     }
@@ -28,43 +30,62 @@ class Logger {
         return this;
     }
 
+    isValid() {
+        return (this.cfg && this.cfg.action instanceof Function);
+    }
+
+    isEnabled() {
+        return this.cfg.level >= 1;
+    }
+
+    format(data) {
+        if (this.cfg.level >= 2) {
+            for (const i in data) {
+                try {
+                    data[i] = JSON.stringify(data[i]);
+                }
+                catch (error) { }
+            }
+        }
+        return data;
+    }
+
     prefix(value) {
         this.cfg.prefix = value;
         return this;
     }
 
+    type(value) {
+        this.cfg.type = value;
+        return this;
+    }
+
     log() {
-        if (this.cfg && this.cfg.level >= 1) {
-            console.log.apply(this, [`[${this.cfg.prefix}] [${this.cfg.label.info}]`, ...arguments]);
+        if (this.isValid() && this.isEnabled()) {
+            const params = this.format(arguments);
+            this.cfg.type = this.cfg.type || this.cfg.label.info;
+            this.cfg.action.apply(this, [`[${this.cfg.prefix}] [${this.cfg.type}]`, ...params]);
         }
         return this;
     }
 
     info() {
-        if (this.cfg && this.cfg.level >= 1) {
-            console.log.apply(this, [`[${this.cfg.prefix}] [${this.cfg.label.info}]`, ...arguments]);
-        }
+        this.type(this.cfg.label.info).log(...arguments);
         return this;
     }
 
     error() {
-        if (this.cfg && this.cfg.level >= 1) {
-            console.log.apply(this, [`[${this.cfg.prefix}] [${this.cfg.label.error}]`, ...arguments]);
-        }
+        this.type(this.cfg.label.error).log(...arguments);
         return this;
     }
 
     warn() {
-        if (this.cfg && this.cfg.level >= 1) {
-            console.log.apply(this, [`[${this.cfg.prefix}] [${this.cfg.label.warn}]`, ...arguments]);
-        }
+        this.type(this.cfg.label.warn).log(...arguments);
         return this;
     }
 
     debug() {
-        if (this.cfg && this.cfg.level >= 1) {
-            console.log.apply(this, [`[${this.cfg.prefix}] [${this.cfg.label.debug}]`, ...arguments]);
-        }
+        this.type(this.cfg.label.debug).log(...arguments);
         return this;
     }
 }
