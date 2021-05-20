@@ -1,18 +1,19 @@
+const path = __dirname;
 // ... APP ...
-const WEB = require('./src/app/AppWEB');
-const Controller = require('./src/app/Controller');
-const Module = require('./src/app/Module');
-const ErrorHandler = require('./src/app/ErrorHandler');
-const Logger = require('./src/app/Logger');
+const WEB = require(path + '/src/app/AppWEB');
+const Controller = require(path + '/src/app/Controller');
+const Module = require(path + '/src/app/Module');
+const ErrorHandler = require(path + '/src/app/ErrorHandler');
+const Logger = require(path + '/src/app/Logger');
 
 // ... TASK ...
-const Cron = require('./src/task/cron');
+const Cron = require(path + '/src/task/cron');
 
 // ... DAO ...
-const Base = require('./src/dao/DAO');
-const Sequelize = require('./src/dao/DAOSequelize');
-const Redis = require('./src/dao/DAORedis');
-const Wrapper = require('./src/dao/DAOWrapper');
+const Base = require(path + '/src/dao/DAO');
+const Sequelize = require(path + '/src/dao/DAOSequelize');
+const Redis = require(path + '/src/dao/DAORedis');
+const Wrapper = require(path + '/src/dao/DAOWrapper');
 
 // ... EXPORTS ...
 module.exports = {
