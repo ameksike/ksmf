@@ -115,12 +115,21 @@ class Module {
             }]);
 
         this.app.delete.apply(this.app, [_prefix + "/:id",
+        ...this.middleware.global,
+        ...this.middleware.delete,
+        ..._controller.middleware.global,
+        ..._controller.middleware.delete,
+        (req, res, next) => {
+            _controller.delete(req, res, next);
+        }]);
+        
+        this.app.delete.apply(this.app, [_prefix,
             ...this.middleware.global,
             ...this.middleware.delete,
             ..._controller.middleware.global,
             ..._controller.middleware.delete,
             (req, res, next) => {
-                _controller.delete(req, res, next);
+                _controller.clean(req, res, next);
             }]);
     }
 
@@ -132,6 +141,7 @@ class Module {
         middleware.insert = middleware.insert instanceof Array ? middleware.insert : [];
         middleware.update = middleware.update instanceof Array ? middleware.update : [];
         middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
+        middleware.clean = middleware.clean instanceof Array ? middleware.clean : [];
         return middleware;
     }
 }
