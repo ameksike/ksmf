@@ -5,6 +5,7 @@ Modular Microframework for create minimalistic web application or REST API based
 ### Install from [npm package](https://www.npmjs.com/package/ksmf)
 ``` npm install ksmf ```
 
+[![Rate on Openbase](https://badges.openbase.com/js/rating/ksmf.svg)](https://openbase.com/js/ksmf?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
 
 ## Project Skeleton
 

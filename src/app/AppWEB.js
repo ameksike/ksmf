@@ -144,7 +144,8 @@ class AppWEB {
         if (handler && handler.log) {
             if (handler.configure) {
                 handler.configure({
-                    level: this.cfg.srv.log
+                    level: this.cfg.srv.log,
+                    prefix: 'KsMf.Web'
                 });
             }
             handler.log(...arguments);
