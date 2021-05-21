@@ -121,7 +121,7 @@ class DAOSequelize {
     }
 
     onLog() {
-        console.log(...arguments);
+        console.log('[KsMf.DAO.Sequelize]', ...arguments);
     }
 
     onError(error) {
@@ -130,7 +130,7 @@ class DAOSequelize {
     }
 
     onConnect(option) {
-        this.log('Data Base connect Success');
+        this.log('DATABASE CONNECTION SUCCESS');
     }
 }
 module.exports = DAOSequelize;
