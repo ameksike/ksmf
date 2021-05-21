@@ -23,6 +23,29 @@ class DAOWrapper {
             this.dao.configure(this.cfg.app);
             this.dao.connect();
             this.dao.load(this.cfg.path + 'db/models/');
+
+            this.dao.onLog = () => {
+                this.setLog('info', ...arguments);
+            }
+
+            this.dao.onError = (error) => {
+                const message = error.message ? error.message : error;
+                this.setLog('error', message);
+            }
+        }
+    }
+
+    setLog(type, data) {
+        const handler = this.helper.get('logger');
+        if (handler && handler.log) {
+            if (handler.configure) {
+                handler.configure({
+                    level: (this.cfg && this.cfg.srv && this.cfg.srv.log) ? this.cfg.srv.log : 1,
+                    prefix: '[KsMf.DAO.Sequelize]',
+                    type
+                });
+            }
+            handler.log(...data);
         }
     }
 

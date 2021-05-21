@@ -62,27 +62,35 @@ class DAOSequelize {
     connect() {
         this.driver.authenticate().then((error) => {
             if (!!error) {
-                this.onError(error);
+                if (this.onError instanceof Function) {
+                    this.onError(error);
+                }
             } else {
                 this.onConnect(this.option);
             }
         })
-            .catch((error) => this.onError(error));
+            .catch((error) => {
+                if (this.onError instanceof Function) {
+                    this.onError(error);
+                }
+            });
 
         return this;
     }
 
     disconnect() {
-        this.driver.close();
+        if (this.driver && this.driver.close instanceof Function) {
+            this.driver.close();
+        }
         return this;
     }
 
     getUri() {
-        return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
+        return this.option ? `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}` : '';
     }
 
     load(dirname) {
-        if (!this.driver || !fs.existsSync(dirname)) {
+        if (!this.driver || !fs || !fs.existsSync(dirname)) {
             return;
         }
 
@@ -97,7 +105,7 @@ class DAOSequelize {
             });
 
         Object.keys(this.models).forEach(modelName => {
-            if (this.models[modelName].associate) {
+            if (this.models[modelName] && this.models[modelName].associate) {
                 this.models[modelName].associate(this.models);
             }
         });
@@ -105,9 +113,15 @@ class DAOSequelize {
     }
 
     log() {
-        if (this.option.logging) {
-            console.log('[KsMk.DAO.Sequelize]', ...arguments);
+        if (this.option && this.option.logging) {
+            if (this.onLog instanceof Function) {
+                this.onLog(...arguments);
+            }
         }
+    }
+
+    onLog() {
+        console.log(...arguments);
     }
 
     onError(error) {
@@ -116,7 +130,7 @@ class DAOSequelize {
     }
 
     onConnect(option) {
-        this.log('[INFO]', 'Data Base connect Success');
+        this.log('Data Base connect Success');
     }
 }
 module.exports = DAOSequelize;
