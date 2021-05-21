@@ -46,7 +46,7 @@ class AppWEB {
             if (this.event && this.event.emit instanceof Function) {
                 this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
             }
-            this.setLog('info', ['SERVER LISTENER', `${url}`]);
+            this.setLog('info', ['LISTENING SERVER', `${url}`]);
             if (this.cfg.srv.log >= 1) {
                 this.setLog('info', [this.getRoutes()]);
             }
