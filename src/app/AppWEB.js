@@ -90,6 +90,7 @@ class AppWEB {
         this.cfg.srv.log = this.cfg.env.LOGGER_DB === 'true' ? 1 : this.cfg.srv.log;
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
         this.cfg.srv.event = this.cfg.srv.event || {};
+        this.cfg.srv.cors = this.cfg.srv.cors || [];
 
         this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
@@ -149,10 +150,12 @@ class AppWEB {
         this.web.use(compression());
 
         //... Allow all origin request, CORS on ExpressJS
-        let allowedOrigins = [];
+        let allowedOrigins = this.cfg.srv.cors;
         if (process.env.CORS_ORIGINS) {
             allowedOrigins = allowedOrigins.concat(this.cfg.env.CORS_ORIGINS.split(','));
         }
+        allowedOrigins = allowedOrigins.map(elm => new RegExp(elm));
+
         const corsConfig = {
             origin: allowedOrigins,
             allowedHeaders: ['Authorization', 'X-Requested-With', 'Content-Type'],
