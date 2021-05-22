@@ -152,10 +152,10 @@ class AppWEB {
         //... Allow all origin request, CORS on ExpressJS
         let allowedOrigins = this.cfg.srv.cors;
         if (process.env.CORS_ORIGINS) {
-            allowedOrigins = allowedOrigins.concat(this.cfg.env.CORS_ORIGINS.split(','));
+            const CORS_ORIGINS = this.cfg && this.cfg.env && this.cfg.env.CORS_ORIGINS ? this.cfg.env.CORS_ORIGINS : [];
+            allowedOrigins = allowedOrigins.concat(CORS_ORIGINS.split(','));
         }
         allowedOrigins = allowedOrigins.map(elm => new RegExp(elm));
-
         const corsConfig = {
             origin: allowedOrigins,
             allowedHeaders: ['Authorization', 'X-Requested-With', 'Content-Type'],
