@@ -10,7 +10,11 @@
 const express = require("express");
 const cors = require('cors');
 const dotenv = require('dotenv');
+
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+
 const KsDp = require('ksdp');
 
 class AppWEB {
@@ -125,6 +129,7 @@ class AppWEB {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitApp', "ksmf", [this.web]);
         }
+
         //... Set Error Handler
         this.web.use((err, req, res, next) => {
             if (this.event && this.event.emit instanceof Function) {
@@ -133,15 +138,28 @@ class AppWEB {
             this.setError(err, req, res, next);
         });
 
+        //... Allow body Parser
+        this.web.use(bodyParser.json());
+        this.web.use(bodyParser.urlencoded({ extended: false }));
+
+        //... Allow cookie Parser
+        this.web.use(cookieParser());
+
+        //... Allow compression
         this.web.use(compression());
 
         //... Allow all origin request, CORS on ExpressJS
-        this.web.use(cors());
-
-        //... Allow body Parser
-        this.web.use(express.json());
-        this.web.use(express.urlencoded());
-        //this.web.use(express.multipart());
+        let allowedOrigins = [];
+        if (process.env.CORS_ORIGINS) {
+            allowedOrigins = allowedOrigins.concat(this.cfg.env.CORS_ORIGINS.split(','));
+        }
+        const corsConfig = {
+            origin: allowedOrigins,
+            allowedHeaders: ['Authorization', 'X-Requested-With', 'Content-Type'],
+            maxAge: 86400,
+            credentials: true,
+        };
+        this.web.use(cors(corsConfig));
 
         //... Log requests 
         this.web.use((req, res, next) => {
