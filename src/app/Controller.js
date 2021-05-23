@@ -57,8 +57,8 @@ class Controller {
         middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
         middleware.clean = middleware.clean instanceof Array ? middleware.clean : [];
         middleware.list = middleware.list instanceof Array ? middleware.list : [];
-        middleware.options = middleware.list instanceof Array ? middleware.options : [];
-        middleware.option = middleware.list instanceof Array ? middleware.option : [];
+        middleware.options = middleware.options instanceof Array ? middleware.options : [];
+        middleware.option = middleware.option instanceof Array ? middleware.option : [];
         return middleware;
     }
 }
