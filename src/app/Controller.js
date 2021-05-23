@@ -17,49 +17,36 @@ class Controller {
     init() { }
 
     list(req, res, next) {
-        res.json({ "message": "REST API mod <" + this.opt.name + "> selectAll." });
+        res.json({ "message": `REST API <${this.opt.name}> LIST.` });
     }
 
     select(req, res, next) {
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  select.", 'id': req.params.id, 'pid': req.params.pid });
+        res.json({ "message": `REST API <${this.opt.name}> SELECT, ID:${req.params.id}.` });
     }
 
     delete(req, res, next) {
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  delete.", 'id': req.params.id, 'pid': req.params.pid });
+        res.json({ "message": `REST API <${this.opt.name}> DELETE, ID:${req.params.id}.` });
     }
 
     clean(req, res, next) {
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  clean.", 'id': req.params.id, 'pid': req.params.pid });
+        res.json({ "message": `REST API <${this.opt.name}> CLEAN.` });
     }
 
     update(req, res, next) {
-        const elm = {
-            'name': req.body['name']
-        }
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  update.", 'id': req.params.id, 'obj': elm });
+        res.json({ "message": `REST API <${this.opt.name}> UPDATE, ID:${req.params.id}.` });
     }
 
     insert(req, res, next) {
-        const elm = {
-            'name': req.body['name']
-        }
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
+        res.json({ "message": `REST API <${this.opt.name}> INSERT.` });
     }
 
     options(req, res, next) {
-        const elm = {
-            'name': req.body['name']
-        }
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
+        res.json({ "message": `REST API <${this.opt.name}> OPTIONS.` });
     }
 
     option(req, res, next) {
-        const elm = {
-            'name': req.body['name']
-        }
-        res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
+        res.json({ "message": `REST API <${this.opt.name}> OPTION, ID:${req.params.id}.` });
     }
-
 
     initRestMiddleware(middleware) {
         middleware = middleware || {};
