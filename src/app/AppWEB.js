@@ -157,7 +157,7 @@ class AppWEB {
         }
         allowedOrigins = allowedOrigins.map(elm => new RegExp(elm));
         const corsConfig = {
-            origin: allowedOrigins,
+            origin: allowedOrigins.concat('null'),
             allowedHeaders: ['Authorization', 'X-Requested-With', 'Content-Type'],
             maxAge: 86400,
             credentials: true,
