@@ -46,6 +46,21 @@ class Controller {
         res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
     }
 
+    options(req, res, next) {
+        const elm = {
+            'name': req.body['name']
+        }
+        res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
+    }
+
+    option(req, res, next) {
+        const elm = {
+            'name': req.body['name']
+        }
+        res.json({ "message": "REST API mod <" + this.opt.name + ">  insert.", 'obj': elm });
+    }
+
+
     initRestMiddleware(middleware) {
         middleware = middleware || {};
         middleware.global = middleware.global instanceof Array ? middleware.global : [];
@@ -55,6 +70,8 @@ class Controller {
         middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
         middleware.clean = middleware.clean instanceof Array ? middleware.clean : [];
         middleware.list = middleware.list instanceof Array ? middleware.list : [];
+        middleware.options = middleware.list instanceof Array ? middleware.options : [];
+        middleware.option = middleware.list instanceof Array ? middleware.option : [];
         return middleware;
     }
 }
