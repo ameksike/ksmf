@@ -42,7 +42,12 @@ class Logger {
         if (this.cfg.level >= 2) {
             for (const i in data) {
                 try {
-                    data[i] = JSON.stringify(data[i]);
+                    if (data[i] instanceof Error) {
+                        const stack = typeof (data[i].stack) === 'string' ? data[i].stack.split('\n') : data[i].stack;
+                        data[i] = JSON.stringify({ message: data[i].message, stack });
+                    } else {
+                        data[i] = JSON.stringify(data[i]);
+                    }
                 }
                 catch (error) { }
             }

@@ -14,7 +14,7 @@ class Module {
         this.opt = payload ? payload.opt : {};
 
         this.name = this.opt.name;
-        this.prefix = "/" + this.name; 
+        this.prefix = "/" + this.name;
         this.routes = [];
         this.middleware = this.initRestMiddleware(this.middleware);
     }
@@ -116,14 +116,14 @@ class Module {
             }]);
 
         this.app.delete.apply(this.app, [_prefix + "/:id",
-        ...this.middleware.global,
-        ...this.middleware.delete,
-        ..._controller.middleware.global,
-        ..._controller.middleware.delete,
-        (req, res, next) => {
-            _controller.delete(req, res, next);
-        }]);
-        
+            ...this.middleware.global,
+            ...this.middleware.delete,
+            ..._controller.middleware.global,
+            ..._controller.middleware.delete,
+            (req, res, next) => {
+                _controller.delete(req, res, next);
+            }]);
+
         this.app.delete.apply(this.app, [_prefix,
             ...this.middleware.global,
             ...this.middleware.delete,
@@ -131,6 +131,24 @@ class Module {
             ..._controller.middleware.delete,
             (req, res, next) => {
                 _controller.clean(req, res, next);
+            }]);
+
+        this.app.options.apply(this.app, [_prefix,
+            ...this.middleware.global,
+            ...this.middleware.options,
+            ..._controller.middleware.global,
+            ..._controller.middleware.options,
+            (req, res, next) => {
+                _controller.options(req, res, next);
+            }]);
+
+        this.app.options.apply(this.app, [_prefix + "/:id",
+            ...this.middleware.global,
+            ...this.middleware.option,
+            ..._controller.middleware.global,
+            ..._controller.middleware.option,
+            (req, res, next) => {
+                _controller.option(req, res, next);
             }]);
     }
 
@@ -143,6 +161,8 @@ class Module {
         middleware.update = middleware.update instanceof Array ? middleware.update : [];
         middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
         middleware.clean = middleware.clean instanceof Array ? middleware.clean : [];
+        middleware.options = middleware.options instanceof Array ? middleware.options : [];
+        middleware.option = middleware.option instanceof Array ? middleware.option : [];
         return middleware;
     }
 }

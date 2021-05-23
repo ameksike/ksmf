@@ -10,7 +10,11 @@
 const express = require("express");
 const cors = require('cors');
 const dotenv = require('dotenv');
+
 const compression = require('compression');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+
 const KsDp = require('ksdp');
 
 class AppWEB {
@@ -86,6 +90,7 @@ class AppWEB {
         this.cfg.srv.log = this.cfg.env.LOGGER_DB === 'true' ? 1 : this.cfg.srv.log;
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
         this.cfg.srv.event = this.cfg.srv.event || {};
+        this.cfg.srv.cors = this.cfg.srv.cors || [];
 
         this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
@@ -125,6 +130,7 @@ class AppWEB {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitApp', "ksmf", [this.web]);
         }
+
         //... Set Error Handler
         this.web.use((err, req, res, next) => {
             if (this.event && this.event.emit instanceof Function) {
@@ -133,15 +139,30 @@ class AppWEB {
             this.setError(err, req, res, next);
         });
 
+        //... Allow body Parser
+        this.web.use(bodyParser.json());
+        this.web.use(bodyParser.urlencoded({ extended: false }));
+
+        //... Allow cookie Parser
+        this.web.use(cookieParser());
+
+        //... Allow compression
         this.web.use(compression());
 
         //... Allow all origin request, CORS on ExpressJS
-        this.web.use(cors());
-
-        //... Allow body Parser
-        this.web.use(express.json());
-        this.web.use(express.urlencoded());
-        //this.web.use(express.multipart());
+        let allowedOrigins = this.cfg.srv.cors;
+        if (process.env.CORS_ORIGINS) {
+            const CORS_ORIGINS = this.cfg && this.cfg.env && this.cfg.env.CORS_ORIGINS ? this.cfg.env.CORS_ORIGINS : [];
+            allowedOrigins = allowedOrigins.concat(CORS_ORIGINS.split(','));
+        }
+        allowedOrigins = allowedOrigins.map(elm => new RegExp(elm));
+        const corsConfig = {
+            origin: allowedOrigins.concat('null'),
+            allowedHeaders: ['Authorization', 'X-Requested-With', 'Content-Type'],
+            maxAge: 86400,
+            credentials: true,
+        };
+        this.web.use(cors(corsConfig));
 
         //... Log requests 
         this.web.use((req, res, next) => {
@@ -270,10 +291,7 @@ class AppWEB {
                 this.event.emit('on404', "ksmf", [req, res, next]);
             }
             this.setLog('error', ['404', `${req.method} : ${req.path}`]);
-            res.json({
-                status: 'failed',
-                data: "404"
-            });
+            next();
         });
     }
 
