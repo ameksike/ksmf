@@ -15,6 +15,7 @@ class Module {
 
         this.name = this.opt.name;
         this.prefix = "/" + this.name;
+        this.restfull = true;
         this.routes = [];
         this.middleware = this.initRestMiddleware(this.middleware);
     }
@@ -37,7 +38,9 @@ class Module {
 
     initRoutes() {
         for (const i in this.routes) {
-            this.initRoutesREST(this.routes[i]);
+            if (this.restfull) {
+                this.initRoutesREST(this.routes[i]);
+            }
             this.initRoutesWeb(this.routes[i]);
         }
     }
@@ -80,13 +83,13 @@ class Module {
             }]);
 
         this.app.get.apply(this.app, [_prefix + "/:id",
-            ...this.middleware.global,
-            ...this.middleware.select,
-            ..._controller.middleware.global,
-            ..._controller.middleware.select,
-            (req, res, next) => {
-                _controller.select(req, res, next);
-            }]);
+        ...this.middleware.global,
+        ...this.middleware.select,
+        ..._controller.middleware.global,
+        ..._controller.middleware.select,
+        (req, res, next) => {
+            _controller.select(req, res, next);
+        }]);
 
         this.app.post.apply(this.app, [_prefix,
             ...this.middleware.global,
@@ -98,31 +101,31 @@ class Module {
             }]);
 
         this.app.put.apply(this.app, [_prefix + "/:id",
-            ...this.middleware.global,
-            ...this.middleware.update,
-            ..._controller.middleware.global,
-            ..._controller.middleware.update,
-            (req, res, next) => {
-                _controller.update(req, res, next);
-            }]);
+        ...this.middleware.global,
+        ...this.middleware.update,
+        ..._controller.middleware.global,
+        ..._controller.middleware.update,
+        (req, res, next) => {
+            _controller.update(req, res, next);
+        }]);
 
         this.app.patch.apply(this.app, [_prefix + "/:id",
-            ...this.middleware.global,
-            ...this.middleware.update,
-            ..._controller.middleware.global,
-            ..._controller.middleware.update,
-            (req, res, next) => {
-                _controller.update(req, res, next);
-            }]);
+        ...this.middleware.global,
+        ...this.middleware.update,
+        ..._controller.middleware.global,
+        ..._controller.middleware.update,
+        (req, res, next) => {
+            _controller.update(req, res, next);
+        }]);
 
         this.app.delete.apply(this.app, [_prefix + "/:id",
-            ...this.middleware.global,
-            ...this.middleware.delete,
-            ..._controller.middleware.global,
-            ..._controller.middleware.delete,
-            (req, res, next) => {
-                _controller.delete(req, res, next);
-            }]);
+        ...this.middleware.global,
+        ...this.middleware.delete,
+        ..._controller.middleware.global,
+        ..._controller.middleware.delete,
+        (req, res, next) => {
+            _controller.delete(req, res, next);
+        }]);
 
         this.app.delete.apply(this.app, [_prefix,
             ...this.middleware.global,
@@ -143,13 +146,13 @@ class Module {
             }]);
 
         this.app.options.apply(this.app, [_prefix + "/:id",
-            ...this.middleware.global,
-            ...this.middleware.option,
-            ..._controller.middleware.global,
-            ..._controller.middleware.option,
-            (req, res, next) => {
-                _controller.option(req, res, next);
-            }]);
+        ...this.middleware.global,
+        ...this.middleware.option,
+        ..._controller.middleware.global,
+        ..._controller.middleware.option,
+        (req, res, next) => {
+            _controller.option(req, res, next);
+        }]);
     }
 
     initRestMiddleware(middleware) {
