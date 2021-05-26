@@ -50,9 +50,9 @@ class AppWEB {
             if (this.event && this.event.emit instanceof Function) {
                 this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
             }
-            this.setLog('info', ['LISTENING SERVER', `${url}`]);
+            this.setLog('INFO', ['LISTENING SERVER', `${url}`]);
             if (this.cfg.srv.log >= 1) {
-                this.setLog('info', [this.getRoutes()]);
+                this.setLog('INFO', [this.getRoutes()]);
             }
         });
     }
@@ -169,7 +169,7 @@ class AppWEB {
             if (this.event && this.event.emit instanceof Function) {
                 this.event.emit('onRequest', "ksmf", [req, res, next]);
             }
-            this.setLog('info', [`${req.method} : ${req.path}`]);
+            this.setLog('INFO', [req.method, req.path]);
             return next();
         })
     }
@@ -180,7 +180,7 @@ class AppWEB {
             if (handler.configure) {
                 handler.configure({
                     level: (this.cfg && this.cfg.srv && this.cfg.srv.log) ? this.cfg.srv.log : 1,
-                    prefix: 'KsMf.Web',
+                    prefix: 'KSMF.WEB',
                     type
                 });
             }
@@ -189,7 +189,7 @@ class AppWEB {
     }
 
     setError(error, req = null, res = null, next = null) {
-        this.setLog('error', [error]);
+        this.setLog('ERROR', [error]);
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onError', "ksmf", [error, req, res, next]);
         }
@@ -290,7 +290,7 @@ class AppWEB {
             if (this.event && this.event.emit instanceof Function) {
                 this.event.emit('on404', "ksmf", [req, res, next]);
             }
-            this.setLog('error', ['404', `${req.method} : ${req.path}`]);
+            this.setLog('WARN', ['404', req.method, req.path]);
             next();
         });
     }

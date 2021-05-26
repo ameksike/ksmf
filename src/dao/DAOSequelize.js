@@ -121,7 +121,7 @@ class DAOSequelize {
     }
 
     onLog() {
-        console.log('[KsMf.DAO.Sequelize]', ...arguments);
+        console.log('[KSMF.DAO.Sequelize]', ...arguments);
     }
 
     onError(error) {
