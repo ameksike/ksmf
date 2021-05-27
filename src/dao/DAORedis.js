@@ -74,14 +74,14 @@ class DAORedis {
     onError(error) {
         const message = error.message ? error.message : error;
         if (this.option.logging) {
-            console.log('>>> DAO ERROR: data base connect error : ' + message);
+            console.log('[KSMF.DAO.Redis]', '[ERROR]', message);
         }
 
     }
 
     onConnect(option) {
         if (this.option.logging) {
-            console.log('>>> DAO data base connect success');
+            console.log('[KSMF.DAO.Redis]', '[INFO]', 'DATABASE CONNECTION SUCCESS');
             console.log(this.option);
         }
     }

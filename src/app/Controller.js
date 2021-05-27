@@ -11,7 +11,7 @@ class Controller {
     constructor(payload) {
         this.opt = payload && payload.opt ? payload.opt : {};
         this.module = payload && payload.module ? payload.module : {};
-        this.middleware = this.initRestMiddleware(this.middleware);
+        this.middleware = this.initMiddlewareList(this.middleware);
     }
 
     init() { }
@@ -48,7 +48,7 @@ class Controller {
         res.json({ "message": `REST API <${this.opt.name}> OPTION, ID:${req.params.id}.` });
     }
 
-    initRestMiddleware(middleware) {
+    initMiddlewareList(middleware) {
         middleware = middleware || {};
         middleware.global = middleware.global instanceof Array ? middleware.global : [];
         middleware.select = middleware.select instanceof Array ? middleware.select : [];

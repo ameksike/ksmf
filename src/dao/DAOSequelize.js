@@ -100,8 +100,11 @@ class DAOSequelize {
                 return (file.indexOf('.') !== 0) && (file !== 'index.js') && (file.slice(-3) === '.js');
             })
             .forEach(file => {
-                const model = require(path.join(dirname, file))(this.driver, Sequelize.DataTypes);
-                this.models[model.name] = model;
+                const target = require(path.join(dirname, file));
+                if (target instanceof Function) {
+                    const model = target(this.driver, Sequelize.DataTypes);
+                    this.models[model.name] = model;
+                }
             });
 
         Object.keys(this.models).forEach(modelName => {
@@ -121,7 +124,7 @@ class DAOSequelize {
     }
 
     onLog() {
-        console.log('[KsMf.DAO.Sequelize]', ...arguments);
+        console.log('[KSMF.DAO.Sequelize]', ...arguments);
     }
 
     onError(error) {

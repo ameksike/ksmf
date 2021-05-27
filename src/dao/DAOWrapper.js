@@ -11,6 +11,7 @@ class DAOWrapper {
     constructor(opt) {
         this.dao = null;
         this.cfg = {};
+        this.exclude = opt && opt.exclude instanceof Array ? opt.exclude : [];
     }
 
     onInitConfig(cfg) {
@@ -30,7 +31,9 @@ class DAOWrapper {
         if (!this.dao) {
             return null;
         }
-        this.dao.load(this.cfg.srv.module.path + mod.name + "/model/");
+        if(!this.exclude.includes(mod.name)){
+            this.dao.load(this.cfg.srv.module.path + mod.name + "/model/");
+        }
     }
 }
 module.exports = DAOWrapper;
