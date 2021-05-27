@@ -15,9 +15,9 @@ class Module {
 
         this.name = this.opt.name;
         this.prefix = "/" + this.name;
-        this.restfull = true;
+        this.rest = true;
         this.routes = [];
-        this.middleware = this.initRestMiddleware(this.middleware);
+        this.middleware = this.initMiddlewareList(this.middleware);
     }
 
     init() {
@@ -38,14 +38,49 @@ class Module {
 
     initRoutes() {
         for (const i in this.routes) {
-            if (this.restfull) {
-                this.initRoutesREST(this.routes[i]);
+            const route = this.routes[i];
+            route.method = route.method || 'rest';
+            if (this.rest && route.method === 'rest') {
+                this.initRoutesREST(route);
             }
-            this.initRoutesWeb(this.routes[i]);
+            this.initRoutesWeb(route);
         }
     }
 
-    initRoutesWeb(opt) { }
+    initRoutesWeb(opt) {
+        if (!opt || !opt.action || !this.app || typeof (this.app[opt.method]) !== 'function') return;
+
+        const _route = this.app[opt.method];
+        const _prefix = opt.route;
+        const _controller = this.helper.get({
+            name: opt.controller,
+            path: 'controller',
+            module: this.name,
+            options: {
+                opt: this.opt,
+                module: this.name
+            },
+            dependency: {
+                'helper': 'helper',
+                'app': 'app'
+            }
+        });
+
+        this.middleware = this.initMiddlewareList(this.middleware);
+        _controller.middleware = this.initMiddlewareList(_controller.middleware);
+        const middleware = _controller.middleware[opt.action] instanceof Array ? _controller.middleware[opt.action] : [];
+
+        _route.apply(this.app, [_prefix,
+            ...this.middleware.global,
+            ..._controller.middleware.global,
+            ...middleware,
+            (req, res, next) => {
+                const _action = _controller[opt.action];
+                if (_action instanceof Function) {
+                    _action.apply(_controller, [req, res, next]);
+                }
+            }]);
+    }
 
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
@@ -67,10 +102,11 @@ class Module {
                 'app': 'app'
             }
         });
-
+        if (!_controller) return null;
+        
         // ... load middlewares  
-        this.middleware = this.initRestMiddleware(this.middleware);
-        _controller.middleware = this.initRestMiddleware(_controller.middleware);
+        this.middleware = this.initMiddlewareList(this.middleware);
+        _controller.middleware = this.initMiddlewareList(_controller.middleware);
 
         // ... define routes  
         this.app.get.apply(this.app, [_prefix,
@@ -155,7 +191,7 @@ class Module {
         }]);
     }
 
-    initRestMiddleware(middleware) {
+    initMiddlewareList(middleware) {
         middleware = middleware || {};
         middleware.global = middleware.global instanceof Array ? middleware.global : [];
         middleware.list = middleware.list instanceof Array ? middleware.list : [];
