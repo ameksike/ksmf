@@ -1,5 +1,5 @@
 # KsMf
-Modular Microframework for create minimalistic web application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki).
+Modular Microframework for create minimalistic web application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki), for more information see our [wiki](https://github.com/ameksike/ksmf/wiki).
 
 
 ### Install from [npm package](https://www.npmjs.com/package/ksmf)
