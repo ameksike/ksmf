@@ -87,12 +87,12 @@ class DAOSequelize {
     }
 
     load(dirname) {
+		const fs = require('fs');
+        const path = require('path');
+        const Sequelize = this.manager;
         if (!this.driver || !fs || !fs.existsSync(dirname)) {
             return;
         }
-        const fs = require('fs');
-        const path = require('path');
-        const Sequelize = this.manager;
         fs
             .readdirSync(dirname)
             .filter(file => {
