@@ -30,7 +30,7 @@ class DAOSequelize {
 
     configure(payload = null) {
         this.option = payload || this.option;
-
+        const Sequelize = this.manager;
         if (this.option.url) {
             this.driver = new Sequelize(this.option.url, {
                 dialect: this.option.dialect,
@@ -92,6 +92,7 @@ class DAOSequelize {
         }
         const fs = require('fs');
         const path = require('path');
+        const Sequelize = this.manager;
         fs
             .readdirSync(dirname)
             .filter(file => {
