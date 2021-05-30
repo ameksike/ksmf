@@ -84,7 +84,7 @@ class AppWEB {
                 return {};
             }
         }
-        return target;
+        return res;
     }
 
     initConfig() {
