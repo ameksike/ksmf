@@ -5,7 +5,7 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * @dependencies express cors dotenv ksdp
+ * @dependencies express, cors, dotenv, ksdp, compression, cookie-parser, body-parser
  * */
 const express = require("express");
 const cors = require('cors');
@@ -73,11 +73,26 @@ class AppWEB {
         }
     }
 
+    loadConfig(target) {
+        const fs = require('fs');
+        let res = {};
+        if (fs.existsSync(target)) {
+            try {
+                res = require(target);
+            }
+            catch (error) {
+                return {};
+            }
+        }
+        return res;
+    }
+
     initConfig() {
         dotenv.config();
         const envid = process.env.NODE_ENV || 'development';
-        const app = require(this.path + 'cfg/config.json') || {};
-        const srv = require(this.path + 'cfg/core.json') || {};
+
+        const app = this.loadConfig(this.path + 'cfg/config.json');
+        const srv = this.loadConfig(this.path + 'cfg/core.json');
 
         this.cfg.env = process.env;
         this.cfg.envid = envid;
