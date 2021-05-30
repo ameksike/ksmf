@@ -21,6 +21,7 @@
 4. [Settings](https://github.com/ameksike/ksmf/wiki/Setting)
 5. [Routes](https://github.com/ameksike/ksmf/wiki/Routes)
 6. [Events](https://github.com/ameksike/ksmf/wiki/Events)
-7. [Dashboard](https://github.com/ameksike/ksmf/wiki/Dashboard)
+7. [Cron / Schedule](https://github.com/ameksike/ksmf/wiki/Cron)
+8. [Dashboard](https://github.com/ameksike/ksmf/wiki/Dashboard)
 
 This is a project example that is based on this framework: [API.Heroku](https://github.com/ameksike/api.heroku) 
