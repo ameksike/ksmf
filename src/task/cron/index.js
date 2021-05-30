@@ -4,12 +4,19 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	TropiPay
  * @version    	1.0
+ * @dependency  node-cron
  * */
-const Module = require('../../app/Module');
-class CronModule extends Module {
+class CronModule {
 
-    init() {
-        this.schedule = this.opt.srv.cron || [];
+    onInitConfig(cfg) {
+        if (cfg && cfg.srv && cfg.srv.cron) {
+            this.configure(cfg.srv.cron, cfg.env);
+        }
+    }
+
+    configure(options, env) {
+        this.env = env || {};
+        this.schedule = options || [];
         this.task = {};
         for (let i in this.schedule) {
             this.booking(this.schedule[i], i);
@@ -22,7 +29,7 @@ class CronModule extends Module {
             name: 'node-cron',
             type: 'lib'
         });
-        const value = opt.env ? this.opt.env[opt.env] : opt.value;
+        const value = opt.env ? this.env[opt.env] : opt.value;
         if (!value || !value.trim()) return;
         const task = cron.schedule(value, () => {
             this.helper.get(opt.target);
