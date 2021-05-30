@@ -1,5 +1,3 @@
-
-const Redis = require("ioredis");
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
@@ -53,6 +51,7 @@ class DAORedis {
                 return delay;
             }
         };
+        const Redis = require("ioredis");
         this.driver = new Redis(cfg);
         redis.on('connect', () => {
             this.onConnect(this.option);

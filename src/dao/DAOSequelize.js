@@ -1,6 +1,3 @@
-const Sequelize = require('sequelize');
-const fs = require('fs');
-const path = require('path');
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
@@ -8,14 +5,14 @@ const path = require('path');
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * @dependencies sequelize fs path
+ * @dependencies sequelize, fs, path
  * */
 class DAOSequelize {
 
     constructor(opt) {
         this.models = {};
         this.driver = null;
-        this.manager = Sequelize;
+        this.manager = require('sequelize');
         this.option = {
             "url": "",
             "path": "",
@@ -93,7 +90,8 @@ class DAOSequelize {
         if (!this.driver || !fs || !fs.existsSync(dirname)) {
             return;
         }
-
+        const fs = require('fs');
+        const path = require('path');
         fs
             .readdirSync(dirname)
             .filter(file => {
