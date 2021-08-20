@@ -48,8 +48,8 @@ class Module {
     }
 
     initRoutesWeb(opt) {
-        if (!opt || !opt.action || !this.app || typeof (this.app[opt.method]) !== 'function') return;
-
+        if (!opt || !opt.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
+        // ... load controller 
         const _route = this.app[opt.method];
         const _prefix = opt.route;
         const _controller = this.helper.get({
@@ -65,11 +65,14 @@ class Module {
                 'app': 'app'
             }
         });
-
+        // ... load middlewares  
+        if(opt.middleware){
+            _controller.middleware = Object.assign(_controller.middleware || {}, opt.middleware);
+        }
         this.middleware = this.initMiddlewareList(this.middleware);
         _controller.middleware = this.initMiddlewareList(_controller.middleware);
         const middleware = _controller.middleware[opt.action] instanceof Array ? _controller.middleware[opt.action] : [];
-
+        // ... define routes  
         _route.apply(this.app, [_prefix,
             ...this.middleware.global,
             ..._controller.middleware.global,
@@ -86,7 +89,6 @@ class Module {
         if (!this.app || !this.helper) {
             return null;
         }
-
         // ... load controller 
         const _prefix = opt.route;
         const _controller = this.helper.get({
@@ -105,6 +107,9 @@ class Module {
         if (!_controller) return null;
         
         // ... load middlewares  
+        if(opt.middleware){
+            _controller.middleware = Object.assign(_controller.middleware || {}, opt.middleware);
+        }
         this.middleware = this.initMiddlewareList(this.middleware);
         _controller.middleware = this.initMiddlewareList(_controller.middleware);
 
