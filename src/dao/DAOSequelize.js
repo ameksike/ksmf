@@ -30,24 +30,27 @@ class DAOSequelize {
 
     configure(payload = null) {
         this.option = payload || this.option;
+        if(!this.option){
+            return this;
+        }
         const Sequelize = this.manager;
         if (this.option.url) {
-            this.driver = new Sequelize(this.option.url, {
+            const opts = {
                 dialect: this.option.dialect,
                 protocol: this.option.protocol,
                 logging: (str) => this.log(str),
-                "dialectOptions": {
+                dialectOptions: this.option.dialectOptions || {
                     "ssl": {
                         "rejectUnauthorized": false
                     }
                 }
-            });
+            }; 
+            this.driver = new Sequelize(this.option.url, opts);
         } else {
             this.driver = new Sequelize(
                 this.option.database,
                 this.option.username,
-                this.option.password,
-                {
+                this.option.password, {
                     logging: (str) => this.log(str),
                     ...this.option,
                 }
@@ -58,14 +61,14 @@ class DAOSequelize {
 
     connect() {
         this.driver.authenticate().then((error) => {
-            if (!!error) {
-                if (this.onError instanceof Function) {
-                    this.onError(error);
+                if (!!error) {
+                    if (this.onError instanceof Function) {
+                        this.onError(error);
+                    }
+                } else {
+                    this.onConnect(this.option);
                 }
-            } else {
-                this.onConnect(this.option);
-            }
-        })
+            })
             .catch((error) => {
                 if (this.onError instanceof Function) {
                     this.onError(error);
@@ -87,7 +90,7 @@ class DAOSequelize {
     }
 
     load(dirname) {
-		const fs = require('fs');
+        const fs = require('fs');
         const path = require('path');
         const Sequelize = this.manager;
         if (!this.driver || !fs || !fs.existsSync(dirname)) {
@@ -133,6 +136,41 @@ class DAOSequelize {
 
     onConnect(option) {
         this.log('DATABASE CONNECTION SUCCESS');
+    }
+
+    /**
+     * @description add column if it doesn't exist
+     * @param {*} queryInterface 
+     * @param {*} Sequelize 
+     * @param {*} tableName 
+     * @param {*} columnName 
+     * @param {*} options 
+     */
+    static addColumn(queryInterface, Sequelize, tableName, columnName, options) {
+        options = options || { type: Sequelize.STRING, allowNull: true };
+        return queryInterface.describeTable(tableName).then(tableDefinition => {
+            if (!tableDefinition[columnName]) {
+                return queryInterface.addColumn(tableName, columnName, options);
+            } else {
+                return Promise.resolve(true);
+            }
+        });
+    }
+    
+    /**
+     * @description remove column if it exists
+     * @param {*} queryInterface 
+     * @param {*} tableName 
+     * @param {*} columnName 
+     */
+    static removeColumn(queryInterface, tableName, columnName) {
+        return queryInterface.describeTable(tableName).then(tableDefinition => {
+            if (tableDefinition[columnName]) {
+                return queryInterface.removeColumn(tableName, columnName);
+            } else {
+                return Promise.resolve(true);
+            }
+        });
     }
 }
 module.exports = DAOSequelize;
