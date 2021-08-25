@@ -106,6 +106,8 @@ class AppWEB {
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
         this.cfg.srv.event = this.cfg.srv.event || {};
         this.cfg.srv.cors = this.cfg.srv.cors || [];
+        this.cfg.srv.public = this.cfg.srv.public || 'www/';
+        this.cfg.srv.static = this.cfg.srv.static || '/www';
 
         this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
@@ -163,6 +165,9 @@ class AppWEB {
 
         //... Allow compression
         this.web.use(compression());
+
+        //... Allow static files
+        this.web.use(this.cfg.srv.static, express.static(this.cfg.path + this.cfg.srv.public));
 
         //... Allow all origin request, CORS on ExpressJS
         let allowedOrigins = this.cfg.srv.cors;
