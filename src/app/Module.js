@@ -64,19 +64,10 @@ class Module {
                 'helper': 'helper',
                 'app': 'app'
             }
-        });
-        // ... load middlewares  
-        if(opt.middleware){
-            _controller.middleware = Object.assign(_controller.middleware || {}, opt.middleware);
-        }
-        this.middleware = this.initMiddlewareList(this.middleware);
-        _controller.middleware = this.initMiddlewareList(_controller.middleware);
-        const middleware = _controller.middleware[opt.action] instanceof Array ? _controller.middleware[opt.action] : [];
+        }); 
         // ... define routes  
         _route.apply(this.app, [_prefix,
-            ...this.middleware.global,
-            ..._controller.middleware.global,
-            ...middleware,
+            ...this.getMiddlewareList(_controller, opt),
             (req, res, next) => {
                 const _action = _controller[opt.action];
                 if (_action instanceof Function) {
@@ -105,95 +96,59 @@ class Module {
             }
         });
         if (!_controller) return null;
-        
-        // ... load middlewares  
-        if(opt.middleware){
-            _controller.middleware = Object.assign(_controller.middleware || {}, opt.middleware);
-        }
-        this.middleware = this.initMiddlewareList(this.middleware);
-        _controller.middleware = this.initMiddlewareList(_controller.middleware);
-
-        // ... define routes  
+        // ... define route list 
         this.app.get.apply(this.app, [_prefix,
-            ...this.middleware.global,
-            ...this.middleware.list,
-            ..._controller.middleware.global,
-            ..._controller.middleware.list,
+            ...this.getMiddlewareList(_controller, opt, 'list'),
             (req, res, next) => {
                 _controller.list(req, res, next);
             }]);
-
+        // ... define route select
         this.app.get.apply(this.app, [_prefix + "/:id",
-        ...this.middleware.global,
-        ...this.middleware.select,
-        ..._controller.middleware.global,
-        ..._controller.middleware.select,
-        (req, res, next) => {
-            _controller.select(req, res, next);
-        }]);
-
+            ...this.getMiddlewareList(_controller, opt, 'select'),
+            (req, res, next) => {
+                _controller.select(req, res, next);
+            }]);
+        // ... define route insert
         this.app.post.apply(this.app, [_prefix,
-            ...this.middleware.global,
-            ...this.middleware.insert,
-            ..._controller.middleware.global,
-            ..._controller.middleware.insert,
+            ...this.getMiddlewareList(_controller, opt, 'insert'),
             (req, res, next) => {
                 _controller.insert(req, res, next);
             }]);
-
+        // ... define route update
         this.app.put.apply(this.app, [_prefix + "/:id",
-        ...this.middleware.global,
-        ...this.middleware.update,
-        ..._controller.middleware.global,
-        ..._controller.middleware.update,
-        (req, res, next) => {
-            _controller.update(req, res, next);
-        }]);
-
+            ...this.getMiddlewareList(_controller, opt, 'update'),
+            (req, res, next) => {
+                _controller.update(req, res, next);
+            }]);
         this.app.patch.apply(this.app, [_prefix + "/:id",
-        ...this.middleware.global,
-        ...this.middleware.update,
-        ..._controller.middleware.global,
-        ..._controller.middleware.update,
-        (req, res, next) => {
-            _controller.update(req, res, next);
-        }]);
-
+            ...this.getMiddlewareList(_controller, opt, 'update'),
+            (req, res, next) => {
+                _controller.update(req, res, next);
+            }]);
+        // ... define route delete
         this.app.delete.apply(this.app, [_prefix + "/:id",
-        ...this.middleware.global,
-        ...this.middleware.delete,
-        ..._controller.middleware.global,
-        ..._controller.middleware.delete,
-        (req, res, next) => {
-            _controller.delete(req, res, next);
-        }]);
-
+            ...this.getMiddlewareList(_controller, opt, 'delete'),
+            (req, res, next) => {
+                _controller.delete(req, res, next);
+            }]);
+        // ... define route clean
         this.app.delete.apply(this.app, [_prefix,
-            ...this.middleware.global,
-            ...this.middleware.delete,
-            ..._controller.middleware.global,
-            ..._controller.middleware.delete,
+            ...this.getMiddlewareList(_controller, opt, 'clean'),
             (req, res, next) => {
                 _controller.clean(req, res, next);
             }]);
-
+        // ... define route options
         this.app.options.apply(this.app, [_prefix,
-            ...this.middleware.global,
-            ...this.middleware.options,
-            ..._controller.middleware.global,
-            ..._controller.middleware.options,
+            ...this.getMiddlewareList(_controller, opt, 'options'),
             (req, res, next) => {
                 _controller.options(req, res, next);
             }]);
-
+        // ... define route option
         this.app.options.apply(this.app, [_prefix + "/:id",
-        ...this.middleware.global,
-        ...this.middleware.option,
-        ..._controller.middleware.global,
-        ..._controller.middleware.option,
-        (req, res, next) => {
-            _controller.option(req, res, next);
-        }]);
+            ...this.getMiddlewareList(_controller, opt, 'option'),
+            (req, res, next) => {
+                _controller.option(req, res, next);
+            }]);
     }
 
     initMiddlewareList(middleware) {
@@ -208,6 +163,32 @@ class Module {
         middleware.options = middleware.options instanceof Array ? middleware.options : [];
         middleware.option = middleware.option instanceof Array ? middleware.option : [];
         return middleware;
+    }
+
+    getMiddlewareList(controller, opt, action=null){
+        try {
+            action = action || opt.action;
+            if(opt.middleware && opt.method === 'rest'){
+                controller.middleware = Object.assign(
+                    controller.middleware || {}, 
+                    opt.middleware
+                );
+            }
+            const middlewareModule = this.initMiddlewareList(this.middleware);
+            const middlewareController = this.initMiddlewareList(controller.middleware);
+            const middlewareRoute = opt.middleware && opt.middleware instanceof Array ? opt.middleware : [];
+            return [
+                ...middlewareModule.global,
+                ...middlewareModule[action] instanceof Array ? middlewareModule[action] : [],
+                ...middlewareController.global,
+                ...middlewareController[action] instanceof Array ? middlewareController[action] : [],
+                ...middlewareRoute
+            ];
+        }
+        catch(error) {
+            console.log('[ERROR]', error);
+            return [];
+        }
     }
 }
 module.exports = Module;
