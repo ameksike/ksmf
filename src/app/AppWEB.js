@@ -150,9 +150,6 @@ class AppWEB {
 
         //... Set Error Handler
         this.web.use((err, req, res, next) => {
-            if (this.event && this.event.emit instanceof Function) {
-                this.event.emit('onError', "ksmf", [err, req, res, next]);
-            }
             this.setError(err, req, res, next);
         });
 
