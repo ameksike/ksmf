@@ -1,6 +1,7 @@
 const KsMf = {
     app: {
         WEB: require('./src/app/AppWEB'),
+        Proxy: require('./src/app/AppProxy'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
         Logger: require('./src/app/Logger'),
