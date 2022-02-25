@@ -25,7 +25,7 @@ class AppWEB {
             srv: {}
         };
         this.path = path;
-        this.web = express();
+        this.web = null;
         this.mod = [];
         this.cfg = {};
         this.helper = new KsDp.integration.IoC();
@@ -38,6 +38,7 @@ class AppWEB {
             this.initApp();
             this.initModules();
             this.initRoutes();
+            this.initErrorHandler();
         } catch (error) {
             this.setError(error);
         }
@@ -45,6 +46,9 @@ class AppWEB {
     }
 
     run() {
+        if (!this.web) {
+            this.init();
+        }
         return this.web.listen(this.cfg.srv.port, () => {
             const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
             if (this.event && this.event.emit instanceof Function) {
@@ -79,8 +83,7 @@ class AppWEB {
         if (fs.existsSync(target)) {
             try {
                 res = require(target);
-            }
-            catch (error) {
+            } catch (error) {
                 return {};
             }
         }
@@ -129,6 +132,7 @@ class AppWEB {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitConfig', "ksmf", [this.cfg]);
         }
+        this.web = express();
     }
 
     initEvents() {
@@ -143,19 +147,25 @@ class AppWEB {
         }
     }
 
+    initErrorHandler() {
+        this.web.use((err, req, res, next) => {
+            this.setError(err, req, res, next);
+        });
+    }
+
     initApp() {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitApp', "ksmf", [this.web]);
         }
 
         //... Set Error Handler
-        this.web.use((err, req, res, next) => {
-            this.setError(err, req, res, next);
-        });
+        this.initErrorHandler();
 
         //... Allow body Parser
         this.web.use(bodyParser.json());
-        this.web.use(bodyParser.urlencoded({ extended: false }));
+        this.web.use(bodyParser.urlencoded({
+            extended: false
+        }));
 
         //... Allow cookie Parser
         this.web.use(cookieParser());
@@ -210,9 +220,16 @@ class AppWEB {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onError', "ksmf", [error, req, res, next]);
         }
-        const handler = this.helper.get('error');
-        if (handler && handler.on) {
-            handler.on(error, req, res, next);
+        if (!res.finished) {
+            res.status(500);
+            return res.json({
+                error: typeof (error) === 'string' ? {
+                    message: error
+                } : {
+                    code: error.code,
+                    message: error.message
+                }
+            });
         }
     }
 
