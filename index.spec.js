@@ -4,6 +4,7 @@ describe('LOAD', () => {
         expect(KsMf).toBeInstanceOf(Object);
 
         expect(KsMf.app.WEB).toBeInstanceOf(Object);
+        expect(KsMf.app.Proxy).toBeInstanceOf(Object);
         expect(KsMf.app.Module).toBeInstanceOf(Object);
         expect(KsMf.app.Controller).toBeInstanceOf(Object);
         expect(KsMf.app.Logger).toBeInstanceOf(Object);
