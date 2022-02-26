@@ -16,6 +16,10 @@ describe('LOAD', () => {
 
         expect(KsMf.task.Cron).toBeInstanceOf(Object);
 
+        expect(KsMf.proxy.App).toBeInstanceOf(Object);
+        expect(KsMf.proxy.Rule).toBeInstanceOf(Object);
+        expect(KsMf.proxy.Auth).toBeInstanceOf(Object);
+
         done();
     });
 });
