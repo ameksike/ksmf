@@ -5,20 +5,24 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * @dependencies AppWEB
+ * @dependencies AppWEB, HttpHandler
  * */
 const http = require('http');
 const net = require('net')
 const url = require('url')
-const AppWEB = require('./AppWEB');
-const HttpHandler = require('./HttpHandler');
 
-class AppProxy {
+const AppWEB = require('../app/AppWEB');
+const HttpHandler = require('../app/HttpHandler');
+
+class ProxyApp {
 
     constructor(path) {
         this.app = new AppWEB(path)
     }
 
+    /**
+     * @description initialize server proxy app 
+     */
     init() {
         try {
             this.app.init();
@@ -31,14 +35,23 @@ class AppProxy {
         return this;
     }
 
+    /**
+     * @description start app server 
+     */
     start() {
         this.run();
     }
 
+    /**
+     * @description stop app server 
+     */
     stop() {
         this.app.stop();
     }
 
+    /**
+     * @description run app server 
+     */
     run() {
         if (!this.app.web) {
             this.init();
@@ -57,6 +70,7 @@ class AppProxy {
             this.app.emit('onConnect', 'ksmf', [req, res, this.inf]);
             this.inf.status = this.inf.status && await this.initAuth(req, res);
             this.inf.status = this.inf.status && await this.initRules(req, res);
+            this.app.setLog('INFO', { state: this.inf.status ? 'ALLOW' : 'DENY', url: this.inf.destination.url, ...this.inf.origin });
             if (this.inf.status) {
                 this.pipe(req, res, this);
             }
@@ -64,25 +78,43 @@ class AppProxy {
         return listener;
     }
 
+    /**
+     * @description Get request information
+     * @param {OBJECT} req 
+     * @param {OBJECT} res 
+     * @param {OBJECT} head 
+     * @returns {OBJECT}
+     */
     initInfo(req, res, head) {
-        const destination = url.parse(`//${req.url}`, false, true);
+        const to = url.parse(`//${req.url}`, false, true);
+        const token = req.headers['proxy-authorization'];
         return {
             status: true,
             method: req.method,
-            url: req.url,
-            user: { username: 'gest' },
             origin: {
-                'agent': req.headers['user-agent'],
-                'host': res.remoteAddress,
-                'port': res.remotePort
+                token,
+                user: { username: 'anonymous' },
+                agent: req.headers['user-agent'],
+                host: res.remoteAddress,
+                port: res.remotePort
             },
-            destination
+            destination: {
+                url: req.url,
+                ...to
+            },
+            security: this.app.cfg.srv.security
         };
 
     }
 
+    /**
+     * @description Run rules handler and get if is valid request or not 
+     * @param {OBJECT} req 
+     * @param {OBJECT} res 
+     * @returns {BOOLEAN}
+     */
     async initRules(req, res) {
-        const srvRules = this.app.helper.get('rules');
+        const srvRules = this.app.helper.get('rule');
         if (!srvRules || !srvRules.verify instanceof Function) {
             return true;
         }
@@ -99,12 +131,17 @@ class AppProxy {
         return true;
     }
 
+    /**
+     * @description Run authentication handler and get if is valid request or not 
+     * @param {OBJECT} req 
+     * @param {OBJECT} res 
+     * @returns {BOOLEAN}
+     */
     async initAuth(req, res) {
         const srvAuth = this.app.helper.get('auth');
         if (!srvAuth || !srvAuth.verify instanceof Function) {
             return true;
         }
-        this.inf.token = req.headers['proxy-authorization'];
         res.user = await srvAuth.verify(req, res, this.inf);
         if (!res.user) {
             try {
@@ -115,8 +152,7 @@ class AppProxy {
             }
             return false;
         }
-        this.app.setLog('INFO', { ...this.inf, user: res.user });
-        this.inf.user = res.user;
+        this.inf.origin.user = res.user;
         return true;
     }
 
@@ -157,4 +193,4 @@ class AppProxy {
     }
 }
 
-module.exports = AppProxy;
+module.exports = ProxyApp;

@@ -4,7 +4,6 @@ describe('LOAD', () => {
         expect(KsMf).toBeInstanceOf(Object);
 
         expect(KsMf.app.WEB).toBeInstanceOf(Object);
-        expect(KsMf.app.Proxy).toBeInstanceOf(Object);
         expect(KsMf.app.Module).toBeInstanceOf(Object);
         expect(KsMf.app.Controller).toBeInstanceOf(Object);
         expect(KsMf.app.Logger).toBeInstanceOf(Object);
@@ -16,6 +15,10 @@ describe('LOAD', () => {
         expect(KsMf.dao.Wrapper).toBeInstanceOf(Object);
 
         expect(KsMf.task.Cron).toBeInstanceOf(Object);
+
+        expect(KsMf.proxy.App).toBeInstanceOf(Object);
+        expect(KsMf.proxy.Rule).toBeInstanceOf(Object);
+        expect(KsMf.proxy.Auth).toBeInstanceOf(Object);
 
         done();
     });

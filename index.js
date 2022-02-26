@@ -1,11 +1,15 @@
 const KsMf = {
     app: {
         WEB: require('./src/app/AppWEB'),
-        Proxy: require('./src/app/AppProxy'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
         Logger: require('./src/app/Logger'),
         Error: require('./src/app/ErrorHandler')
+    },
+    proxy: {
+        App: require('./src/proxy/ProxyApp'),
+        Rule: require('./src/proxy/ProxyRule'),
+        Auth: require('./src/proxy/ProxyAuth')
     },
     dao: {
         Base: require('./src/dao/DAOBase'),

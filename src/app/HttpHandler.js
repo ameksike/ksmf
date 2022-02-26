@@ -7,7 +7,6 @@
  * @version    	1.0
  * */
 class HttpHandler {
-
     constructor() {
         this.ation = {
             200: (res) => {
