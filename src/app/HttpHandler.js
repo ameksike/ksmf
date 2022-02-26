@@ -28,7 +28,7 @@ class HttpHandler {
             407: (res) => {
                 res.write([
                     'HTTP/1.1 407 Proxy Authentication Required',
-                    'Proxy-Authenticate: Basic realm="proxy"',
+                    'Proxy-Authenticate: Basic realm="!Ksike Proxy!"',
                     'Proxy-Connection: close',
                 ].join('\r\n'));
                 res.end('\r\n\r\n');
