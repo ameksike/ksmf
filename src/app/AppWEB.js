@@ -211,6 +211,7 @@ class AppWEB {
                     type
                 });
             }
+            data = data instanceof Array ? data : [data];
             handler.log(...data);
         }
     }
@@ -220,7 +221,7 @@ class AppWEB {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onError', "ksmf", [error, req, res, next]);
         }
-        if (!res.finished) {
+        if (res && !res.finished && res.status instanceof Function) {
             res.status(500);
             return res.json({
                 error: typeof (error) === 'string' ? {
@@ -366,6 +367,12 @@ class AppWEB {
             this.web._router.stack.forEach(print.bind(null, []));
         }
         return list;
+    }
+
+    emit() {
+        if (this.event && this.event.emit instanceof Function) {
+            this.event.emit(...arguments);
+        }
     }
 }
 

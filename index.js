@@ -6,6 +6,11 @@ const KsMf = {
         Logger: require('./src/app/Logger'),
         Error: require('./src/app/ErrorHandler')
     },
+    proxy: {
+        App: require('./src/proxy/ProxyApp'),
+        Rule: require('./src/proxy/ProxyRule'),
+        Auth: require('./src/proxy/ProxyAuth')
+    },
     dao: {
         Base: require('./src/dao/DAOBase'),
         Sequelize: require('./src/dao/DAOSequelize'),
