@@ -1,7 +1,7 @@
 /*
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
- * @date		10/01/2022
+ * @date		15/11/2021
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
@@ -25,11 +25,25 @@ class AppRTA {
      */
     init() {
         try {
+            this.app.event.add(this, 'onLoadModule', "ksmf");
             this.app.init();
         } catch (error) {
             this.app.setError(error);
         }
         return this;
+    }
+    
+    /**
+     * @description on load module
+     * @param {OBJECT} mod 
+     * @param {STRING} name 
+     * @param {STRING} path 
+     */
+    onLoadModule(mod, name, path) {
+        this.app.cfg.srv.channel = this.app.cfg.srv.channel || [];
+        if (mod.channels) {
+            this.app.cfg.srv.channel = this.app.cfg.srv.channel.concat(mod.channels);
+        }
     }
 
     /**
