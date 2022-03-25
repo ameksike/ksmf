@@ -28,8 +28,20 @@ class DAOSequelize extends DAOBase {
         if (!this.option) {
             return this;
         }
+        return this;
+    }
+
+    /**
+     * @description initialize Sequelize manager
+     * @returns {OBJECT} self
+     */
+    initManager() {
+        if (!this.manager || this.driver) {
+            return this;
+        }
         const Sequelize = this.manager;
-        if (this.option.url) {
+        if (this.option.url || this.option.use_env_variable) {
+            this.option.url = this.option.url || process.env[this.option.use_env_variable];
             const opts = {
                 dialect: this.option.dialect,
                 protocol: this.option.protocol,
@@ -60,6 +72,7 @@ class DAOSequelize extends DAOBase {
      * @returns {OBJECT} self
      */
     connect() {
+        this.initManager();
         this.driver
             .authenticate()
             .then((error) => {

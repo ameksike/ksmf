@@ -112,7 +112,6 @@ class AppWEB {
         this.cfg.srv.public = this.cfg.srv.public || 'www/';
         this.cfg.srv.static = this.cfg.srv.static || '/www';
 
-        this.cfg.app.url = this.cfg.env.DATABASE_URL;
         this.cfg.app.logging = this.cfg.srv.log > 0;
 
         // ... configure Helper ...
