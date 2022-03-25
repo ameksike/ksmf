@@ -7,30 +7,25 @@
  * @version    	1.0
  * @dependencies sequelize, fs, path
  * */
-class DAOSequelize {
+const DAOBase = require('./DAOBase');
 
-    constructor(opt) {
-        this.models = {};
-        this.driver = null;
+class DAOSequelize extends DAOBase {
+    /**
+     * @description redefine constructor and set Sequelize ORM dependence
+     */
+    constructor() {
+        super();
         this.manager = require('sequelize');
-        this.option = {
-            "url": "",
-            "path": "",
-            "port": "5432",
-            "host": "127.0.0.1",
-            "database": "default",
-            "username": "postgres",
-            "password": "postgres",
-            "protocol": "postgres",
-            "dialect": "postgres",
-            "logging": true
-        };
-        this.config = {};
+        this.option.port = this.option.port || 5432;
     }
 
+    /**
+     * @description redefine configure method
+     * @returns {OBJECT} self
+     */
     configure(payload = null) {
         this.option = payload || this.option;
-        if(!this.option){
+        if (!this.option) {
             return this;
         }
         const Sequelize = this.manager;
@@ -44,13 +39,14 @@ class DAOSequelize {
                         "rejectUnauthorized": false
                     }
                 }
-            }; 
+            };
             this.driver = new Sequelize(this.option.url, opts);
         } else {
             this.driver = new Sequelize(
                 this.option.database,
                 this.option.username,
-                this.option.password, {
+                this.option.password,
+                {
                     logging: (str) => this.log(str),
                     ...this.option,
                 }
@@ -59,8 +55,14 @@ class DAOSequelize {
         return this;
     }
 
+    /**
+     * @description redefine connect method
+     * @returns {OBJECT} self
+     */
     connect() {
-        this.driver.authenticate().then((error) => {
+        this.driver
+            .authenticate()
+            .then((error) => {
                 if (!!error) {
                     if (this.onError instanceof Function) {
                         this.onError(error);
@@ -74,10 +76,13 @@ class DAOSequelize {
                     this.onError(error);
                 }
             });
-
         return this;
     }
 
+    /**
+     * @description redefine disconnect method
+     * @returns {OBJECT} self
+     */
     disconnect() {
         if (this.driver && this.driver.close instanceof Function) {
             this.driver.close();
@@ -85,10 +90,11 @@ class DAOSequelize {
         return this;
     }
 
-    getUri() {
-        return this.option ? `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}` : '';
-    }
-
+    /**
+     * @description load load models from dirname
+     * @param {STRING} dirname 
+     * @returns 
+     */
     load(dirname) {
         const fs = require('fs');
         const path = require('path');
@@ -117,34 +123,21 @@ class DAOSequelize {
         return this;
     }
 
-    log() {
-        if (this.option && this.option.logging) {
-            if (this.onLog instanceof Function) {
-                this.onLog(...arguments);
-            }
-        }
-    }
-
+    /**
+     * @description redefine logs
+     */
     onLog() {
         console.log('[KSMF.DAO.Sequelize]', ...arguments);
     }
 
-    onError(error) {
-        const message = error.message ? error.message : error;
-        this.log('[ERROR]', message);
-    }
-
-    onConnect(option) {
-        this.log('DATABASE CONNECTION SUCCESS');
-    }
-
     /**
      * @description add column if it doesn't exist
-     * @param {*} queryInterface 
-     * @param {*} Sequelize 
-     * @param {*} tableName 
-     * @param {*} columnName 
-     * @param {*} options 
+     * @param {OBJECT} queryInterface
+     * @param {OBJECT} Sequelize  
+     * @param {STRING} tableName 
+     * @param {STRING} columnName 
+     * @param {OBJECT} options 
+     * @return {Promise} 
      */
     static addColumn(queryInterface, Sequelize, tableName, columnName, options) {
         options = options || { type: Sequelize.STRING, allowNull: true };
@@ -156,12 +149,13 @@ class DAOSequelize {
             }
         });
     }
-    
+
     /**
      * @description remove column if it exists
-     * @param {*} queryInterface 
-     * @param {*} tableName 
-     * @param {*} columnName 
+     * @param {OBJECT} queryInterface
+     * @param {STRING} tableName 
+     * @param {STRING} columnName 
+     * @return {Promise} 
      */
     static removeColumn(queryInterface, tableName, columnName) {
         return queryInterface.describeTable(tableName).then(tableDefinition => {
@@ -171,6 +165,50 @@ class DAOSequelize {
                 return Promise.resolve(true);
             }
         });
+    }
+
+    /**
+     * @description change column
+     * @param {OBJECT} queryInterface
+     * @param {OBJECT} Sequelize  
+     * @param {STRING} tableName 
+     * @param {STRING} columnName 
+     * @param {OBJECT} options 
+     * @return {Promise} 
+     */
+    static changeColumn(queryInterface, Sequelize, tableName, columnName, options) {
+        return queryInterface.changeColumn(tableName, columnName, options);
+    }
+
+    /**
+     * @description change column
+     * @param {OBJECT} queryInterface
+     * @param {STRING} sql  
+     * @return {Promise} 
+     */
+    static query(queryInterface, sql) {
+        return queryInterface.sequelize.query(sql);
+    }
+
+    /**
+     * @description change column
+     * @param {OBJECT} queryInterface
+     * @param {STRING} file  
+     * @return {Promise} 
+     */
+    static async run(queryInterface, file) {
+        const fs = require('fs');
+        if (!queryInterface || !file) {
+            throw new Error('Query Interface is null or the file is empty');
+        }
+        if (!fs.existsSync(file)) {
+            throw new Error('File no exists : ' + file);
+        }
+        const sql = fs.readFileSync(file, 'utf8');
+        if (!sql) {
+            throw new Error('Script is empty or not utf8 format');
+        }
+        return await queryInterface.sequelize.query(sql);
     }
 }
 module.exports = DAOSequelize;
