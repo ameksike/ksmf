@@ -7,13 +7,20 @@
  * @dependency  node-cron
  * */
 class CronModule {
-
+    /**
+     * @description configure on initialize configurations event
+     */
     onInitConfig(cfg) {
         if (cfg && cfg.srv && cfg.srv.cron) {
             this.configure(cfg.srv.cron, cfg.env);
         }
     }
 
+    /**
+     * @description configure the cron handler
+     * @param {OBJECT} options 
+     * @param {OBJECT} env 
+     */
     configure(options, env) {
         this.env = env || {};
         this.schedule = options || [];
@@ -22,7 +29,12 @@ class CronModule {
             this.booking(this.schedule[i], i);
         }
     }
-
+    
+    /**
+     * @description create scheduled task
+     * @param {OBJECT} opt 
+     * @param {STRING} key 
+     */
     booking(opt, key) {
         if (!this.helper) return null;
         const cron = this.helper.get({
