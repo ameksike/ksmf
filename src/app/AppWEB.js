@@ -18,7 +18,10 @@ const bodyParser = require('body-parser');
 const KsDp = require('ksdp');
 
 class AppWEB {
-
+    /**
+     * @description initialize library
+     * @param {STRING} path 
+     */
     constructor(path) {
         this.option = {
             app: {},
@@ -32,6 +35,10 @@ class AppWEB {
         this.event = new KsDp.behavioral.Observer();
     }
 
+    /**
+     * @description initialize serve (Implement template method pattern)
+     * @returns {OBJECT} self
+     */
     init() {
         try {
             this.initConfig();
@@ -45,6 +52,9 @@ class AppWEB {
         return this;
     }
 
+    /**
+     * @description start server 
+     */
     run() {
         if (!this.web) {
             this.init();
@@ -61,10 +71,16 @@ class AppWEB {
         });
     }
 
+    /**
+     * @description alias for run method
+     */
     start() {
         this.run();
     }
 
+    /**
+     * @description stop server 
+     */
     stop() {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onStop', "ksmf", [this.web]);
@@ -77,6 +93,11 @@ class AppWEB {
         }
     }
 
+    /**
+     * @description load file config
+     * @param {STRING} target 
+     * @returns {OBJECT}
+     */
     loadConfig(target) {
         const fs = require('fs');
         let res = {};
@@ -90,6 +111,9 @@ class AppWEB {
         return res;
     }
 
+    /**
+     * @description preload configuration file, variables, environments, etc
+     */
     initConfig() {
         dotenv.config();
         const envid = process.env.NODE_ENV || 'development';
@@ -134,6 +158,9 @@ class AppWEB {
         this.web = express();
     }
 
+    /**
+     * @description initialize event handler 
+     */
     initEvents() {
         for (let event in this.cfg.srv.event) {
             const eventList = this.cfg.srv.event[event];
@@ -146,12 +173,18 @@ class AppWEB {
         }
     }
 
+    /**
+     * @description set error handler middleware
+     */
     initErrorHandler() {
         this.web.use((err, req, res, next) => {
             this.setError(err, req, res, next);
         });
     }
 
+    /**
+     * @description initialize middleware applications
+     */
     initApp() {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitApp', "ksmf", [this.web]);
@@ -200,6 +233,11 @@ class AppWEB {
         })
     }
 
+    /**
+     * @description set logging based on a logging handler
+     * @param {STRING} type 
+     * @param {STRING|OBJECT} data 
+     */
     setLog(type, data) {
         const handler = this.helper.get('logger');
         if (handler && handler.log) {
@@ -215,6 +253,13 @@ class AppWEB {
         }
     }
 
+    /**
+     * @description throw application error
+     * @param {OBJECT} error 
+     * @param {OBJECT} req 
+     * @param {OBJECT} res 
+     * @param {OBJECT} next 
+     */
     setError(error, req = null, res = null, next = null) {
         this.setLog('ERROR', [error]);
         if (this.event && this.event.emit instanceof Function) {
@@ -233,6 +278,9 @@ class AppWEB {
         }
     }
 
+    /**
+     * @description load modules 
+     */
     initModules() {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
@@ -294,6 +342,9 @@ class AppWEB {
         }
     }
 
+    /**
+     * @description load application routes
+     */
     initRoutes() {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit('onInitRoutes', "ksmf", [this.cfg.srv.route]);
@@ -329,6 +380,10 @@ class AppWEB {
         });
     }
 
+    /**
+     * @description get list of available routes
+     * @returns {ARRAY}
+     */
     getRoutes() {
         const list = [];
         const epss = [];
@@ -368,6 +423,9 @@ class AppWEB {
         return list;
     }
 
+    /**
+     * @description safely trigger events
+     */
     emit() {
         if (this.event && this.event.emit instanceof Function) {
             this.event.emit(...arguments);

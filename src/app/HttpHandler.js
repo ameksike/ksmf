@@ -7,6 +7,9 @@
  * @version    	1.0
  * */
 class HttpHandler {
+    /**
+     * initialize each controller response by http code
+     */
     constructor() {
         this.ation = {
             200: (res) => {
@@ -44,6 +47,12 @@ class HttpHandler {
         }
     }
 
+    /**
+     * @description safely http response 
+     * @param {OBJECT} res 
+     * @param {STRING} code 
+     * @param {STRING} message 
+     */
     send(res, code, message) {
         if (!res || !code || res.finished || res.writable !== true) return false;
         try {
