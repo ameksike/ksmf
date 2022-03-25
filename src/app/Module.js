@@ -7,7 +7,13 @@
  * @version    	1.0
  * */
 class Module {
-
+    /**
+     * @description initialize module
+     * @param {OBJECT} payload 
+     * @param {OBJECT} payload.app 
+     * @param {OBJECT} payload.web
+     * @param {OBJECT} payload.opt 
+     */
     constructor(payload) {
         this.app = payload ? payload.app : null;
         this.web = payload ? payload.web : null;
@@ -20,14 +26,23 @@ class Module {
         this.middleware = this.initMiddlewareList(this.middleware);
     }
 
+    /**
+     * @description implement template method pattern
+     */
     init() {
         this.initConfig();
         this.initApp();
         this.initRoutes();
     }
 
+    /**
+     * @description allow customized application initialization by module
+     */
     initApp() { }
 
+    /**
+     * @description allow customized config initialization by module
+     */
     initConfig() {
         this.routes.push({
             route: this.prefix,
@@ -36,6 +51,9 @@ class Module {
         });
     }
 
+    /**
+     * @description allow customized routes initialization by module
+     */
     initRoutes() {
         for (const i in this.routes) {
             const route = this.routes[i];
@@ -47,6 +65,9 @@ class Module {
         }
     }
 
+    /**
+     * @description allow customized web routes initialization by module
+     */
     initRoutesWeb(opt) {
         if (!opt || !opt.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
         // ... load controller 
@@ -76,6 +97,9 @@ class Module {
             }]);
     }
 
+    /**
+     * @description allow customized REST routes initialization by module
+     */
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
             return null;
@@ -151,6 +175,11 @@ class Module {
             }]);
     }
 
+    /**
+     * @description initialize module middleware list
+     * @param {OBJECT} middleware 
+     * @returns 
+     */
     initMiddlewareList(middleware) {
         middleware = middleware || {};
         middleware.global = middleware.global instanceof Array ? middleware.global : [];
@@ -165,6 +194,13 @@ class Module {
         return middleware;
     }
 
+    /**
+     * @description get middleware list by controller
+     * @param {OBJECT} controller 
+     * @param {OBJECT} opt 
+     * @param {STRING} action 
+     * @returns 
+     */
     getMiddlewareList(controller, opt, action=null){
         try {
             action = action || opt.action;

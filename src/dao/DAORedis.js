@@ -7,30 +7,26 @@
  * @version    	1.0
  * @dependencies ioredis
  * */
-class DAORedis {
+const DAOBase = require('./DAOBase');
 
-    constructor(opt) {
-        this.driver = null;
+class DAORedis extends DAOBase {
+
+    /**
+     * @description redefine constructor and set Sequelize ORM dependence
+     */
+    constructor() {
+        super();
         this.cache = {};
         this.sets = {};
-        this.option = {
-            "url": "",
-            "port": 6379,
-            "family": 4, // 4 (IPv4) or 6 (IPv6)
-            "host": "127.0.0.1",
-            "database": "default",
-            "username": "",
-            "password": "auth",
-            "protocol": "rediss",
-            "logging": true
-        };
+        this.option.port = this.option.port || 6379;
+        this.option.protocol = this.option.protocol || "rediss";
+        this.option.password = this.option.password || "auth";
     }
 
-    configure(payload = null) {
-        this.option = payload || this.option;
-        return this;
-    }
-
+    /**
+     * @description redefine connect method
+     * @returns {OBJECT} self
+     */
     connect() {
         const cfg = this.option.url ? this.option.url : {
             port: this.option.port,
@@ -59,17 +55,19 @@ class DAORedis {
         return this;
     }
 
+    /**
+     * @description redefine disconnect method
+     * @returns {OBJECT} self
+     */
     disconnect() {
         this.driver.disconnect();
         return this;
     }
 
-    getUri() {
-        return `${this.option.protocol}://${this.option.username}:${this.option.password}@${this.option.host}:${this.option.port}/${this.option.database}`;
-    }
-
-    load(dirname) { }
-
+    /**
+     * @description redefine error event method
+     * @param {OBJECT} option 
+     */
     onError(error) {
         const message = error.message ? error.message : error;
         if (this.option.logging) {
@@ -78,14 +76,23 @@ class DAORedis {
 
     }
 
-    onConnect(option) {
+    /**
+     * @description redefine connect event method
+     * @param {OBJECT} option 
+     */
+    onConnect(option = null) {
         if (this.option.logging) {
             console.log('[KSMF.DAO.Redis]', '[INFO]', 'DATABASE CONNECTION SUCCESS');
             console.log(this.option);
         }
     }
 
-
+    /**
+     * @description allow support for saving json-encoded object as the value of a specific key
+     * @param {STRING} key 
+     * @param {ANY} value 
+     * @returns {Promise}
+     */
     async set(key, value) {
         if (!this.driver) {
             this.cache[key] = value;
@@ -96,6 +103,12 @@ class DAORedis {
         }
     }
 
+    /**
+     * @description allow retrieval of json encoded objects from a specific key
+     * @param {STRING} key 
+     * @param {FUNCTION} callback 
+     * @returns 
+     */
     async get(key, callback) {
         if (!this.driver) {
             return new Promise(function (resolve, reject) {
@@ -123,6 +136,12 @@ class DAORedis {
         }
     }
 
+    /**
+     * @description 
+     * @param {*} name 
+     * @param {*} key 
+     * @returns 
+     */
     sismember(name, key) {
         if (!this.driver) {
             if (!this.sets[name]) {
@@ -134,6 +153,12 @@ class DAORedis {
         }
     }
 
+    /**
+     * @description 
+     * @param {*} name 
+     * @param {*} key 
+     * @returns {Promise}
+     */
     sadd(name, key) {
         if (!this.driver) {
             if (!this.sets[name]) {
@@ -147,6 +172,12 @@ class DAORedis {
         }
     }
 
+    /**
+     * @description 
+     * @param {*} name 
+     * @param {*} key 
+     * @returns {Promise}
+     */
     srem(name, key) {
         if (!this.driver) {
             if (!this.sets[name]) {
@@ -159,6 +190,10 @@ class DAORedis {
         }
     }
 
+    /**
+     * @description close connection
+     * @returns {Promise}
+     */
     quit() {
         if (!this.driver) {
             return Promise.resolve();
