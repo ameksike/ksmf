@@ -194,7 +194,7 @@ class DAOSequelize extends DAOBase {
     }
 
     /**
-     * @description change column
+     * @description perform sql query
      * @param {OBJECT} queryInterface
      * @param {STRING} sql  
      * @return {Promise} 
