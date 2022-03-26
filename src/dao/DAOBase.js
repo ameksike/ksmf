@@ -24,7 +24,7 @@ class DAOBase {
             "username": "postgres",
             "password": "postgres",
             "protocol": null,
-            "logging": true
+            "logging": false
         };
         this.configure(opt);
     }
@@ -124,7 +124,15 @@ class DAOBase {
      * @param {OBJECT} option 
      */
     onConnect(option) {
-        this.log('DATABASE CONNECTION SUCCESS');
+        this.log('[INFO]', 'DATABASE CONNECTION SUCCESS');
+    }
+
+    /**
+     * @description get log level
+     * @returns {NUMBER}
+     */
+    getLogLevel(){
+        return this.option && this.option.log ? this.option.log : 2;
     }
 
     /**

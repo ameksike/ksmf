@@ -121,7 +121,7 @@ class AppWEB {
         const app = this.loadConfig(this.path + 'cfg/config.json');
         const srv = this.loadConfig(this.path + 'cfg/core.json');
 
-        this.cfg.env = process.env;
+        this.cfg.env = process.env || {};
         this.cfg.envid = envid;
         this.cfg.app = app[envid] || {};
         this.cfg.srv = srv[envid] || {};
@@ -129,7 +129,7 @@ class AppWEB {
 
         this.cfg.srv.module = this.cfg.srv.module || {};
         this.cfg.srv.module.path = this.path + 'src/';
-        this.cfg.srv.log = this.cfg.env.LOGGER_DB === 'true' ? 1 : this.cfg.srv.log;
+        this.cfg.srv.log = this.cfg.env.LOG_LEVEL ? this.cfg.env.LOG_LEVEL : this.cfg.srv.log;
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
         this.cfg.srv.event = this.cfg.srv.event || {};
         this.cfg.srv.cors = this.cfg.srv.cors || [];
