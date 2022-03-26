@@ -32,6 +32,7 @@ class DAOWrapper {
     onInitModules() {
         this.dao = this.helper.get('dao');
         if (this.dao) {
+            this.cfg.app.log = this.cfg.srv.log;
             this.dao.configure(this.cfg.app);
             this.dao.connect();
             this.dao.load(this.cfg.path + 'db/models/');
