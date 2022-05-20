@@ -8,25 +8,42 @@
  * */
 class DAOWrapper {
 
+    /**
+     * @description Initialize options on construct DATAWrapper
+     * @param {OBJECT} opt 
+     */
     constructor(opt) {
         this.dao = null;
         this.cfg = {};
         this.exclude = opt && opt.exclude instanceof Array ? opt.exclude : [];
     }
 
+    /**
+     * @description Set options on Initialize Configuration Event 
+     * @param {OBJECT} cfg 
+     */
     onInitConfig(cfg) {
         this.cfg = cfg;
     }
 
+    /**
+     * @description load DAO lib and load project models
+     */
     onInitModules() {
         this.dao = this.helper.get('dao');
         if (this.dao) {
+            this.cfg.app.log = this.cfg.srv.log;
             this.dao.configure(this.cfg.app);
             this.dao.connect();
             this.dao.load(this.cfg.path + 'db/models/');
         }
     }
 
+    /**
+     * @description load models for each module 
+     * @param {OBJECT} mod 
+     * @returns 
+     */
     onLoadModule(mod) {
         if (!this.dao) {
             return null;
