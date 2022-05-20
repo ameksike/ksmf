@@ -9,9 +9,7 @@
  * */
 const http = require('http');
 const url = require('url');
-
 const AppWEB = require('./AppWEB');
-const SocketIO = require("socket.io");
 
 class AppRTA {
 
@@ -32,7 +30,7 @@ class AppRTA {
         }
         return this;
     }
-    
+
     /**
      * @description on load module
      * @param {OBJECT} mod 
@@ -67,6 +65,7 @@ class AppRTA {
         if (!this.app.web) {
             this.init();
         }
+        const SocketIO = require("socket.io");
         const server = http.createServer(this.app.web);
         this.wss = new SocketIO.Server(server);
         this.initConnection();
