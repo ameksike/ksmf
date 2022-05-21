@@ -73,7 +73,6 @@ class DAORedis extends DAOBase {
         if (this.option.logging) {
             console.log('[KSMF.DAO.Redis]', '[ERROR]', message);
         }
-
     }
 
     /**
@@ -126,7 +125,6 @@ class DAORedis extends DAOBase {
                     }
                 });
             });
-
         } else {
             const value = this.cache[key];
             if (callback instanceof Function) {
