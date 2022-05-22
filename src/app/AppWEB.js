@@ -46,6 +46,7 @@ class AppWEB {
             this.initModules();
             this.initRoutes();
             this.initErrorHandler();
+            this.emit('onInitCompleted', "ksmf", [this]);
         } catch (error) {
             this.setError(error);
         }
@@ -61,9 +62,7 @@ class AppWEB {
         }
         return this.web.listen(this.cfg.srv.port, () => {
             const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
-            if (this.event && this.event.emit instanceof Function) {
-                this.event.emit('onStart', "ksmf", [this.cfg.srv, url]);
-            }
+            this.emit('onStart', "ksmf", [this.cfg.srv, url]);
             this.setLog('INFO', ['LISTENING SERVER', `${url}`]);
             if (this.cfg.srv.log >= 1) {
                 this.setLog('INFO', [this.getRoutes()]);
@@ -82,9 +81,7 @@ class AppWEB {
      * @description stop server 
      */
     stop() {
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit('onStop', "ksmf", [this.web]);
-        }
+        this.emit('onStop', "ksmf", [this.web]);
         if (this.dao && this.dao.disconnect instanceof Function) {
             this.dao.disconnect();
         }
@@ -135,6 +132,7 @@ class AppWEB {
         this.cfg.srv.cors = this.cfg.srv.cors || [];
         this.cfg.srv.public = this.cfg.srv.public || 'www/';
         this.cfg.srv.static = this.cfg.srv.static || '/www';
+        this.cfg.srv.doc = this.cfg.srv.doc || {};
 
         this.cfg.app.logging = this.cfg.srv.log > 0;
 
@@ -152,9 +150,7 @@ class AppWEB {
         this.helper.set(this, 'app');
         // ... configure Events ...
         this.initEvents();
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit('onInitConfig', "ksmf", [this.cfg]);
-        }
+        this.emit('onInitConfig', "ksmf", [this.cfg]);
         this.web = express();
     }
 
@@ -186,9 +182,7 @@ class AppWEB {
      * @description initialize middleware applications
      */
     initApp() {
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit('onInitApp', "ksmf", [this.web]);
-        }
+        this.emit('onInitApp', "ksmf", [this.web]);
 
         //... Set Error Handler
         this.initErrorHandler();
@@ -225,9 +219,7 @@ class AppWEB {
 
         //... Log requests 
         this.web.use((req, res, next) => {
-            if (this.event && this.event.emit instanceof Function) {
-                this.event.emit('onRequest', "ksmf", [req, res, next]);
-            }
+            this.emit('onRequest', "ksmf", [req, res, next]);
             this.setLog('INFO', [req.method, req.path]);
             return next();
         })
@@ -262,9 +254,7 @@ class AppWEB {
      */
     setError(error, req = null, res = null, next = null) {
         this.setLog('ERROR', [error]);
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit('onError', "ksmf", [error, req, res, next]);
-        }
+        this.emit('onError', "ksmf", [error, req, res, next]);
         if (res && !res.finished && res.status instanceof Function) {
             res.status(500);
             return res.json({
@@ -282,12 +272,10 @@ class AppWEB {
      * @description load modules 
      */
     initModules() {
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
-        }
+        this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
+        const modules = [];
         if (this.cfg.srv.module && this.cfg.srv.module.load) {
             this.cfg.srv.module.load.forEach(item => {
-
                 const name = (typeof (item) === 'string') ? item : item.name;
                 const options = {
                     // ... EXPRESS APP
@@ -335,21 +323,20 @@ class AppWEB {
                     };
                 }
                 const obj = this.helper.get(item);
-                if (obj && this.event && this.event.emit instanceof Function) {
-                    this.event.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
+                if (obj) {
+                    modules.push(obj);
+                    this.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
                 }
             });
         }
+        this.emit('onLoadedModules', "ksmf", [modules]);
     }
 
     /**
      * @description load application routes
      */
     initRoutes() {
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit('onInitRoutes', "ksmf", [this.cfg.srv.route]);
-        }
-
+        this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route]);
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
@@ -363,18 +350,13 @@ class AppWEB {
                         }
                         controller[route.action](req, res, next);
                     });
-
-                    if (this.event && this.event.emit instanceof Function) {
-                        this.event.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
-                    }
+                    this.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
                 }
             }
         }
 
         this.web.get('*', (req, res, next) => {
-            if (this.event && this.event.emit instanceof Function) {
-                this.event.emit('on404', "ksmf", [req, res, next]);
-            }
+            this.emit('on404', "ksmf", [req, res, next]);
             this.setLog('WARN', ['404', req.method, req.path]);
             next();
         });
@@ -387,7 +369,6 @@ class AppWEB {
     getRoutes() {
         const list = [];
         const epss = [];
-
         function print(path, layer) {
             if (layer.route) {
                 layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))))
@@ -401,7 +382,6 @@ class AppWEB {
                 }
             }
         }
-
         function split(thing) {
             if (typeof thing === 'string') {
                 return thing.split('/')

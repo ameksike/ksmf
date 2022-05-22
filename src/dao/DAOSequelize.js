@@ -106,7 +106,7 @@ class DAOSequelize extends DAOBase {
     /**
      * @description load load models from dirname
      * @param {STRING} dirname 
-     * @returns 
+     * @returns {OBJECT}
      */
     load(dirname) {
         const fs = require('fs');
@@ -128,6 +128,14 @@ class DAOSequelize extends DAOBase {
                 }
             });
 
+        return this;
+    }
+
+    /**
+     * @description create models associations
+     * @returns {OBJECT}
+     */
+    associate() {
         Object.keys(this.models).forEach(modelName => {
             if (this.models[modelName] && this.models[modelName].associate) {
                 this.models[modelName].associate(this.models);
@@ -141,7 +149,7 @@ class DAOSequelize extends DAOBase {
     onLog() {
         if (this.getLogLevel() < 1) return null;
         if (this.getLogLevel() === 1 && arguments[0] !== '[INFO]') return null;
-        if (this.getLogLevel() < 4 && arguments[0] !== '[INFO]' && arguments[0] !== '[ERROR]' ) return null;
+        if (this.getLogLevel() < 4 && arguments[0] !== '[INFO]' && arguments[0] !== '[ERROR]') return null;
         console.log('[KSMF.DAO.Sequelize]', ...arguments);
     }
 

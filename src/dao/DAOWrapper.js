@@ -48,9 +48,20 @@ class DAOWrapper {
         if (!this.dao) {
             return null;
         }
-        if(!this.exclude.includes(mod.name)){
+        if (!this.exclude.includes(mod.name)) {
             this.dao.load(this.cfg.srv.module.path + mod.name + "/model/");
         }
+    }
+
+    /**
+     * @description create all models associations
+     * @param {ARRAY} modules 
+     */
+    onLoadedModules(modules) {
+        if (!this.dao) {
+            return null;
+        }
+        this.dao.associate();
     }
 }
 module.exports = DAOWrapper;
