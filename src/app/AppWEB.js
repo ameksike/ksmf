@@ -46,6 +46,7 @@ class AppWEB {
             this.initModules();
             this.initRoutes();
             this.initErrorHandler();
+            this.emit('onInitCompleted', "ksmf", [this]);
         } catch (error) {
             this.setError(error);
         }
@@ -131,6 +132,7 @@ class AppWEB {
         this.cfg.srv.cors = this.cfg.srv.cors || [];
         this.cfg.srv.public = this.cfg.srv.public || 'www/';
         this.cfg.srv.static = this.cfg.srv.static || '/www';
+        this.cfg.srv.doc = this.cfg.srv.doc || {};
 
         this.cfg.app.logging = this.cfg.srv.log > 0;
 

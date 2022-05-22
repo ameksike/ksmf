@@ -20,6 +20,9 @@ const KsMf = {
     },
     task: {
         Cron: require('./src/task/cron')
+    },
+    doc: {
+        Swagger: require('./src/doc/Swagger')
     }
 };
 

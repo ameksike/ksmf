@@ -19,6 +19,8 @@ describe('LOAD', () => {
         expect(KsMf.proxy.App).toBeInstanceOf(Object);
         expect(KsMf.proxy.Rule).toBeInstanceOf(Object);
         expect(KsMf.proxy.Auth).toBeInstanceOf(Object);
+        
+        expect(KsMf.doc.Swagger).toBeInstanceOf(Object);
 
         done();
     });
