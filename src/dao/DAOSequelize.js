@@ -20,18 +20,6 @@ class DAOSequelize extends DAOBase {
     }
 
     /**
-     * @description redefine configure method
-     * @returns {OBJECT} self
-     */
-    configure(payload = null) {
-        this.option = payload || this.option;
-        if (!this.option) {
-            return this;
-        }
-        return this;
-    }
-
-    /**
      * @description initialize Sequelize manager
      * @returns {OBJECT} self
      */
@@ -40,30 +28,61 @@ class DAOSequelize extends DAOBase {
             return this;
         }
         const Sequelize = this.manager;
-        if (this.option.url || this.option.use_env_variable) {
-            this.option.url = this.option.url || process.env[this.option.use_env_variable];
-            const opts = {
-                dialect: this.option.dialect,
-                protocol: this.option.protocol,
-                logging: (str) => this.log(str),
-                dialectOptions: this.option.dialectOptions || {
-                    "ssl": {
-                        "rejectUnauthorized": false
-                    }
+        const opts = {
+            /*
+            dialect: this.option.dialect,
+            protocol: this.option.protocol,
+            dialectOptions: this.option.dialectOptions || {
+                "ssl": {
+                    "rejectUnauthorized": false
                 }
-            };
+            },*/
+            define: {
+                timestamps: false
+            },
+            pool: {
+                max: 30,
+                min: 3,
+                acquire: 30000,
+                idle: 10000,
+            },
+            retry: {
+                match: [
+                    Sequelize.ConnectionError,
+                    Sequelize.ConnectionTimedOutError,
+                    Sequelize.TimeoutError,
+                    /Deadlock/i
+                ],
+                max: 3
+            },
+            benchmark: true,
+            logging: (msg, timingMs) => {
+                if ("Executed (default): SELECT 1+1 AS result" !== msg) {
+                    this.log('debug', {
+                        src: "models:db:query",
+                        message: msg,
+                        data: { timingMs }
+                    });
+                }
+            },
+            logQueryParameters: true,
+            ...this.option
+        };
+
+        const url = this.option.url || this.conn2str(this.option);
+        this.driver = new Sequelize(url, opts);
+
+        /*if (this.option.url || this.option.use_env_variable) {
+            this.option.url = this.option.url || process.env[this.option.use_env_variable];
             this.driver = new Sequelize(this.option.url, opts);
         } else {
             this.driver = new Sequelize(
                 this.option.database,
                 this.option.username,
                 this.option.password,
-                {
-                    logging: (str) => this.log(str),
-                    ...this.option,
-                }
+                opts
             );
-        }
+        }*/
         return this;
     }
 
@@ -112,22 +131,28 @@ class DAOSequelize extends DAOBase {
         const fs = require('fs');
         const path = require('path');
         const Sequelize = this.manager;
-        if (!this.driver || !fs || !fs.existsSync(dirname)) {
-            return;
+        if (!this.driver) {
+            return this;
         }
-        fs
-            .readdirSync(dirname)
-            .filter(file => {
-                return (file.indexOf('.') !== 0) && (file !== 'index.js') && (file.slice(-3) === '.js');
-            })
-            .forEach(file => {
-                const target = require(path.join(dirname, file));
-                if (target instanceof Function) {
-                    const model = target(this.driver, Sequelize.DataTypes);
-                    this.models[model.name] = model;
-                }
-            });
-
+        try {
+            fs
+                .readdirSync(dirname)
+                .filter(file => {
+                    return (file !== 'index.js') && (file.slice(-3) === '.js');
+                })
+                .forEach(file => {
+                    const target = require(path.join(dirname, file));
+                    if (target instanceof Function) {
+                        const model = target(this.driver, Sequelize.DataTypes);
+                        this.models[model.name] = model;
+                    }
+                });
+        }
+        catch (error) {
+            /*if (this.onError instanceof Function) {
+                this.onError(error);
+            }*/
+        }
         return this;
     }
 
@@ -143,14 +168,17 @@ class DAOSequelize extends DAOBase {
         });
         return this;
     }
+
     /**
      * @description redefine logs
      */
-    onLog() {
-        if (this.getLogLevel() < 1) return null;
-        if (this.getLogLevel() === 1 && arguments[0] !== '[INFO]') return null;
-        if (this.getLogLevel() < 4 && arguments[0] !== '[INFO]' && arguments[0] !== '[ERROR]') return null;
-        console.log('[KSMF.DAO.Sequelize]', ...arguments);
+    onLog(type, message) {
+        const logger = this.helper?.get("logger");
+        const log = logger ? logger[type] : null;
+        log && log({
+            src: "KSMF.DAO.Sequelize",
+            message
+        });
     }
 
     /**

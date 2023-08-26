@@ -1,4 +1,4 @@
-const DAOSequelize = require('./DAOSequelize');
+const DAOSequelize = require('../src/dao/DAOSequelize');
 
 describe('DAO_Sequelize', () => {
     it("should a valid lib", (done) => {

@@ -16,15 +16,15 @@ class DAOBase {
         this.driver = null;
         this.manager = null;
         this.option = {
-            "url": "",
-            "path": "",
-            "port": null,
-            "host": "127.0.0.1",
-            "database": "default",
-            "username": "postgres",
-            "password": "postgres",
-            "protocol": null,
-            "logging": false
+            url: "",
+            path: "",
+            port: "3303",
+            host: "127.0.0.1",
+            database: "default",
+            username: "root",
+            password: "root",
+            protocol: null,
+            dialect: null
         };
         this.configure(opt);
     }
@@ -34,10 +34,7 @@ class DAOBase {
      * @returns {OBJECT} self
      */
     configure(payload = null) {
-        if (!payload) return this;
-        for (let i in payload) {
-            this.option[i] = payload[i];
-        }
+        payload && Object.assign(this.option, payload);
         return this;
     }
 
@@ -54,9 +51,7 @@ class DAOBase {
      * @returns {OBJECT} self
      */
     disconnect() {
-        if (this.driver && this.driver.disconnect) {
-            this.driver.disconnect();
-        }
+        this.driver?.disconnect && this.driver.disconnect();
         return this;
     }
 
@@ -92,7 +87,7 @@ class DAOBase {
         if (typeof (cfg) === 'string') return cfg;
         const password = cfg.password ? ':' + cfg.password : '';
         const username = cfg.username || ''; //!cfg.username ? '' : (cfg.username + password + '@');
-        const account = username || password  ? username + password + '@'  : '';
+        const account = username || password ? username + password + '@' : '';
         const port = cfg.port ? ':' + cfg.port : '';
         const host = (!cfg.host ? '127.0.0.1' : cfg.host) + port;
         const database = cfg.database ? '/' + cfg.database : '';
@@ -104,10 +99,8 @@ class DAOBase {
      * @description dispatch onLoad event
      */
     log() {
-        if (this.option && this.option.logging) {
-            if (this.onLog instanceof Function) {
-                this.onLog(...arguments);
-            }
+        if (this.onLog instanceof Function) {
+            this.onLog(...arguments);
         }
     }
 
@@ -117,22 +110,14 @@ class DAOBase {
      */
     onError(error) {
         const message = error.message ? error.message : error;
-        this.log('[ERROR]', message);
+        this.log('error', message);
     }
     /**
      * @description on connect event
      * @param {OBJECT} option 
      */
     onConnect(option) {
-        this.log('[INFO]', 'DATABASE CONNECTION SUCCESS');
-    }
-
-    /**
-     * @description get log level
-     * @returns {NUMBER}
-     */
-    getLogLevel(){
-        return this.option && this.option.log ? this.option.log : 2;
+        this.log('info', 'DATABASE CONNECTION SUCCESS');
     }
 
     /**

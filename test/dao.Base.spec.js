@@ -1,4 +1,4 @@
-const DAOBase = require('./DAOBase');
+const DAOBase = require('../src/dao/DAOBase');
 const dao = new DAOBase();
 
 describe('DAO_Base', () => {

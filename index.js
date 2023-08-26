@@ -4,8 +4,15 @@ const KsMf = {
         RTA: require('./src/app/AppRTA'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
-        Logger: require('./src/app/Logger'),
-        Error: require('./src/app/ErrorHandler')
+        Utl: require('./src/app/Utl')
+    },
+    monitor: {
+        Manager: require('./src/monitor/Manager'),
+        Error: require('./src/monitor/ErrorHandler'),
+        Logger: require('./src/monitor/Logger'),
+        LoggerManager: require('./src/monitor/LoggerManager'),
+        LoggerSimple: require('./src/monitor/LoggerSimple'),
+        LoggerWrapper: require('./src/monitor/LoggerWrapper')
     },
     proxy: {
         App: require('./src/proxy/ProxyApp'),
@@ -16,7 +23,8 @@ const KsMf = {
         Base: require('./src/dao/DAOBase'),
         Sequelize: require('./src/dao/DAOSequelize'),
         Redis: require('./src/dao/DAORedis'),
-        Wrapper: require('./src/dao/DAOWrapper')
+        Wrapper: require('./src/dao/DAOWrapper'),
+        DataService: require('./src/dao/DataService')
     },
     task: {
         Cron: require('./src/task/cron')

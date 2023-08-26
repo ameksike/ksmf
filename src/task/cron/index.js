@@ -1,8 +1,8 @@
 /*
- * @author		TropiPay
+ * @author		Antonio Membrides Espinosa
  * @date		07/04/2021
  * @copyright  	Copyright (c) 2020-2030
- * @license    	TropiPay
+ * @license    	MIT
  * @version    	1.0
  * @dependency  node-cron
  * */
@@ -11,15 +11,15 @@ class CronModule {
      * @description configure on initialize configurations event
      */
     onInitConfig(cfg) {
-        if (cfg && cfg.srv && cfg.srv.cron) {
+        if (cfg?.srv?.cron) {
             this.configure(cfg.srv.cron, cfg.env);
         }
     }
 
     /**
      * @description configure the cron handler
-     * @param {OBJECT} options 
-     * @param {OBJECT} env 
+     * @param {Object} options 
+     * @param {Object} env 
      */
     configure(options, env) {
         this.env = env || {};
@@ -29,11 +29,11 @@ class CronModule {
             this.booking(this.schedule[i], i);
         }
     }
-    
+
     /**
      * @description create scheduled task
-     * @param {OBJECT} opt 
-     * @param {STRING} key 
+     * @param {Object} opt 
+     * @param {String} key 
      */
     booking(opt, key) {
         if (!this.helper) return null;
@@ -42,7 +42,7 @@ class CronModule {
             type: 'lib'
         });
         const value = opt.env ? this.env[opt.env] : opt.value;
-        if (!value || !value.trim()) return;
+        if (!value?.trim()) return;
         const task = cron.schedule(value, () => {
             this.helper.get(opt.target);
         }, {
