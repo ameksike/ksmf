@@ -6,6 +6,7 @@
  * @license    	GPL
  * @version    	1.0
  */
+const KsCryp = require("kscryp");
 class LoggerSimple {
 
     constructor(config) {
@@ -39,7 +40,7 @@ class LoggerSimple {
         this.envs[this.env] = this.envs[this.env] || this.level.debug;
         this.sep = config?.sep || ",";
         this.drv = config?.drv || console;
-        this.type = "str";
+        this.type = config?.type || "str";
         return this;
     }
 
@@ -81,7 +82,7 @@ class LoggerSimple {
      */
     toStr(value) {
         try {
-            return JSON.stringify(value);
+            return KsCryp.encode(value, "json");
         } catch (error) {
             return error?.message;
         }

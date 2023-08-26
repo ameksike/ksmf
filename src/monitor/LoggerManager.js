@@ -6,6 +6,7 @@
  * @license    	GPL
  * @version    	1.0
  */
+const KsCryp = require("kscryp");
 class LoggerManager {
 
     constructor(cfg) {
@@ -93,7 +94,7 @@ class LoggerManager {
      * @param {Object} obj 
      * @returns {Object} logger
      */
-    track(obj) {
+    seTrack(obj) {
         const _this = this;
         return new Proxy(obj, {
             get(target, prop, receiver) {
@@ -118,7 +119,7 @@ class LoggerManager {
      * @param {String} action 
      * @returns {Object} logger
      */
-    trackInbound(obj, action = "track") {
+    seTrackInbound(obj, action = "trackInbound") {
         const _this = this;
         this.skip.add(action);
         Reflect.set(obj, action, () => {
@@ -147,7 +148,7 @@ class LoggerManager {
                         flow: req.flow,
                         level: _this.level.debug,
                         src: "Logger:Track:Response",
-                        data
+                        data: KsCryp.decode(data, "json")
                     }));
                     this.wrap(res, "end", function (chunk, encoding) {
                         const location = res?.getHeader && res.getHeader("Location");
@@ -171,7 +172,7 @@ class LoggerManager {
      * @param {String} action 
      * @returns {Object} logger
      */
-    trackOutbound(obj, action = "trackOutbound") {
+    seTrackOutbound(obj, action = "trackOutbound") {
         const _this = this;
         this.skip.add(action);
         Reflect.set(obj, action, () => {
@@ -210,9 +211,9 @@ class LoggerManager {
     build(obj = null) {
         obj = obj || this.driver;
         try {
-            this.trackInbound(obj);
-            this.trackOutbound(obj);
-            const logger = this.track(obj);
+            this.seTrackInbound(obj);
+            this.seTrackOutbound(obj);
+            const logger = this.seTrack(obj);
             logger.adm = this;
             return logger;
         }

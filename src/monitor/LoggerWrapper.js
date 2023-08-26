@@ -12,9 +12,15 @@ class LoggerWrapper {
      * @param {OBJECT} cfg 
      */
     onInitConfig(cfg) {
-        this.manager.configure(cfg.app?.log);
+        this.manager.configure(cfg.srv?.log);
         const logger = this.manager.build();
         this.helper.set(logger, 'logger');
+    }
+
+    onInitApp(web) {
+        const logger = this.helper.get('logger');
+        logger.trackOutbound();
+        web.use(logger.trackInbound());
     }
 }
 module.exports = LoggerWrapper;
