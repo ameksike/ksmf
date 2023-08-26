@@ -34,7 +34,7 @@ class Swagger {
      * @returns 
      */
     onLoadModule(mod) {
-        if (!this.exclude || !this.exclude.length || !this.exclude.includes(mod.name)) {
+        if (!this.exclude?.includes(mod.name)) {
             const docFileDescription = this.cfg.srv.module.path + mod.name + "/doc/index.js";
             if (require('fs').existsSync(docFileDescription)) {
                 const definition = require(docFileDescription);
@@ -48,11 +48,13 @@ class Swagger {
      * @param {OBJECT} srv 
      */
     onInitCompleted(app) {
-        if (!app || !app.web) {
+        if (!app?.web) {
             return null;
         }
+        const path = require("path");
+        const dir = path.resolve(app.path);
         const url = app.cfg.srv.doc.url;
-        const definition = app.cfg.srv.doc.src ? app.loadConfig(app.path + app.cfg.srv.doc.src) : null;
+        const definition = app.cfg.srv.doc.src ? app.loadConfig(path.join(app.path, app.cfg.srv.doc.src)) : null;
         definition.info = definition.info || {};
         definition.info.title = definition.info.title || app.cfg?.pack?.name;
         definition.info.version = definition.info.version || app.cfg?.pack?.version;
@@ -62,17 +64,24 @@ class Swagger {
         if (!definition || !url) {
             return null;
         }
-
         const swaggerUI = require('swagger-ui-express');
         const swaggerJsDoc = require('swagger-jsdoc');
-
         app.web.use(
             url,
             swaggerUI.serve,
             swaggerUI.setup(swaggerJsDoc({
                 definition: this.definition,
-                apis: []
-            }))
+                apis: [
+                    `${dir}/doc/**/*.yml`,
+                    `${dir}/doc/**/*.json`,
+                    `${dir}/doc/**/*.js`,
+                    `${dir}/doc/**/*.ts`
+                ]
+            }), {
+                explorer: true,
+                customCssUrl: Array.isArray(definition.css) ? definition.css : [],
+                customJs: Array.isArray(definition.js) ? definition.js : []
+            })
         );
     }
 
