@@ -4,12 +4,13 @@
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
- * @version    	1.0
+ * @version    	1.3
  * @dependencies express, cors, dotenv, ksdp, compression, cookie-parser, body-parser
  * */
 const express = require("express");
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
 
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
@@ -20,7 +21,7 @@ const KsDp = require('ksdp');
 class AppWEB {
     /**
      * @description initialize library
-     * @param {STRING} path 
+     * @param {String} path 
      */
     constructor(path) {
         this.option = {
@@ -37,7 +38,7 @@ class AppWEB {
 
     /**
      * @description initialize serve (Implement template method pattern)
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     init() {
         try {
@@ -61,12 +62,11 @@ class AppWEB {
             this.init();
         }
         return this.web.listen(this.cfg.srv.port, () => {
-            const url = `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`;
-            this.emit('onStart', "ksmf", [this.cfg.srv, url]);
-            this.setLog('INFO', ['LISTENING SERVER', `${url}`]);
-            if (this.cfg.srv.log >= 1) {
-                this.setLog('INFO', [this.getRoutes()]);
-            }
+            this.emit('onStart', "ksmf", [{
+                srv: this.cfg.srv,
+                message: 'LISTENING SERVER',
+                url: `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`
+            }]);
         });
     }
 
@@ -92,20 +92,30 @@ class AppWEB {
 
     /**
      * @description load file config
-     * @param {STRING} target 
-     * @returns {OBJECT}
+     * @param {String} target 
+     * @returns {Object}
      */
-    loadConfig(target) {
-        const fs = require('fs');
-        let res = {};
-        if (fs.existsSync(target)) {
-            try {
-                res = require(target);
-            } catch (error) {
-                return {};
+    loadConfig(target, dir, id) {
+        try {
+            let file = dir ? path.join(dir, target) : target;
+            let tmp = require(file) || {};
+            tmp = tmp[id] || tmp["default"] || tmp || {};
+            if (tmp.import) {
+                for (let item of tmp.import) {
+                    Object.assign(tmp, this.loadConfig(item, dir, id));
+                }
             }
+            return tmp;
+        } catch (error) {
+            console.log(JSON.stringify({
+                flow: String(Date.now()) + "00",
+                level: 1,
+                src: "KsMf:App:loadConfig",
+                error: error?.message,
+                data: { target, dir, id }
+            }));
+            return {};
         }
-        return res;
     }
 
     /**
@@ -113,19 +123,19 @@ class AppWEB {
      */
     initConfig() {
         dotenv.config();
-        const envid = process.env.NODE_ENV || 'development';
+        const env = process.env || {};
+        const eid = env["NODE_ENV"] || 'development';
+        const srv = this.loadConfig('cfg/core.json', this.path, eid);
+        const pac = this.loadConfig(path.join(this.path, 'package.json'));
 
-        const app = this.loadConfig(this.path + 'cfg/config.json');
-        const srv = this.loadConfig(this.path + 'cfg/core.json');
-
-        this.cfg.env = process.env || {};
-        this.cfg.envid = envid;
-        this.cfg.app = app[envid] || {};
-        this.cfg.srv = srv[envid] || {};
+        this.cfg.env = env;
+        this.cfg.eid = eid;
+        this.cfg.srv = srv;
         this.cfg.path = this.path;
+        this.cfg.pack = pac;
 
         this.cfg.srv.module = this.cfg.srv.module || {};
-        this.cfg.srv.module.path = this.path + 'src/';
+        this.cfg.srv.module.path = path.join(this.path, 'src/');
         this.cfg.srv.log = this.cfg.env.LOG_LEVEL ? this.cfg.env.LOG_LEVEL : this.cfg.srv.log;
         this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
         this.cfg.srv.event = this.cfg.srv.event || {};
@@ -134,17 +144,13 @@ class AppWEB {
         this.cfg.srv.static = this.cfg.srv.static || '/www';
         this.cfg.srv.doc = this.cfg.srv.doc || {};
 
-        this.cfg.app.logging = this.cfg.srv.log > 0;
-
         // ... configure Helper ...
         this.helper.configure({
             path: this.cfg.srv.module.path,
             src: this.cfg.srv.helper,
             name: 'helper',
             error: {
-                on: (error) => {
-                    this.setError(error);
-                }
+                on: (error) => this.setError(error)
             }
         });
         this.helper.set(this, 'app');
@@ -200,7 +206,7 @@ class AppWEB {
         this.web.use(compression());
 
         //... Allow static files
-        this.web.use(this.cfg.srv.static, express.static(this.cfg.path + this.cfg.srv.public));
+        this.web.use(this.cfg.srv.static, express.static(path.join(this.cfg.path, this.cfg.srv.public)));
 
         //... Allow all origin request, CORS on ExpressJS
         let allowedOrigins = this.cfg.srv.cors;
@@ -220,44 +226,21 @@ class AppWEB {
         //... Log requests 
         this.web.use((req, res, next) => {
             this.emit('onRequest', "ksmf", [req, res, next]);
-            this.setLog('INFO', [req.method, req.path]);
             return next();
-        })
-    }
-
-    /**
-     * @description set logging based on a logging handler
-     * @param {STRING} type 
-     * @param {STRING|OBJECT} data 
-     */
-    setLog(type, data) {
-        const handler = this.helper.get('logger');
-        if (handler && handler.log) {
-            if (handler.configure) {
-                handler.configure({
-                    level: (this.cfg && this.cfg.srv && this.cfg.srv.log) ? this.cfg.srv.log : 1,
-                    prefix: 'KSMF.WEB',
-                    type
-                });
-            }
-            data = data instanceof Array ? data : [data];
-            handler.log(...data);
-        }
+        });
     }
 
     /**
      * @description throw application error
-     * @param {OBJECT} error 
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} error 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} next 
      */
     setError(error, req = null, res = null, next = null) {
-        this.setLog('ERROR', [error]);
         this.emit('onError', "ksmf", [error, req, res, next]);
         if (res && !res.finished && res.status instanceof Function) {
-            res.status(500);
-            return res.json({
+            return res.status(500).json({
                 error: typeof (error) === 'string' ? {
                     message: error
                 } : {
@@ -281,19 +264,18 @@ class AppWEB {
                     // ... EXPRESS APP
                     app: this.web,
                     web: this.web,
-                    // ... DATA ACCESS OBJECT 
+                    // ... DATA ACCESS Object 
                     opt: {
                         // ... CONFIGURE 
-                        'cfg': this.cfg.app,
-                        'srv': this.cfg.srv,
+                        'cfg': this.cfg.srv,
                         // ... ENV
                         'env': this.cfg.env,
-                        'envid': this.cfg.envid,
+                        'eid': this.cfg.eid,
                         // ... PATH
                         'path': {
-                            'prj': this.path,
-                            'mod': this.cfg.srv.module.path + name + "/",
-                            'app': this.cfg.srv.module.path + "app/",
+                            'prj': path.resolve(this.path),
+                            'mod': path.join(this.cfg.srv.module.path, name),
+                            'app': path.join(this.cfg.srv.module.path, "app")
                         },
                         // ... NAME
                         'name': name
@@ -325,7 +307,7 @@ class AppWEB {
                 const obj = this.helper.get(item);
                 if (obj) {
                     modules.push(obj);
-                    this.emit('onLoadModule', "ksmf", [obj, name, this.cfg.srv.module.path + name + "/model/"]);
+                    this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model")]);
                 }
             });
         }
@@ -357,60 +339,17 @@ class AppWEB {
 
         this.web.get('*', (req, res, next) => {
             this.emit('on404', "ksmf", [req, res, next]);
-            this.setLog('WARN', ['404', req.method, req.path]);
             next();
         });
-    }
-
-    /**
-     * @description get list of available routes
-     * @returns {ARRAY}
-     */
-    getRoutes() {
-        const list = [];
-        const epss = [];
-        function print(path, layer) {
-            if (layer.route) {
-                layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))))
-            } else if (layer.name === 'router' && layer.handle.stack) {
-                layer.handle.stack.forEach(print.bind(null, path.concat(split(layer.regexp))))
-            } else if (layer.method) {
-                const endpoint = `${layer.method.toUpperCase()} ${path.concat(split(layer.regexp)).filter(Boolean).join('/')}`;
-                if (epss.indexOf(endpoint) === -1) {
-                    epss.push(endpoint);
-                    list.push([layer.method.toUpperCase(), path.concat(split(layer.regexp)).filter(Boolean).join('/')]);
-                }
-            }
-        }
-        function split(thing) {
-            if (typeof thing === 'string') {
-                return thing.split('/')
-            } else if (thing.fast_slash) {
-                return ''
-            } else {
-                var match = thing.toString()
-                    .replace('\\/?', '')
-                    .replace('(?=\\/|$)', '$')
-                    .match(/^\/\^((?:\\[.*+?^${}()|[\]\\\/]|[^.*+?^${}()|[\]\\\/])*)\$\//)
-                return match ?
-                    match[1].replace(/\\(.)/g, '$1').split('/') :
-                    '<complex:' + thing.toString() + '>'
-            }
-        }
-        if (this.web && this.web._router && this.web._router.stack) {
-            this.web._router.stack.forEach(print.bind(null, []));
-        }
-        return list;
     }
 
     /**
      * @description safely trigger events
      */
     emit() {
-        if (this.event && this.event.emit instanceof Function) {
-            this.event.emit(...arguments);
-        }
+        this.event?.emit instanceof Function && this.event.emit(...arguments);
     }
+
 }
 
 module.exports = AppWEB;

@@ -53,6 +53,11 @@ class Swagger {
         }
         const url = app.cfg.srv.doc.url;
         const definition = app.cfg.srv.doc.src ? app.loadConfig(app.path + app.cfg.srv.doc.src) : null;
+        definition.info = definition.info || {};
+        definition.info.title = definition.info.title || app.cfg?.pack?.name;
+        definition.info.version = definition.info.version || app.cfg?.pack?.version;
+        definition.info.contact = definition.info.contact || app.cfg?.pack?.author?.email;
+        definition.info.description = definition.info.description || app.cfg?.pack?.description;
         this.mergeDeep(this.definition, definition);
         if (!definition || !url) {
             return null;
