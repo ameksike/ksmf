@@ -14,6 +14,7 @@ describe('LOAD', () => {
         expect(KsMf.dao.Sequelize).toBeInstanceOf(Object);
         expect(KsMf.dao.Redis).toBeInstanceOf(Object);
         expect(KsMf.dao.Wrapper).toBeInstanceOf(Object);
+        expect(KsMf.dao.DataService).toBeInstanceOf(Object);
 
         expect(KsMf.task.Cron).toBeInstanceOf(Object);
 

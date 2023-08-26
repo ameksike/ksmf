@@ -23,7 +23,8 @@ const KsMf = {
         Base: require('./src/dao/DAOBase'),
         Sequelize: require('./src/dao/DAOSequelize'),
         Redis: require('./src/dao/DAORedis'),
-        Wrapper: require('./src/dao/DAOWrapper')
+        Wrapper: require('./src/dao/DAOWrapper'),
+        DataService: require('./src/dao/DataService')
     },
     task: {
         Cron: require('./src/task/cron')
