@@ -445,7 +445,7 @@ class DataService extends DIP {
         const where = {};
         for (let i in filter) {
             let [field, value, operator = 'eq'] = filter[i];
-            if (model && model.tableAttributes && model.tableAttributes.hasOwnProperty(field)) {
+            if (model?.tableAttributes?.hasOwnProperty(field)) {
                 value = ['like', 'ilike'].includes((operator || '').toLowerCase()) ? '%' + value + '%' : value;
                 if (Sequelize.Op[operator]) {
                     where[field] = {

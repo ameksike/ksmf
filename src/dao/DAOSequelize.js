@@ -29,14 +29,6 @@ class DAOSequelize extends DAOBase {
         }
         const Sequelize = this.manager;
         const opts = {
-            /*
-            dialect: this.option.dialect,
-            protocol: this.option.protocol,
-            dialectOptions: this.option.dialectOptions || {
-                "ssl": {
-                    "rejectUnauthorized": false
-                }
-            },*/
             define: {
                 timestamps: false
             },
@@ -71,18 +63,6 @@ class DAOSequelize extends DAOBase {
 
         const url = this.option.url || this.conn2str(this.option);
         this.driver = new Sequelize(url, opts);
-
-        /*if (this.option.url || this.option.use_env_variable) {
-            this.option.url = this.option.url || process.env[this.option.use_env_variable];
-            this.driver = new Sequelize(this.option.url, opts);
-        } else {
-            this.driver = new Sequelize(
-                this.option.database,
-                this.option.username,
-                this.option.password,
-                opts
-            );
-        }*/
         return this;
     }
 
@@ -95,7 +75,7 @@ class DAOSequelize extends DAOBase {
         this.driver
             .authenticate()
             .then((error) => {
-                if (!!error) {
+                if (error) {
                     if (this.onError instanceof Function) {
                         this.onError(error);
                     }
@@ -138,7 +118,7 @@ class DAOSequelize extends DAOBase {
             fs
                 .readdirSync(dirname)
                 .filter(file => {
-                    return (file !== 'index.js') && (file.slice(-3) === '.js');
+                    return (file !== 'index.js') && (file.endsWith('.js'));
                 })
                 .forEach(file => {
                     const target = require(path.join(dirname, file));
@@ -148,11 +128,7 @@ class DAOSequelize extends DAOBase {
                     }
                 });
         }
-        catch (error) {
-            /*if (this.onError instanceof Function) {
-                this.onError(error);
-            }*/
-        }
+        catch (error) { }
         return this;
     }
 
@@ -162,7 +138,7 @@ class DAOSequelize extends DAOBase {
      */
     associate() {
         Object.keys(this.models).forEach(modelName => {
-            if (this.models[modelName] && this.models[modelName].associate) {
+            if (this.models[modelName]?.associate) {
                 this.models[modelName].associate(this.models);
             }
         });
@@ -175,7 +151,7 @@ class DAOSequelize extends DAOBase {
     onLog(type, message) {
         const logger = this.helper?.get("logger");
         const log = logger ? logger[type] : null;
-        log && log({
+        (log instanceof Function) && log({
             src: "KSMF.DAO.Sequelize",
             message
         });

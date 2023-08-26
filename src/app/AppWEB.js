@@ -101,8 +101,14 @@ class AppWEB {
             let tmp = require(file) || {};
             tmp = tmp[id] || tmp["default"] || tmp || {};
             if (tmp.import) {
-                for (let item of tmp.import) {
-                    Object.assign(tmp, this.loadConfig(item, dir, id));
+                for (let i in tmp.import) {
+                    if (tmp.import[i]) {
+                        if (!isNaN(i)) {
+                            Object.assign(tmp, this.loadConfig(tmp.import[i], dir, id));
+                        } else {
+                            tmp[i] = this.loadConfig(tmp.import[i], dir, id);
+                        }
+                    }
                 }
             }
             return tmp;
