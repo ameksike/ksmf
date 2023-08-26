@@ -1,8 +1,5 @@
-const constant = require("../../../config/constant");
-
 const ksdp = require("ksdp");
 const DIP = ksdp.integration.Dip;
-
 class DataService extends DIP {
 
     constructor() {
@@ -12,15 +9,7 @@ class DataService extends DIP {
         this.modelKeyStr = "";
         this.modelInclude = null;
         this.modelStatus = null;
-        this.constant = {
-            
-        }
-
-        //this.logger = require("./log.service");
-        //this.utl = require("../utils/utl");
-        //this.models = models;
-        //this.driver = Sequelize;
-        //this.connection = connection;
+        this.constant = {};
     }
 
     /**
@@ -378,7 +367,49 @@ class DataService extends DIP {
         }
     }
 
+    /**
+     * @description insert an entity
+     * @param {Object} payload 
+     * @param {Object} payload.data 
+     * @param {Object} payload.where 
+     * @param {Object} payload.row 
+     * @param {Number} payload.mode 
+     * @param {Object} payload.transaction 
+     * @returns {Object} row
+     */
+    create(payload, opt) {
+        return this.insert(payload, opt);
+    }
 
+    /**
+     * @description insert an entity
+     * @param {Object} payload 
+     * @param {Object} payload.data 
+     * @param {Object} payload.where 
+     * @param {Object} payload.row 
+     * @param {Number} payload.mode 
+     * @param {Object} payload.transaction 
+     * @returns {Object} row
+     */
+    insert(payload, opt) {
+        payload.mode = this.constant.action.create;
+        return this.save(payload, opt);
+    }
+
+    /**
+     * @description update an entity
+     * @param {Object} payload 
+     * @param {Object} payload.data 
+     * @param {Object} payload.where 
+     * @param {Object} payload.row 
+     * @param {Number} payload.mode 
+     * @param {Object} payload.transaction 
+     * @returns {Object} row
+     */
+    update(payload, opt) {
+        payload.mode = this.constant.action.update;
+        return this.save(payload, opt);
+    }
 
     /**
      * @description get count of data from model
