@@ -1,4 +1,4 @@
-const DAORedis = require('./DAORedis');
+const DAORedis = require('../src/dao/DAORedis');
 
 describe('DAO_Redis', () => {
     it("should a valid lib", (done) => {
