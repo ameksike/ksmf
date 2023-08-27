@@ -21,7 +21,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description initialize Sequelize manager
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     initManager() {
         if (!this.manager || this.driver) {
@@ -68,7 +68,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description redefine connect method
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     connect() {
         this.initManager();
@@ -93,7 +93,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description redefine disconnect method
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     disconnect() {
         if (this.driver && this.driver.close instanceof Function) {
@@ -104,8 +104,8 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description load load models from dirname
-     * @param {STRING} dirname 
-     * @returns {OBJECT}
+     * @param {String} dirname 
+     * @returns {Object}
      */
     load(dirname) {
         const fs = require('fs');
@@ -134,7 +134,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description create models associations
-     * @returns {OBJECT}
+     * @returns {Object}
      */
     associate() {
         Object.keys(this.models).forEach(modelName => {
@@ -159,11 +159,11 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description add column if it doesn't exist
-     * @param {OBJECT} queryInterface
-     * @param {OBJECT} Sequelize  
-     * @param {STRING} tableName 
-     * @param {STRING} columnName 
-     * @param {OBJECT} options 
+     * @param {Object} queryInterface
+     * @param {Object} Sequelize  
+     * @param {String} tableName 
+     * @param {String} columnName 
+     * @param {Object} options 
      * @return {Promise} 
      */
     static addColumn(queryInterface, Sequelize, tableName, columnName, options) {
@@ -179,9 +179,9 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description remove column if it exists
-     * @param {OBJECT} queryInterface
-     * @param {STRING} tableName 
-     * @param {STRING} columnName 
+     * @param {Object} queryInterface
+     * @param {String} tableName 
+     * @param {String} columnName 
      * @return {Promise} 
      */
     static removeColumn(queryInterface, tableName, columnName) {
@@ -196,11 +196,11 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description change column
-     * @param {OBJECT} queryInterface
-     * @param {OBJECT} Sequelize  
-     * @param {STRING} tableName 
-     * @param {STRING} columnName 
-     * @param {OBJECT} options 
+     * @param {Object} queryInterface
+     * @param {Object} Sequelize  
+     * @param {String} tableName 
+     * @param {String} columnName 
+     * @param {Object} options 
      * @return {Promise} 
      */
     static changeColumn(queryInterface, Sequelize, tableName, columnName, options) {
@@ -209,8 +209,8 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description perform sql query
-     * @param {OBJECT} queryInterface
-     * @param {STRING} sql  
+     * @param {Object} queryInterface
+     * @param {String} sql  
      * @return {Promise} 
      */
     static query(queryInterface, sql) {
@@ -219,8 +219,8 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description run sql file
-     * @param {OBJECT} queryInterface
-     * @param {STRING} file  
+     * @param {Object} queryInterface
+     * @param {String} file  
      * @return {Promise} 
      */
     static async run(queryInterface, file) {
@@ -236,6 +236,52 @@ class DAOSequelize extends DAOBase {
             throw new Error('Script is empty or not utf8 format');
         }
         return await queryInterface.sequelize.query(sql);
+    }
+
+    /**
+     * @description allow generating models from db
+     * @param {Object} config 
+     * @returns {Object} res
+     */
+    static async process(config, logger) {
+        const path = require('path');
+        const output = path.join(__dirname, "../db/models");
+        const defaults = {
+            directory: output,
+            caseFile: 'l',
+            caseModel: 'p',
+            caseProp: 'c',
+            lang: 'js',  // ts
+            useDefine: false,
+            singularize: true,
+            spaces: true,
+            indentation: 2
+        };
+        const options = Object.assign({}, defaults, config || {});
+        try {
+            const SequelizeAuto = require('sequelize-auto');
+            const auto = new SequelizeAuto(
+                config.database,
+                config.username,
+                config.password,
+                options
+            );
+            const res = await auto.run();
+            const tableNames = Object.keys(res.tables);
+            logger?.info && logger.info({
+                src: "models:db:auto:process",
+                message: "Importation success",
+                data: tableNames
+            });
+            return res;
+        }
+        catch (error) {
+            logger?.error && logger.error({
+                src: "models:db:auto:process",
+                message: error?.message || error,
+                data: { config, options }
+            });
+        }
     }
 }
 module.exports = DAOSequelize;

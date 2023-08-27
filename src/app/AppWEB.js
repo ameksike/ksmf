@@ -163,6 +163,7 @@ class AppWEB {
         this.emit('onInitConfig', "ksmf", [this.cfg]);
         this.web = express();
         this.drv = express;
+        return this;
     }
 
     /**
@@ -178,6 +179,7 @@ class AppWEB {
                 }
             }
         }
+        return this;
     }
 
     /**
@@ -231,6 +233,7 @@ class AppWEB {
             this.emit('onRequest', "ksmf", [req, res, next]);
             return next();
         });
+        return this;
     }
 
     /**
@@ -317,6 +320,7 @@ class AppWEB {
         }
         this.emit('onLoadedModules', "ksmf", [modules]);
         this.modules = modules;
+        return this;
     }
 
     /**
@@ -346,6 +350,7 @@ class AppWEB {
             this.emit('on404', "ksmf", [req, res, next]);
             next();
         });
+        return this;
     }
 
     /**
@@ -353,6 +358,7 @@ class AppWEB {
      */
     emit() {
         this.event?.emit instanceof Function && this.event.emit(...arguments);
+        return this;
     }
 
 }
