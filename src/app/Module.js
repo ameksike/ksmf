@@ -17,6 +17,7 @@ class Module {
     constructor(payload) {
         this.app = payload ? payload.app : null;
         this.web = payload ? payload.web : null;
+        this.drv = payload ? payload.drv : null;
         this.opt = payload ? payload.opt : {};
 
         this.name = this.opt.name;
@@ -38,7 +39,9 @@ class Module {
     /**
      * @description allow customized application initialization by module
      */
-    initApp() { }
+    initApp() {
+        // TODO document why this method 'initApp' is empty  
+    }
 
     /**
      * @description allow customized config initialization by module
@@ -69,7 +72,7 @@ class Module {
      * @description allow customized web routes initialization by module
      */
     initRoutesWeb(opt) {
-        if (!opt || !opt.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
+        if (!opt?.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
         // ... load controller 
         const _route = this.app[opt.method];
         const _prefix = opt.route;
@@ -85,7 +88,7 @@ class Module {
                 'helper': 'helper',
                 'app': 'app'
             }
-        }); 
+        });
         // ... define routes  
         _route.apply(this.app, [_prefix,
             ...this.getMiddlewareList(_controller, opt),
@@ -124,7 +127,7 @@ class Module {
         this.app.get.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             ...this.getMiddlewareList(_controller, opt, 'select'),
             (req, res, next) => {
-                    _controller.select(req, res, next);
+                _controller.select(req, res, next);
             }]);
         // ... define route list 
         this.app.get.apply(this.app, [_prefix,
@@ -201,18 +204,19 @@ class Module {
      * @param {STRING} action 
      * @returns 
      */
-    getMiddlewareList(controller, opt, action=null){
+    getMiddlewareList(controller, opt, action = null) {
         try {
             action = action || opt.action;
-            if(opt.middleware && opt.method === 'rest'){
+            if (opt.middleware && opt.method === 'rest') {
                 controller.middleware = Object.assign(
-                    controller.middleware || {}, 
+                    controller.middleware || {},
                     opt.middleware
                 );
             }
             const middlewareModule = this.initMiddlewareList(this.middleware);
             const middlewareController = this.initMiddlewareList(controller.middleware);
             const middlewareRoute = opt.middleware && opt.middleware instanceof Array ? opt.middleware : [];
+            this.drv && middlewareModule.global.push(this.drv.json());
             return [
                 ...middlewareModule.global,
                 ...middlewareModule[action] instanceof Array ? middlewareModule[action] : [],
@@ -221,7 +225,7 @@ class Module {
                 ...middlewareRoute
             ];
         }
-        catch(error) {
+        catch (error) {
             console.log('[ERROR]', error);
             return [];
         }
