@@ -1,20 +1,18 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.3
- * @dependencies express, cors, dotenv, ksdp, compression, cookie-parser, body-parser
- * */
+ * @dependencies express, express-session, cors, dotenv, ksdp, cookie-parser
+ **/
 const express = require("express");
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-
-const compression = require('compression');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
 
 const KsDp = require('ksdp');
 
@@ -22,7 +20,7 @@ class AppWEB {
     /**
      * @description initialize library
      * @param {String} path 
-     */
+     **/
     constructor(path) {
         this.option = {
             app: {},
@@ -164,6 +162,7 @@ class AppWEB {
         this.initEvents();
         this.emit('onInitConfig', "ksmf", [this.cfg]);
         this.web = express();
+        this.drv = express;
     }
 
     /**
@@ -196,20 +195,18 @@ class AppWEB {
     initApp() {
         this.emit('onInitApp', "ksmf", [this.web]);
 
-        //... Set Error Handler
-        this.initErrorHandler();
-
-        //... Allow body Parser
-        this.web.use(bodyParser.json());
-        this.web.use(bodyParser.urlencoded({
-            extended: false
-        }));
-
         //... Allow cookie Parser
         this.web.use(cookieParser());
 
-        //... Allow compression
-        this.web.use(compression());
+        //... Allow body Parser
+        this.web.use(express.urlencoded({ extended: true }));
+
+        //... Allow session
+        this.web.use(session({
+            resave: true,
+            saveUninitialized: true,
+            secret: process?.env?.SESSION_KEY || 'ksksksks'
+        }));
 
         //... Allow static files
         this.web.use(this.cfg.srv.static, express.static(path.join(this.cfg.path, this.cfg.srv.public)));
@@ -217,7 +214,7 @@ class AppWEB {
         //... Allow all origin request, CORS on ExpressJS
         let allowedOrigins = this.cfg.srv.cors;
         if (process.env.CORS_ORIGINS) {
-            const CORS_ORIGINS = this.cfg && this.cfg.env && this.cfg.env.CORS_ORIGINS ? this.cfg.env.CORS_ORIGINS : [];
+            const CORS_ORIGINS = this.cfg?.env?.CORS_ORIGINS || "";
             allowedOrigins = allowedOrigins.concat(CORS_ORIGINS.split(','));
         }
         allowedOrigins = allowedOrigins.map(elm => new RegExp(elm));
@@ -263,13 +260,14 @@ class AppWEB {
     initModules() {
         this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
         const modules = [];
-        if (this.cfg.srv.module && this.cfg.srv.module.load) {
+        if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => {
                 const name = (typeof (item) === 'string') ? item : item.name;
                 const options = {
                     // ... EXPRESS APP
                     app: this.web,
                     web: this.web,
+                    drv: this.drv,
                     // ... DATA ACCESS Object 
                     opt: {
                         // ... CONFIGURE 
@@ -318,6 +316,7 @@ class AppWEB {
             });
         }
         this.emit('onLoadedModules', "ksmf", [modules]);
+        this.modules = modules;
     }
 
     /**
