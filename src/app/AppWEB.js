@@ -5,15 +5,13 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.3
- * @dependencies express, express-session, cors, dotenv, ksdp, cookie-parser
+ * @dependencies express, express-session, dotenv, ksdp, cookie-parser
  **/
 const express = require("express");
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
-
 const KsDp = require('ksdp');
 
 class AppWEB {
@@ -195,7 +193,7 @@ class AppWEB {
      * @description initialize middleware applications
      */
     initApp() {
-        this.emit('onInitApp', "ksmf", [this.web]);
+        this.emit('onInitApp', "ksmf", [this.web, this]);
 
         //... Allow cookie Parser
         this.web.use(cookieParser());
@@ -212,21 +210,6 @@ class AppWEB {
 
         //... Allow static files
         this.web.use(this.cfg.srv.static, express.static(path.join(this.cfg.path, this.cfg.srv.public)));
-
-        //... Allow all origin request, CORS on ExpressJS
-        let allowedOrigins = this.cfg.srv.cors;
-        if (process.env.CORS_ORIGINS) {
-            const CORS_ORIGINS = this.cfg?.env?.CORS_ORIGINS || "";
-            allowedOrigins = allowedOrigins.concat(CORS_ORIGINS.split(','));
-        }
-        allowedOrigins = allowedOrigins.map(elm => new RegExp(elm));
-        const corsConfig = {
-            origin: allowedOrigins.concat('null'),
-            allowedHeaders: ['Authorization', 'X-Requested-With', 'Content-Type'],
-            maxAge: 86400,
-            credentials: true,
-        };
-        this.web.use(cors(corsConfig));
 
         //... Log requests 
         this.web.use((req, res, next) => {
@@ -261,7 +244,7 @@ class AppWEB {
      * @description load modules 
      */
     initModules() {
-        this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load]);
+        this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load, this]);
         const modules = [];
         if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => {
@@ -314,11 +297,11 @@ class AppWEB {
                 const obj = this.helper.get(item);
                 if (obj) {
                     modules.push(obj);
-                    this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model")]);
+                    this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
                 }
             });
         }
-        this.emit('onLoadedModules', "ksmf", [modules]);
+        this.emit('onLoadedModules', "ksmf", [modules, this]);
         this.modules = modules;
         return this;
     }
@@ -327,7 +310,7 @@ class AppWEB {
      * @description load application routes
      */
     initRoutes() {
-        this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route]);
+        this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route, this]);
         if (this.cfg.srv.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
@@ -341,7 +324,7 @@ class AppWEB {
                         }
                         controller[route.action](req, res, next);
                     });
-                    this.emit('onLoadRoutes', "ksmf", [i, route, this.web]);
+                    this.emit('onLoadRoutes', "ksmf", [i, route, this.web, this]);
                 }
             }
         }
@@ -360,7 +343,6 @@ class AppWEB {
         this.event?.emit instanceof Function && this.event.emit(...arguments);
         return this;
     }
-
 }
 
 module.exports = AppWEB;
