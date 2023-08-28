@@ -2,7 +2,7 @@
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		20/03/2022
- * @copyright  	Copyright (c) 2020-2030
+ * @copyright  	Copyright (c) 2020-2035
  * @license    	GPL
  * @version    	1.0
  * @description CLI application, for more information see: https://github.com/ameksike/ksmf/wiki  
@@ -10,6 +10,7 @@
 try {
     const KsMf = require('ksmf');
     const path = require('path');
+
     let dir = path.resolve(process.cwd());
     let act = process.argv[2] || "web";
     let app = new KsMf.app.WEB(dir);
@@ -20,7 +21,7 @@ try {
             if (target) {
                 app.initConfig();
                 let obj = app.helper?.get(target);
-                if (obj.run instanceof Function) {
+                if (obj?.run instanceof Function) {
                     obj.run(...process.argv.slice(4), app);
                 }
             }
@@ -33,6 +34,10 @@ try {
             KsMf.dao.Sequelize.process(opt, app.helper?.get("logger"));
             break;
 
+        case "proxy":
+            (new KsMf.proxy.App(dir)).run();
+            break;
+
         default:
             module.exports = app.run();
             break;
@@ -40,8 +45,9 @@ try {
 }
 catch (error) {
     console.log({
+        flow: String(Date.now()) + "00",
         level: 1,
-        src: "KSMF:bin:cli",
+        src: "KSMF:bin:CLI",
         error
     });
 }
