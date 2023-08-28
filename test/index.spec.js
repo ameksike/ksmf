@@ -9,6 +9,7 @@ describe('LOAD', () => {
         expect(KsMf.app.Module).toBeInstanceOf(Object);
         expect(KsMf.app.Controller).toBeInstanceOf(Object);
         expect(KsMf.app.Utl).toBeInstanceOf(Object);
+        expect(KsMf.app.Cors).toBeInstanceOf(Object);
 
         expect(KsMf.dao.Base).toBeInstanceOf(Object);
         expect(KsMf.dao.Sequelize).toBeInstanceOf(Object);

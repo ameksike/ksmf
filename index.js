@@ -1,10 +1,20 @@
+/**
+ * @author		Antonio Membrides Espinosa
+ * @email		tonykssa@gmail.com
+ * @date		20/05/2020
+ * @copyright  	Copyright (c) 2020-2035
+ * @license    	GPL
+ * @version    	1.0
+ * @description For more information see: https://github.com/ameksike/ksmf/wiki  
+ **/
 const KsMf = {
     app: {
         WEB: require('./src/app/AppWEB'),
         RTA: require('./src/app/AppRTA'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
-        Utl: require('./src/app/Utl')
+        Utl: require('./src/app/Utl'),
+        Cors: require('./src/app/Cors')
     },
     monitor: {
         Manager: require('./src/monitor/Manager'),
@@ -35,4 +45,4 @@ const KsMf = {
 };
 
 module.exports = KsMf;
-module.exports.default = KsMf;
+module.exports.default = KsMf.app.WEB;
