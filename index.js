@@ -13,7 +13,8 @@ const KsMf = {
         RTA: require('./src/app/AppRTA'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
-        Utl: require('./src/app/Utl')
+        Utl: require('./src/app/Utl'),
+        Cors: require('./src/app/Cors')
     },
     monitor: {
         Manager: require('./src/monitor/Manager'),
