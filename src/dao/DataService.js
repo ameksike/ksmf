@@ -271,7 +271,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object} row
      */
     async save(payload, opt) {
-        let { data, where, row, mode = constant.action.read, transaction = null } = payload || {};
+        let { data, where, row, mode = this.constant?.action?.read, transaction = null } = payload || {};
         opt = opt || {};
         try {
             payload.flow = payload.flow || opt?.flow;
@@ -282,7 +282,7 @@ class DataService extends ksdp.integration.Dip {
                 row = await model.findOne({ where }, { transaction });
             }
 
-            if (mode <= constant.action.read) {
+            if (mode <= this.constant?.action?.read) {
                 return row;
             }
 
@@ -292,12 +292,12 @@ class DataService extends ksdp.integration.Dip {
                 updateOnDuplicate: Array.isArray(modelKey) ? modelKey : [modelKey], transaction
             } : { transaction };
 
-            if (!row && (mode >= constant.action.write || mode === constant.action.create)) {
+            if (!row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.create)) {
                 let res = model[Array.isArray(data) ? "bulkCreate" : "create"](this.getRequest(data, "create", payload), options);
                 return this.getResponse(await res, "create", payload);
             }
 
-            if (row && (mode >= constant.action.write || mode === constant.action.update) && this.utl?.isDifferent(row, data)) {
+            if (row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update) && this.utl?.isDifferent(row, data)) {
                 let res = Array.isArray(data) ?
                     model.bulkCreate(this.getRequest(data, "update", payload, row), options) :
                     row.update(this.getRequest(data, "update", payload, row), options);
@@ -412,7 +412,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object} row
      */
     insert(payload, opt) {
-        payload.mode = this.constant.action.create;
+        payload.mode = this.constant?.action?.create;
         return this.save(payload, opt);
     }
 
@@ -427,7 +427,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object} row
      */
     update(payload, opt) {
-        payload.mode = this.constant.action.update;
+        payload.mode = this.constant?.action?.update;
         return this.save(payload, opt);
     }
 
