@@ -1,4 +1,21 @@
+/**
+ * @author		Antonio Membrides Espinosa
+ * @email		tonykssa@gmail.com
+ * @date		22/04/2023
+ * @copyright  	Copyright (c) 2020-2030
+ * @license    	GPL
+ * @version    	1.0
+ **/
 class Manager {
+
+    constructor(cfg) {
+        this.startUsage = process?.cpuUsage && process.cpuUsage();
+        this.configure(cfg);
+    }
+
+    configure(cfg) {
+        this.logger = cfg.logger || this.logger;
+    }
 
     /**
      * @description KsMf Wrapper
@@ -6,7 +23,7 @@ class Manager {
      */
     onStart(info = {}) {
         const app = this.helper?.get('app');
-        const logger = this.helper?.get('logger');
+        const logger = this.helper?.get('logger') || this.logger;
         const routes = this.getRoutes(app.web);
         logger?.info({
             src: "KSMF:Monitor:onStart",
@@ -25,7 +42,7 @@ class Manager {
      * @param {Object} error 
      */
     onError(error) {
-        const logger = this.helper?.get('logger');
+        const logger = this.helper?.get('logger') || this.logger;
         (logger?.error instanceof Function) && logger?.error({
             src: "KSMF:Monitor:onError",
             message: error?.message || error,

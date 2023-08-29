@@ -93,7 +93,7 @@ class LoggerSimple {
      * @param {String} level
      * @param  {...any} args
      * @returns {Boolean}
-     */
+     **/
     print(level, ...args) {
         if (this.isAllow(level)) {
             if (this.type === 'str') {

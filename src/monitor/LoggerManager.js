@@ -5,7 +5,7 @@
  * @copyright  	Copyright (c) 2020-2035
  * @license    	GPL
  * @version    	1.0
- */
+ **/
 const KsCryp = require("kscryp");
 class LoggerManager {
 
