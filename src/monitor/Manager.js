@@ -1,25 +1,33 @@
 class Manager {
 
+    /**
+     * @description KsMf Wrapper
+     * @param {Object} info 
+     */
     onStart(info = {}) {
-        const app = this.helper.get('app');
-        const logger = this.helper.get('logger');
+        const app = this.helper?.get('app');
+        const logger = this.helper?.get('logger');
         const routes = this.getRoutes(app.web);
-        logger && logger.info({
-            src: "KsMf:Monitor:onStart",
-            message: info.message,
+        logger?.info({
+            src: "KSMF:Monitor:onStart",
+            message: info?.message,
             data: {
-                url: info.url,
-                public: info.public,
-                static: info.static,
+                url: info?.url,
+                public: info?.public,
+                static: info?.static,
                 routes
             }
         });
     }
 
+    /**
+     * @description error handler
+     * @param {Object} error 
+     */
     onError(error) {
-        const logger = this.helper.get('logger');
-        logger && logger.error({
-            src: "KsMf:Monitor:onError",
+        const logger = this.helper?.get('logger');
+        (logger?.error instanceof Function) && logger?.error({
+            src: "KSMF:Monitor:onError",
             message: error?.message || error,
             stack: error?.stack
         });
@@ -27,6 +35,7 @@ class Manager {
 
     /**
      * @description get list of available routes
+     * @param {Object} web 
      * @returns {Array} list
      */
     getRoutes(web) {
@@ -45,13 +54,14 @@ class Manager {
                 }
             }
         }
+
         function split(thing) {
             if (typeof thing === 'string') {
                 return thing.split('/')
             } else if (thing.fast_slash) {
                 return ''
             } else {
-                var match = thing.toString()
+                let match = thing.toString()
                     .replace('\\/?', '')
                     .replace('(?=\\/|$)', '$')
                     .match(/^\/\^((?:\\[.*+?^${}()|[\]\\\/]|[^.*+?^${}()|[\]\\\/])*)\$\//)
@@ -60,10 +70,27 @@ class Manager {
                     '<complex:' + thing.toString() + '>'
             }
         }
-        if (web && web._router && web._router.stack) {
-            web._router.stack.forEach(print.bind(null, []));
-        }
+        web?._router?.stack?.forEach(print.bind(null, []));
         return list;
+    }
+
+    /**
+     * @description get platform information
+     * @returns {Object} info
+     */
+    info() {
+        const cpuUsage = (process.cpuUsage instanceof Function) && process.cpuUsage(this.startUsage);
+        const memory = (process.constrainedMemory instanceof Function) && process.constrainedMemory();
+        return {
+            memory: memory ?? "none",
+            cpu_usage_system: cpuUsage?.system ? cpuUsage?.system / 1000000 : "none",
+            cpu_usage_user: cpuUsage?.user ? cpuUsage?.user / 1000000 : "none",
+            host_arch: process.config?.variables?.host_arch ?? "none",
+            target_arch: process.config?.variables?.target_arch ?? "none",
+            node_use_openssl: process.config?.variables?.node_use_openssl ?? "none",
+            v8_use_snapshot: process.config?.variables?.v8_use_snapshot ?? "none",
+            connected: process.connected ?? "none",
+        };
     }
 }
 module.exports = Manager;

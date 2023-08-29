@@ -14,8 +14,8 @@ class LoggerManager {
     }
 
     configure(cfg) {
-        this.skip = cfg?.skip || new Set("adm");
-        this.level = cfg?.level || {
+        this.skip = cfg?.skip || this.skip || new Set("adm");
+        this.level = cfg?.level || this.level || {
             none: -1,
             all: 0,
             error: 1,
@@ -23,9 +23,10 @@ class LoggerManager {
             info: 3,
             debug: 4
         }
-        this.excluded = cfg?.excluded || [];
+        this.excluded = cfg?.excluded || this.excluded || [];
         this.driver = cfg?.driver || this.driver || null;
-        this.driver?.configure && this.driver?.configure(cfg);
+        this.formater = cfg?.formater instanceof Function ? cfg.formater : this.format;
+        (this.driver?.configure instanceof Function) && this.driver.configure(cfg);
         return this;
     }
 
@@ -66,11 +67,12 @@ class LoggerManager {
      * @param {String} prop 
      * @returns {Object} 
      */
-    format(logItem, prop) {
+    format(logItem, prop, drv) {
         if (typeof logItem === 'object') {
+            let level = typeof drv?.level === "object" ? drv.level : {};
             return {
                 flow: String(Date.now()) + "00",
-                level: this.level[prop] ?? this.level.info,
+                level: level[prop] ?? level.info,
                 ...logItem,
                 date: logItem.date || (new Date()).toUTCString(),
             }
@@ -96,6 +98,7 @@ class LoggerManager {
      */
     seTrack(obj) {
         const _this = this;
+        const format = this.formater || this.format;
         return new Proxy(obj, {
             get(target, prop, receiver) {
                 const method = Reflect.get(target, prop, receiver);
@@ -106,7 +109,7 @@ class LoggerManager {
                     ? (...args) =>
                         method.apply(
                             target,
-                            args.map((item) => _this.format(typeof item === 'object' && !Array.isArray(item) ? item : { message: item }, prop)),
+                            args.map((item) => format(typeof item === 'object' && !Array.isArray(item) ? item : { message: item }, prop, _this)),
                         )
                     : method;
             }
@@ -129,7 +132,7 @@ class LoggerManager {
                     obj.debug({
                         flow: req.flow,
                         level: _this.level.debug,
-                        src: "Logger:Track:Request",
+                        src: "KsMf:Logger:Track:Request",
                         data: {
                             method: req.method,
                             path: req.path,
@@ -141,13 +144,13 @@ class LoggerManager {
                     this.wrap(res, "redirect", (data) => obj?.debug && obj.debug({
                         flow: req.flow,
                         level: _this.level.debug,
-                        src: "Logger:Track:Redirect",
+                        src: "KsMf:Logger:Track:Redirect",
                         data
                     }));
                     this.wrap(res, "send", (data) => obj?.debug && obj.debug({
                         flow: req.flow,
                         level: _this.level.debug,
-                        src: "Logger:Track:Response",
+                        src: "KsMf:Logger:Track:Response",
                         data: KsCryp.decode(data, "json")
                     }));
                     this.wrap(res, "end", function (chunk, encoding) {
@@ -155,7 +158,7 @@ class LoggerManager {
                         location && obj?.debug && obj.debug({
                             flow: req.flow,
                             level: _this.level.debug,
-                            src: "Logger:Track:Redirect",
+                            src: "KsMf:Logger:Track:Redirect",
                             data: { location, chunk, encoding }
                         })
                     });
@@ -179,7 +182,7 @@ class LoggerManager {
             const outboundTrack = (opt) => obj?.info && obj.info({
                 flow: _this.getFlowId(),
                 level: _this.level.info,
-                src: "Logger:Track:Outbound",
+                src: "KsMf:Logger:Track:Outbound",
                 data: typeof (opt) === "object" ? {
                     hostname: opt.hostname,
                     port: opt.port,
@@ -218,7 +221,7 @@ class LoggerManager {
             return logger;
         }
         catch (error) {
-            console.log({ src: "KsMf:LoggerManager:build", error });
+            console.log({ src: "KsMf:Logger:build", error });
         }
     }
 }

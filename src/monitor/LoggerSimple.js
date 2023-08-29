@@ -25,7 +25,7 @@ class LoggerSimple {
      * @param {Object} config.envs
      */
     configure(config) {
-        this.level = config?.level || {
+        this.level = config?.level || this.level || {
             none: -1,
             all: 0,
             error: 1,
@@ -33,14 +33,14 @@ class LoggerSimple {
             info: 3,
             debug: 4
         };
-        this.envKey = config?.envKey || "NODE_ENV";
-        this.envKeyLevel = config?.envKeyLevel || "LOG_LEVEL";
-        this.env = config?.env || process.env[this.envKey] || "local";
-        this.envs = { local: this.level.debug, ...config?.envs };
+        this.envKey = config?.envKey || this.envKey || "NODE_ENV";
+        this.envKeyLevel = config?.envKeyLevel || this.envKeyLevel || "LOG_LEVEL";
+        this.env = config?.env || this.env || process.env[this.envKey] || "local";
+        this.envs = config?.envs ? { local: this.level.debug, ...config.envs } : (this.envs || { local: this.level.debug });
         this.envs[this.env] = this.envs[this.env] || this.level.debug;
-        this.sep = config?.sep || ",";
-        this.drv = config?.drv || console;
-        this.type = config?.type || "str";
+        this.sep = config?.sep || this.sep || ",";
+        this.drv = config?.drv || this.drv || console;
+        this.type = config?.type || this.type || "str";
         return this;
     }
 

@@ -8,12 +8,16 @@
  * */
 class ErrorHandler {
 
+    configure(cfg) {
+        this.logger = cfg.logger || this.logger;
+    }
+
     /**
      * @description Set options on Initialize Configuration Event 
-     * @param {OBJECT} cfg 
+     * @param {Object} cfg 
      */
     onInitConfig(cfg) {
-        this.logger = this.helper?.get("logger");
+        this.logger = this.helper?.get("logger") || this.logger;
         this.init();
     }
 
