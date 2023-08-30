@@ -1,15 +1,35 @@
 const ksdp = require("ksdp");
-const DIP = ksdp.integration.Dip;
-class DataService extends DIP {
+const Utl = require("../app/Utl");
+class DataService extends ksdp.integration.Dip {
 
-    constructor() {
+    constructor(cfg) {
         super();
-        this.modelName = "";
-        this.modelKey = "";
-        this.modelKeyStr = "";
-        this.modelInclude = null;
-        this.modelStatus = null;
-        this.constant = {};
+        this.utl = new Utl();
+        this.configure(cfg);
+    }
+
+    /**
+     * 
+     * @param {Object} cfg 
+     * @param {String} cfg.modelName
+     * @param {String} cfg.modelKey
+     * @param {String} cfg.modelKeyStr
+     * @param {Object} cfg.modelInclude
+     * @param {String} cfg.modelStatus
+     * @param {Object} cfg.constant
+     * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
+     * @param {Object} cfg.logger 
+     */
+    configure(cfg) {
+        this.modelName = cfg?.modelName || this.modelName || "";
+        this.modelKey = cfg?.modelKey || this.modelKey || "";
+        this.modelKeyStr = cfg?.modelKeyStr || this.modelKeyStr || "";
+        this.modelInclude = cfg?.modelInclude || this.modelInclude || null;
+        this.modelStatus = cfg?.modelStatus || this.modelStatus || null;
+        this.constant = cfg?.constant || this.constant || {};
+        this.dao = cfg?.dao || this.dao || {};
+        this.logger = cfg?.logger || this.logger || null;
+        this.utl = cfg?.utl || this.utl || null;
     }
 
     /**
@@ -83,8 +103,8 @@ class DataService extends DIP {
         if (map[pk] || map[this.modelKeyStr]) {
             return true;
         }
-        payload.quantity = payload?.quantity?.toLocaleLowerCase() || constant.quantity.one;
-        return Boolean(payload.quantity === constant.quantity.one);
+        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.one;
+        return Boolean(payload.quantity === this.constant?.quantity?.one);
     }
 
     /**
@@ -177,16 +197,16 @@ class DataService extends DIP {
      * @returns {Object}
      */
     getModel(name = null) {
-        return this.dao.models[name || this.modelName];
+        return this.dao?.models[name || this.modelName];
     }
 
     getDriver() {
-        this.driver = this.dao.driver;
+        this.driver = this.dao?.driver;
         return this.driver;
     }
 
     getManager() {
-        this.manager = this.dao.manager;
+        this.manager = this.dao?.manager;
         return this.manager;
     }
 
@@ -251,18 +271,18 @@ class DataService extends DIP {
      * @returns {Object} row
      */
     async save(payload, opt) {
-        let { data, where, row, mode = constant.action.read, transaction = null } = payload || {};
+        let { data, where, row, mode = this.constant?.action?.read, transaction = null } = payload || {};
         opt = opt || {};
         try {
             payload.flow = payload.flow || opt?.flow;
             const model = this.getModel();
             payload.tmp = {};
             where = this.getWhere(payload, opt);
-            if (!row && utl.asBoolean(where) && !Array.isArray(data)) {
+            if (!row && this.utl?.asBoolean(where) && !Array.isArray(data)) {
                 row = await model.findOne({ where }, { transaction });
             }
 
-            if (mode <= constant.action.read) {
+            if (mode <= this.constant?.action?.read) {
                 return row;
             }
 
@@ -272,12 +292,12 @@ class DataService extends DIP {
                 updateOnDuplicate: Array.isArray(modelKey) ? modelKey : [modelKey], transaction
             } : { transaction };
 
-            if (!row && (mode >= constant.action.write || mode === constant.action.create)) {
+            if (!row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.create)) {
                 let res = model[Array.isArray(data) ? "bulkCreate" : "create"](this.getRequest(data, "create", payload), options);
                 return this.getResponse(await res, "create", payload);
             }
 
-            if (row && (mode >= constant.action.write || mode === constant.action.update) && this.utl.isDifferent(row, data)) {
+            if (row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update) && this.utl?.isDifferent(row, data)) {
                 let res = Array.isArray(data) ?
                     model.bulkCreate(this.getRequest(data, "update", payload, row), options) :
                     row.update(this.getRequest(data, "update", payload, row), options);
@@ -392,7 +412,7 @@ class DataService extends DIP {
      * @returns {Object} row
      */
     insert(payload, opt) {
-        payload.mode = this.constant.action.create;
+        payload.mode = this.constant?.action?.create;
         return this.save(payload, opt);
     }
 
@@ -407,7 +427,7 @@ class DataService extends DIP {
      * @returns {Object} row
      */
     update(payload, opt) {
-        payload.mode = this.constant.action.update;
+        payload.mode = this.constant?.action?.update;
         return this.save(payload, opt);
     }
 
@@ -475,10 +495,13 @@ class DataService extends DIP {
      * @returns {Object} Logger
      */
     getLogger() {
-        if (!this.helper) {
-            return null;
+        if (this.logger) {
+            return this.logger;
         }
-        return this.helper.get('logger');
+
+        if (this.helper) {
+            return this.helper.get('logger');
+        }
     }
 }
 
