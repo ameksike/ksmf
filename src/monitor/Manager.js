@@ -14,7 +14,7 @@ class Manager {
     }
 
     configure(cfg) {
-        this.logger = cfg.logger || this.logger;
+        this.logger = cfg?.logger || this.logger;
     }
 
     /**
