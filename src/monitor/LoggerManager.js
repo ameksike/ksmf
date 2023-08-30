@@ -62,20 +62,22 @@ class LoggerManager {
     }
 
     /**
-     * @description 
+     * @description perform the log format 
      * @param {Object} logItem 
      * @param {String} prop 
-     * @returns {Object} 
+     * @returns {Object} log entry
      */
     format(logItem, prop, drv) {
         if (typeof logItem === 'object') {
-            let level = typeof drv?.level === "object" ? drv.level : {};
-            return {
-                flow: String(Date.now()) + "00",
+            const level = typeof drv?.level === "object" ? drv.level : {};
+            const track = {
+                flow: null,
                 level: level[prop] ?? level.info,
                 ...logItem,
                 date: logItem.date || (new Date()).toUTCString(),
             }
+            track.flow = track.flow || String(Date.now()) + "00";
+            return track;
         }
         return logItem;
     }
@@ -128,7 +130,7 @@ class LoggerManager {
         Reflect.set(obj, action, () => {
             return (req, res, next) => {
                 if (!this.isExcluded(req.path)) {
-                    req.flow = this.getFlowId();
+                    req.flow = req.flow || this.getFlowId();
                     obj.debug({
                         flow: req.flow,
                         level: _this.level.debug,
@@ -180,7 +182,7 @@ class LoggerManager {
         this.skip.add(action);
         Reflect.set(obj, action, () => {
             const outboundTrack = (opt) => obj?.info && obj.info({
-                flow: _this.getFlowId(),
+                flow: opt.flow || _this.getFlowId(),
                 level: _this.level.info,
                 src: "KsMf:Logger:Track:Outbound",
                 data: typeof (opt) === "object" ? {
