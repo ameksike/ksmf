@@ -36,6 +36,9 @@ const KsMf = {
         Wrapper: require('./src/dao/DAOWrapper'),
         DataService: require('./src/dao/DataService')
     },
+    view: {
+        Tpl: require('./src/view/Tpl')
+    },
     task: {
         Cron: require('./src/task/cron')
     },

@@ -1,19 +1,27 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class ErrorHandler {
+
+    constructor(cfg) {
+        this.configure(cfg);
+    }
+
+    configure(cfg) {
+        this.logger = cfg.logger || this.logger;
+    }
 
     /**
      * @description Set options on Initialize Configuration Event 
-     * @param {OBJECT} cfg 
+     * @param {Object} cfg 
      */
     onInitConfig(cfg) {
-        this.logger = this.helper?.get("logger");
+        this.logger = this.helper?.get("logger") || this.logger;
         this.init();
     }
 

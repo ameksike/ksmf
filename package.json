@@ -1,6 +1,6 @@
 {
   "name": "ksmf",
-  "version": "1.2.11",
+  "version": "1.2.15",
   "description": "Modular Microframework for create minimalistic web application or REST API",
   "main": "index.js",
   "scripts": {

@@ -1,15 +1,15 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class Logger {
     /**
      * @description initialize logger
-     * @param {OBJECT} opt 
+     * @param {Object} opt 
      */
     constructor(opt = null) {
         this.cfg = {
@@ -30,8 +30,8 @@ class Logger {
     
     /**
      * @description allow configure options for logger
-     * @param {OBJECT} opt 
-     * @returns {OBJECT} self
+     * @param {Object} opt 
+     * @returns {Object} self
      */
     configure(opt = null) {
         this.cfg = Object.assign(this.cfg, opt);
@@ -40,7 +40,7 @@ class Logger {
 
     /**
      * @description verify if there is a valid log handler
-     * @returns {BOOLEAN}
+     * @returns {Boolean}
      */
     isValid() {
         return (this.cfg && this.cfg.action instanceof Function);
@@ -48,7 +48,7 @@ class Logger {
 
     /**
      * @description check if logs are allowed
-     * @returns {BOOLEAN}
+     * @returns {Boolean}
      */
     isEnabled() {
         return this.cfg.level >= 1;
@@ -56,8 +56,8 @@ class Logger {
 
     /**
      * @description set the correct log format
-     * @param {OBJECT|STRING} data 
-     * @returns {STRING}
+     * @param {Boolean|String} data 
+     * @returns {String}
      */
     format(data) {
         if (this.cfg.level >= 2) {
@@ -78,7 +78,7 @@ class Logger {
 
     /**
      * @description set log prefix
-     * @param {STRING} value 
+     * @param {String} value 
      * @returns 
      */
     prefix(value) {
@@ -88,7 +88,7 @@ class Logger {
 
     /**
      * @description set type of logs [info|error|warn|debug]
-     * @param {STRING} value 
+     * @param {String} value 
      * @returns 
      */
     type(value) {
@@ -98,7 +98,7 @@ class Logger {
 
     /**
      * @description perform logs
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     log() {
         if (this.isValid() && this.isEnabled()) {
@@ -111,7 +111,7 @@ class Logger {
 
     /**
      * @description alias for perform info logs
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     info() {
         this.type(this.cfg.label.info).log(...arguments);
@@ -125,7 +125,7 @@ class Logger {
 
     /**
      * @description alias for perform warn logs
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     warn() {
         this.type(this.cfg.label.warn).log(...arguments);
@@ -134,7 +134,7 @@ class Logger {
 
     /**
      * @description alias for perform debug logs
-     * @returns {OBJECT} self
+     * @returns {Object} self
      */
     debug() {
         this.type(this.cfg.label.debug).log(...arguments);
