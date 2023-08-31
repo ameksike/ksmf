@@ -1,4 +1,5 @@
 const ksdp = require("ksdp");
+const kscrip = require("kscryp");
 const Utl = require("../app/Utl");
 class DataService extends ksdp.integration.Dip {
 
@@ -26,10 +27,28 @@ class DataService extends ksdp.integration.Dip {
         this.modelKeyStr = cfg?.modelKeyStr || this.modelKeyStr || "";
         this.modelInclude = cfg?.modelInclude || this.modelInclude || null;
         this.modelStatus = cfg?.modelStatus || this.modelStatus || null;
-        this.constant = cfg?.constant || this.constant || {};
         this.dao = cfg?.dao || this.dao || {};
         this.logger = cfg?.logger || this.logger || null;
         this.utl = cfg?.utl || this.utl || null;
+        this.constant = cfg?.constant || this.constant || {
+            action: {
+                none: 0,
+                read: 1,
+                update: 2,
+                create: 3,
+                write: 4,
+                all: 5
+            },
+            quantity: {
+                all: "all",
+                one: "one"
+            },
+            status: {
+                disabled: 0,
+                activated: 1,
+                blocked: 3
+            }
+        };
     }
 
     /**
@@ -39,10 +58,10 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     getPaginator(payload, options) {
-        let { page, size, jump } = payload;
+        let { page, size, limit, jump } = payload;
         page = parseInt(page) || 1;
         jump = page > 0 ? page - 1 : 0;
-        size = parseInt(size) || 10;
+        size = parseInt(limit) || parseInt(size) || 10;
         return {
             page,
             size,
@@ -103,7 +122,8 @@ class DataService extends ksdp.integration.Dip {
         if (map[pk] || map[this.modelKeyStr]) {
             return true;
         }
-        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.one;
+        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
+        payload.quantity = payload?.limit === 1 ? this.constant?.quantity?.one : payload.quantity;
         return Boolean(payload.quantity === this.constant?.quantity?.one);
     }
 
@@ -458,8 +478,8 @@ class DataService extends ksdp.integration.Dip {
      * @param {ARRAY} filter 
      */
     asQuery(filter) {
+        filter = kscrip.decode(filter, "json");
         if (!filter) return {};
-        filter = typeof (filter) === 'string' ? JSON.parse(filter) : filter;
         const Sequelize = this.getManager();
         const model = this.getModel();
         const where = {};
@@ -484,10 +504,10 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Array} order options
      */
     asOrder(sort) {
-        if (!sort) return [];
+        const list = kscrip.decode(sort, "json");
+        if (!list) return [];
         const model = this.getModel();
-        const list = typeof (sort) === 'string' ? JSON.parse(sort) : sort;
-        return list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
+        return list?.filter && list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
     }
 
     /**
@@ -502,6 +522,37 @@ class DataService extends ksdp.integration.Dip {
         if (this.helper) {
             return this.helper.get('logger');
         }
+    }
+
+    /**
+     * @description Extract hotkeys from request parameters 
+     * @param {Object} req 
+     * @returns { page: Number, size: Number, filter: Object, query: Object, order:Array }
+     */
+    extract(req) {
+        const res = {};
+        if (req.page) {
+            res.page = req.page;
+            delete req["page"];
+        }
+        if (req.size) {
+            res.size = req.size;
+            delete req["size"];
+        }
+        if (req.filter) {
+            res.where = this.asQuery(req.filter);
+            delete req["filter"];
+        }
+        if (req.order) {
+            res.order = this.asOrder(req.order);
+            delete req["order"];
+        }
+        if (req.limit) {
+            res.limit = parseInt(req.limit);
+            delete req["limit"];
+        }
+        res.query = { ...req };
+        return res;
     }
 }
 
