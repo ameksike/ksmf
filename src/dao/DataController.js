@@ -6,9 +6,9 @@
  * @license    	GPL
  * @version    	1.0
  * */
-const KsMf = require('ksmf');
+const Controller = require('../app/Controller');
 
-class DefaultController extends KsMf.app.Controller {
+class DataController extends Controller {
 
     constructor() {
         super(...arguments);
@@ -173,4 +173,4 @@ class DefaultController extends KsMf.app.Controller {
     }
 }
 
-module.exports = DefaultController;
+module.exports = DataController;
