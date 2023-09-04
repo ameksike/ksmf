@@ -16,7 +16,6 @@ class DAOSequelize extends DAOBase {
     constructor() {
         super();
         this.manager = require('sequelize');
-        this.option.port = this.option.port || 5432;
     }
 
     /**
