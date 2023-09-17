@@ -267,6 +267,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {String}
      */
     getPK() {
+        // TODO: allow composite keys
         const model = this.getModel();
         return this.modelKey || Object.keys(model?.primaryKeys || {})[0];
     }
