@@ -287,17 +287,20 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} payload.where 
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
+     * @param {Boolean} payload.error 
      * @param {Object} payload.transaction 
      * @returns {Object} row
      */
     async save(payload, opt) {
-        let { data, where, row, mode = this.constant?.action?.read, transaction = null } = payload || {};
+        let { data, row, mode = this.constant?.action?.read, transaction = null, error = false } = payload || {};
         opt = opt || {};
         try {
             payload.flow = payload.flow || opt?.flow;
-            const model = this.getModel();
             payload.tmp = {};
-            where = this.getWhere(payload, opt);
+            opt.action = opt.action || "select";
+
+            const model = this.getModel();
+            const where = this.getWhere(payload, opt);
             if (!row && this.utl?.asBoolean(where) && !Array.isArray(data)) {
                 row = await model.findOne({ where }, { transaction });
             }
@@ -307,24 +310,35 @@ class DataService extends ksdp.integration.Dip {
             }
 
             const modelKey = this.getPK();
+            const options = {};
 
-            const options = modelKey && Array.isArray(data) ? {
-                updateOnDuplicate: Array.isArray(modelKey) ? modelKey : [modelKey], transaction
-            } : { transaction };
+            if (transaction) {
+                options.transaction = transaction;
+            }
+
+            if (!error && mode === this.constant?.action?.create) {
+                options.ignoreDuplicates = true;
+            }
+
+            if (!error && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update)) {
+                options.updateOnDuplicate = Array.isArray(modelKey) ? modelKey : [modelKey];
+            }
 
             if (!row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.create)) {
-                let res = model[Array.isArray(data) ? "bulkCreate" : "create"](this.getRequest(data, "create", payload), options);
-                return this.getResponse(await res, "create", payload);
+                opt.action = "create";
+                let res = model[Array.isArray(data) ? "bulkCreate" : opt.action](this.getRequest(data, opt.action, payload), options);
+                return this.getResponse(await res, opt.action, payload);
             }
 
             if (row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update) && this.utl?.isDifferent(row, data)) {
+                opt.action = "update";
                 let res = Array.isArray(data) ?
-                    model.bulkCreate(this.getRequest(data, "update", payload, row), options) :
-                    row.update(this.getRequest(data, "update", payload, row), options);
-                return this.getResponse(await res, "update", payload);
+                    model.bulkCreate(this.getRequest(data, opt.action, payload, row), options) :
+                    row.update(this.getRequest(data, opt.action, payload, row), options);
+                return this.getResponse(await res, opt.action, payload);
             }
 
-            return this.getResponse(row, "none", payload);
+            return this.getResponse(row, opt.action, payload);
         } catch (error) {
             const logger = this.getLogger();
             logger?.error({
