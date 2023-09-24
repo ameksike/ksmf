@@ -14,6 +14,7 @@ const KsMf = {
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
         Utl: require('./src/app/Utl'),
+        Url: require('./src/app/Url'),
         Cors: require('./src/app/Cors')
     },
     monitor: {

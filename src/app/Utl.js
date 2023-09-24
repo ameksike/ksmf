@@ -354,6 +354,15 @@ class Utl {
     }
 
     /**
+     * @description Get mixed parameters from request: params <- query <- body | req
+     * @param {Object} req 
+     * @returns {Object} params
+     */
+    mixReq(req) {
+        return Object.assign({}, req?.params || {}, req?.query || {}, req?.body || req || {});
+    }
+
+    /**
      * @description get all request params [POST, GET, Path] 
      * @param {Object} req 
      * @param {Object} option 
@@ -367,7 +376,7 @@ class Utl {
         req = req || {};
         let act = type => typeof (type) === "function" ? type : (type && this["as" + type] ? this["as" + type] : null);
         // get data from a request object
-        let opt = Object.assign({}, req.query || {}, req.params || {}, req.body || req);
+        let opt = this.mixReq(req);
         if (req.files) {
             for (let i in req.files) {
                 const file = req.files[i];
@@ -426,6 +435,14 @@ class Utl {
             }
         }
         return tmp;
+    }
+
+    static #instance;
+    static self() {
+        if (!this.#instance) {
+            this.#instance = new Utl();
+        }
+        return this.#instance;
     }
 }
 
