@@ -44,6 +44,23 @@ class UrlUtil {
     }
 
     /**
+     * @description Convert as request parameters string  
+     * @param {Object} req 
+     * @returns {String} params 
+     */
+    strParam(req) {
+        if (!req) {
+            return "";
+        }
+        let tmp = "";
+        for (let i in req) {
+            let sep = !tmp ? "&" : "";
+            tmp += sep + i + "=" + req[i];
+        }
+        return tmp;
+    }
+
+    /**
      * @description Add parameters to an url
      * @param {String} url 
      * @param {Object} params 
@@ -55,7 +72,7 @@ class UrlUtil {
             return "";
         }
         for (let i in params) {
-            tmp.searchParams.append(i, params[i]);
+            params[i] && tmp.searchParams.append(i, params[i]);
         }
         return tmp.href;
     }
