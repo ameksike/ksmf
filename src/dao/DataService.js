@@ -14,9 +14,11 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} cfg 
      * @param {String} cfg.modelName
      * @param {String} cfg.modelKey
+     * @param {Array} cfg.modelKeys
      * @param {String} cfg.modelKeyStr
      * @param {Object} cfg.modelInclude
      * @param {String} cfg.modelStatus
+     * @param {Array} cfg.updateOnDuplicate
      * @param {Object} cfg.constant
      * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
      * @param {Object} cfg.logger 
@@ -24,9 +26,11 @@ class DataService extends ksdp.integration.Dip {
     configure(cfg) {
         this.modelName = cfg?.modelName || this.modelName || "";
         this.modelKey = cfg?.modelKey || this.modelKey || "";
+        this.modelKeys = cfg?.modelKeys || this.modelKeys || null;
         this.modelKeyStr = cfg?.modelKeyStr || this.modelKeyStr || "";
         this.modelInclude = cfg?.modelInclude || this.modelInclude || null;
         this.modelStatus = cfg?.modelStatus || this.modelStatus || null;
+        this.updateOnDuplicate = cfg?.updateOnDuplicate || this.updateOnDuplicate || null;
         this.dao = cfg?.dao || this.dao || {};
         this.logger = cfg?.logger || this.logger || null;
         this.utl = cfg?.utl || this.utl || null;
@@ -245,11 +249,18 @@ class DataService extends ksdp.integration.Dip {
 
     /**
      * @description get attributes map
-     * @param {Object} lst 
+     * @param {Object|Array} lst 
      * @param {Number} mode 
      * @returns {Object} attributes
      */
     getAttrs(lst, mode = 0) {
+        if (Array.isArray(lst)) {
+            let tmp = [];
+            for (let i in lst) {
+                tmp[i] = this.getAttrs(lst[i], mode);
+            }
+            return tmp;
+        }
         const model = this.getModel();
         if (!model || (!lst && !mode)) return {};
         if (!lst) {
@@ -281,7 +292,9 @@ class DataService extends ksdp.integration.Dip {
      */
     getPKs() {
         const model = this.getModel();
-        return Object.keys(model?.primaryKeys || {}) || [this.modelKey];
+        return (Array.isArray(this.modelKeys) && this.modelKeys) ||
+            Object.keys(model?.primaryKeys || {}) ||
+            [this.modelKey];
     }
 
     /**
@@ -311,38 +324,29 @@ class DataService extends ksdp.integration.Dip {
             payload.flow = payload.flow || opt?.flow;
             payload.tmp = {};
             opt.action = opt.action || "select";
-
             const model = this.getModel();
             const where = this.getWhere(payload, opt);
             if (!row && this.utl?.asBoolean(where) && !Array.isArray(data)) {
                 row = await model.findOne({ where }, { transaction });
             }
-
             if (mode <= this.constant?.action?.read) {
                 return row;
             }
-
-            const modelKey = this.getPKs();
             const options = {};
-
             if (transaction) {
                 options.transaction = transaction;
             }
-
             if (!error && mode === this.constant?.action?.create) {
                 options.ignoreDuplicates = true;
             }
-
             if (!error && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update)) {
-                options.updateOnDuplicate = Array.isArray(modelKey) ? modelKey : [modelKey];
+                options.updateOnDuplicate = Array.isArray(this.updateOnDuplicate) ? this.updateOnDuplicate : this.getPKs();
             }
-
             if (!row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.create)) {
                 opt.action = "create";
                 let res = model[Array.isArray(data) ? "bulkCreate" : opt.action](this.getRequest(data, opt.action, payload), options);
                 return this.getResponse(await res, opt.action, payload);
             }
-
             if (row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update) && this.utl?.isDifferent(row, data)) {
                 opt.action = "update";
                 let res = Array.isArray(data) ?
@@ -350,7 +354,6 @@ class DataService extends ksdp.integration.Dip {
                     row.update(this.getRequest(data, opt.action, payload, row), options);
                 return this.getResponse(await res, opt.action, payload);
             }
-
             return this.getResponse(row, opt.action, payload);
         } catch (error) {
             const logger = this.getLogger();
