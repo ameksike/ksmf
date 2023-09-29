@@ -79,7 +79,8 @@ class DataService extends ksdp.integration.Dip {
     getWhere({ where, query }, options) {
         let subFilter = {};
         if (typeof query === "number" || !isNaN(query)) {
-            subFilter[this.getPK()] = parseInt(query);
+            let pks = this.modelKey || this.getPKs()[0] || "id"; // TODO: check this PK selection
+            subFilter[pks] = parseInt(query);
         } else if (typeof query === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
             subFilter[this.modelKeyStr] = query;
         }
@@ -113,14 +114,19 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get if it is single or multiple selection 
      * @param {Object} payload 
+     * @param {Object} payload.where
+     * @param {Boolean} payload.auto 
      * @param {Object} opt 
      * @returns {Boolean}
      */
     iSingle(payload, opt) {
-        const pk = this.getPK();
-        const map = payload?.where || [];
-        if (map[pk] || map[this.modelKeyStr]) {
-            return true;
+        const map = payload?.where || {};
+        if (payload.auto || payload.auto === undefined) {
+            const pks = this.getPKs();
+            const con = this.utl.contains(pks, Object.keys(map));
+            if (con.length === pks.length || map[this.modelKeyStr]) {
+                return true;
+            }
         }
         payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
         payload.quantity = payload?.limit === 1 ? this.constant?.quantity?.one : payload.quantity;
@@ -131,8 +137,15 @@ class DataService extends ksdp.integration.Dip {
      * @description overload action for findAll/findOne
      * @param {Object} payload
      * @param {Object|String|Number} payload.query 
-     * @param {String} payload.quantity 
      * @param {Array} payload.attributes 
+     * @param {Object} payload.include 
+     * @param {Object} payload.where 
+     * @param {String} payload.quantity 
+     * @param {Number} payload.limit
+     * @param {Number} payload.page
+     * @param {Number} payload.size
+     * @param {Number} payload.jump
+     * @param {Boolean} payload.auto
      * @returns {Object} row
      */
     async select(payload, opt) {
@@ -266,10 +279,9 @@ class DataService extends ksdp.integration.Dip {
      * @description get the primary key 
      * @returns {String}
      */
-    getPK() {
-        // TODO: allow composite keys
+    getPKs() {
         const model = this.getModel();
-        return this.modelKey || Object.keys(model?.primaryKeys || {})[0];
+        return Object.keys(model?.primaryKeys || {}) || [this.modelKey];
     }
 
     /**
@@ -310,7 +322,7 @@ class DataService extends ksdp.integration.Dip {
                 return row;
             }
 
-            const modelKey = this.getPK();
+            const modelKey = this.getPKs();
             const options = {};
 
             if (transaction) {
