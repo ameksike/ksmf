@@ -314,6 +314,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
      * @param {Boolean} payload.error 
+     * @param {Array} payload.updateOnDuplicate
      * @param {Object} payload.transaction 
      * @returns {Object} row
      */
@@ -340,7 +341,9 @@ class DataService extends ksdp.integration.Dip {
                 options.ignoreDuplicates = true;
             }
             if (!error && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update)) {
-                options.updateOnDuplicate = Array.isArray(this.updateOnDuplicate) ? this.updateOnDuplicate : this.getPKs();
+                options.updateOnDuplicate = (Array.isArray(payload.updateOnDuplicate) && payload.updateOnDuplicate) ||
+                    (Array.isArray(this.updateOnDuplicate) && this.updateOnDuplicate)
+                    || this.getPKs();
             }
             if (!row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.create)) {
                 opt.action = "create";
