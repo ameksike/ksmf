@@ -446,6 +446,14 @@ class Utl {
         check = check instanceof Function ? check : ((item, lst) => lst.includes(item));
         return child.filter(item => check(item, parent));
     }
+
+    static #instance;
+    static self() {
+        if (!this.#instance) {
+            this.#instance = new Utl();
+        }
+        return this.#instance;
+    }
 }
 
 module.exports = Utl;
