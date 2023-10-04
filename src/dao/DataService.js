@@ -313,13 +313,14 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} payload.where 
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
+     * @param {Boolean} payload.strict 
      * @param {Boolean} payload.error 
-     * @param {Array} payload.updateOnDuplicate
+     * @param {Array} payload.updateOnDuplicate 
      * @param {Object} payload.transaction 
-     * @returns {Object} row
+     * @returns {Object} row 
      */
     async save(payload, opt) {
-        let { data, row, mode = this.constant?.action?.read, transaction = null, error = false } = payload || {};
+        let { data, row, mode = this.constant?.action?.read, transaction = null, error = false, strict = false } = payload || {};
         opt = opt || {};
         try {
             payload.flow = payload.flow || opt?.flow;
@@ -352,6 +353,19 @@ class DataService extends ksdp.integration.Dip {
             }
             if (row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update) && this.utl?.isDifferent(row, data)) {
                 opt.action = "update";
+                if (strict && !Array.isArray(data) && options.updateOnDuplicate) {
+                    let tmp = {};
+                    for (let i of options.updateOnDuplicate) {
+                        if (data[i] !== undefined && row[i] !== data[i]) {
+                            tmp[i] = data[i];
+                        }
+                    }
+                    if (Object.keys(tmp).length === 0) {
+                        return this.getResponse(row, opt.action, payload);
+                    }
+                    payload.tmp.data = data;
+                    data = tmp;
+                }
                 let res = Array.isArray(data) ?
                     model.bulkCreate(this.getRequest(data, opt.action, payload, row), options) :
                     row.update(this.getRequest(data, opt.action, payload, row), options);
