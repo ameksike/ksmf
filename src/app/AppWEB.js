@@ -268,7 +268,8 @@ class AppWEB {
                             'app': path.join(this.cfg.srv.module.path, "app")
                         },
                         // ... NAME
-                        'name': name
+                        'name': name,
+                        'prefix': this.cfg.srv?.prefix || ""
                     }
                 };
 
@@ -288,6 +289,7 @@ class AppWEB {
                         ...item.options,
                         ...options
                     };
+
                     item.dependency = {
                         ...item.dependency,
                         ...dependency

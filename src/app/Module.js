@@ -32,7 +32,7 @@ class Module {
         this.opt = payload?.opt || this.opt || null;
 
         this.name = this.opt?.name || "";
-        this.prefix = "/" + this.name;
+        this.prefix = payload?.prefix || payload?.opt?.prefix || "/" + this.name;
         this.rest = payload?.rest ?? this.rest ?? true;
         this.routes = payload?.routes || this.routes || [];
 
