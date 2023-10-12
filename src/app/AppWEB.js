@@ -288,13 +288,21 @@ class AppWEB {
                         ...item.options,
                         ...options
                     };
-
                     item.dependency = {
                         ...item.dependency,
                         ...dependency
                     };
                 }
-                const obj = this.helper.get(item);
+                let obj = this.helper.get(item);
+                if (!obj) {
+                    obj = this.helper.get({
+                        options,
+                        dependency,
+                        name,
+                        type: 'lib'
+                    });
+                }
+
                 if (obj) {
                     modules.push(obj);
                     this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);

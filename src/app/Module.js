@@ -93,6 +93,7 @@ class Module {
             name: opt.controller,
             path: 'controller',
             module: this.name,
+            moduleType: this._?.type,
             options: {
                 opt: this.opt,
                 module: this.name
@@ -126,6 +127,7 @@ class Module {
             name: opt.controller,
             path: 'controller',
             module: this.name,
+            moduleType: this._?.type,
             options: {
                 opt: this.opt,
                 module: this.name

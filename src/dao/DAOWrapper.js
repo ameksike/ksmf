@@ -54,7 +54,9 @@ class DAOWrapper {
             return null;
         }
         if (!this.exclude.includes(mod.name)) {
-            this.dao.load(path.join(this.cfg.srv.module.path, mod.name, "model"));
+            let pat = mod._?.path || path.join(this.cfg.srv.module.path, mod.name);
+            let dir = path.join(pat, "model");
+            this.dao.load(dir);
         }
     }
 
