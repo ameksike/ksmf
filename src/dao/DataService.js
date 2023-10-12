@@ -329,8 +329,7 @@ class DataService extends ksdp.integration.Dip {
             const model = this.getModel();
             const where = this.getWhere(payload, opt);
             if (!row && this.utl?.asBoolean(where) && !Array.isArray(data)) {
-                row = await this.select({ ...payload, limit: 1 }, { ...opt });
-                //row = await model.findOne({ where }, { transaction });
+                row = await this.select({ ...payload, limit: 1 }, opt);
             }
             if (mode <= this.constant?.action?.read || row && mode === this.constant?.action?.create) {
                 return this.getResponse(row, "read", payload);
