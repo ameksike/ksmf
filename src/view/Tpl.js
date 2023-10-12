@@ -16,7 +16,7 @@ class TPL {
         const filename = _path.basename(file);
         return { path, file, filename, ext };
     }
-    
+
     /**
      * @description Render templates based on twing lib
      * @param {String} name 
@@ -49,7 +49,7 @@ class TPL {
             const { TwingEnvironment, TwingLoaderFilesystem, TwingFunction } = require("twing");
             const loader = new TwingLoaderFilesystem(path);
             const twing = new TwingEnvironment(loader);
-            if (options.functions) {
+            if (options?.functions) {
                 for (let i in options.functions) {
                     if (options.functions[i] instanceof Function) {
                         twing.addFunction(new TwingFunction(i, options.functions[i]));
@@ -62,7 +62,7 @@ class TPL {
             this.logger?.error({
                 flow: data?.flow || options?.flow,
                 src: "util:TPLHandler:render",
-                message: error && error.message ? error.message : error,
+                message: error?.message || error,
                 data: { name, path, local: __dirname }
             });
             return "";

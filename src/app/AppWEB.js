@@ -268,7 +268,8 @@ class AppWEB {
                             'app': path.join(this.cfg.srv.module.path, "app")
                         },
                         // ... NAME
-                        'name': name
+                        'name': name,
+                        'prefix': this.cfg.srv?.prefix || ""
                     }
                 };
 
@@ -294,7 +295,16 @@ class AppWEB {
                         ...dependency
                     };
                 }
-                const obj = this.helper.get(item);
+                let obj = this.helper.get(item);
+                if (!obj) {
+                    obj = this.helper.get({
+                        options,
+                        dependency,
+                        name,
+                        type: 'lib'
+                    });
+                }
+
                 if (obj) {
                     modules.push(obj);
                     this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);

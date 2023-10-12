@@ -1,30 +1,43 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class Module {
     /**
      * @description initialize module
-     * @param {OBJECT} payload 
-     * @param {OBJECT} payload.app 
-     * @param {OBJECT} payload.web
-     * @param {OBJECT} payload.opt 
+     * @param {Object} payload 
+     * @param {Object} payload.app 
+     * @param {Object} payload.web
+     * @param {Object} payload.opt 
      */
     constructor(payload) {
-        this.app = payload ? payload.app : null;
-        this.web = payload ? payload.web : null;
-        this.drv = payload ? payload.drv : null;
-        this.opt = payload ? payload.opt : {};
+        this.configure(payload);
+    }
 
-        this.name = this.opt.name;
-        this.prefix = "/" + this.name;
-        this.rest = true;
-        this.routes = [];
-        this.middleware = this.initMiddlewareList(this.middleware);
+    /**
+     * @description initialize module
+     * @param {Object} payload 
+     * @param {Object} payload.app 
+     * @param {Object} payload.web
+     * @param {Object} payload.opt 
+     */
+    configure(payload) {
+        this.app = payload?.app || this.app || null;
+        this.web = payload?.web || this.web || null;
+        this.drv = payload?.drv || this.drv || null;
+        this.opt = payload?.opt || this.opt || null;
+
+        this.name = this.opt?.name || "";
+        this.prefix = payload?.prefix || payload?.opt?.prefix || "/" + this.name;
+        this.rest = payload?.rest ?? this.rest ?? true;
+        this.routes = payload?.routes || this.routes || [];
+
+        this.middleware = this.initMiddlewareList(payload?.middleware || this.middleware);
+        return this;
     }
 
     /**
@@ -80,6 +93,7 @@ class Module {
             name: opt.controller,
             path: 'controller',
             module: this.name,
+            moduleType: this._?.type,
             options: {
                 opt: this.opt,
                 module: this.name
@@ -113,6 +127,7 @@ class Module {
             name: opt.controller,
             path: 'controller',
             module: this.name,
+            moduleType: this._?.type,
             options: {
                 opt: this.opt,
                 module: this.name
@@ -180,7 +195,7 @@ class Module {
 
     /**
      * @description initialize module middleware list
-     * @param {OBJECT} middleware 
+     * @param {Object} middleware 
      * @returns 
      */
     initMiddlewareList(middleware) {
@@ -199,9 +214,9 @@ class Module {
 
     /**
      * @description get middleware list by controller
-     * @param {OBJECT} controller 
-     * @param {OBJECT} opt 
-     * @param {STRING} action 
+     * @param {Object} controller 
+     * @param {Object} opt 
+     * @param {String} action 
      * @returns 
      */
     getMiddlewareList(controller, opt, action = null) {

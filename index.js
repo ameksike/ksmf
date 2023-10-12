@@ -14,6 +14,7 @@ const KsMf = {
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
         Utl: require('./src/app/Utl'),
+        Url: require('./src/app/Url'),
         Cors: require('./src/app/Cors')
     },
     monitor: {
@@ -34,7 +35,8 @@ const KsMf = {
         Sequelize: require('./src/dao/DAOSequelize'),
         Redis: require('./src/dao/DAORedis'),
         Wrapper: require('./src/dao/DAOWrapper'),
-        DataService: require('./src/dao/DataService')
+        DataService: require('./src/dao/DataService'),
+        DataController: require('./src/dao/DataController')
     },
     view: {
         Tpl: require('./src/view/Tpl')

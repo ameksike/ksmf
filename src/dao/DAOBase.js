@@ -15,17 +15,7 @@ class DAOBase {
         this.models = {};
         this.driver = null;
         this.manager = null;
-        this.option = {
-            url: "",
-            path: "",
-            port: "3303",
-            host: "127.0.0.1",
-            database: "default",
-            username: "root",
-            password: "root",
-            protocol: null,
-            dialect: null
-        };
+        this.option = {};
         this.configure(opt);
     }
 

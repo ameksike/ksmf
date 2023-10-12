@@ -39,8 +39,8 @@ class DAOWrapper {
             let cfg = this.cfg?.srv?.db || this.cfg?.srv;
             cfg = this.utl?.from(cfg, this.cfg.srv.from) || cfg;
             this.dao.configure(cfg);
-            this.dao.load(path.join(this.cfg.path, 'db/models/'));
             this.dao.connect();
+            this.dao.load(path.join(this.cfg.path, 'db/models/'));
         }
     }
 
@@ -54,7 +54,9 @@ class DAOWrapper {
             return null;
         }
         if (!this.exclude.includes(mod.name)) {
-            this.dao.load(path.join(this.cfg.srv.module.path, mod.name, "model"));
+            let pat = mod._?.path || path.join(this.cfg.srv.module.path, mod.name);
+            let dir = path.join(pat, "model");
+            this.dao.load(dir);
         }
     }
 
