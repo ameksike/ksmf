@@ -1,11 +1,11 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		21/05/2022
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 const Controller = require('../app/Controller');
 
 class DataController extends Controller {
@@ -19,15 +19,17 @@ class DataController extends Controller {
         //... Define logger service as global for his controller
         this.logger = this.helper.get('logger');
         //... Define user service as global for his controller
-        this.srv = this.helper.get({
-            name: this.srvName,
-            path: 'service',
-            module: this.module,
-            dependency: {
-                dao: 'dao',
-                helper: 'helper'
-            }
-        });
+        this.srv = typeof this.srv === "object" ?
+            this.srv :
+            (this.helper.get(typeof this.srv === "string" ? this.srv : {
+                name: this.srvName,
+                path: 'service',
+                module: this.module,
+                dependency: {
+                    dao: 'dao',
+                    helper: 'helper'
+                }
+            }));
         this.initValidations();
     }
 
