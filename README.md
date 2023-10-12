@@ -1,4 +1,4 @@
-**KsMf** is a modular microframework for create minimalistic web application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki), for more information see our [wiki](https://github.com/ameksike/ksmf/wiki).
+This project is based on the Ksike ecosystem. **KsMf** is a modular microframework for create minimalistic web application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki), for more information see our [wiki](https://github.com/ameksike/ksmf/wiki).
 
 [![Rate on Openbase](https://badges.openbase.com/js/rating/ksmf.svg)](https://openbase.com/js/ksmf?utm_source=embedded&utm_medium=badge&utm_campaign=rate-badge)
 
@@ -29,4 +29,4 @@
 1. [Dashboard](https://github.com/ameksike/ksmf/wiki/Dashboard)
 2. [Proxy Server](https://github.com/ameksike/ksmf/wiki/Proxy-Server)
 
-This is a project example that is based on this framework: [API.Heroku](https://github.com/ameksike/api.heroku), and in case of developing a REST API, it is recommended to evaluate the deployment of your service through libraries such as [KsWc](https://github.com/ameksike/kswc/wiki).  
+In case of developing a REST API, it is recommended to evaluate the deployment of your service through libraries such as [KsWc](https://github.com/ameksike/kswc/wiki).  
