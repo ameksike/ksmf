@@ -18,6 +18,7 @@ class DAOWrapper {
         this.dao = null;
         this.cfg = {};
         this.exclude = Array.isArray(opt?.exclude) ? opt.exclude : [];
+        this.service = opt?.service;
     }
 
     /**
@@ -66,6 +67,33 @@ class DAOWrapper {
      */
     onLoadedModules(modules) {
         this.dao?.associate && this.dao.associate();
+        this.loadModules();
+    }
+
+    /**
+     * @description create all models associations
+     * @param {ARRAY} modules 
+     */
+    loadModules() {
+        this.dao = this.dao || this.helper?.get('dao');
+        this.app = this.app || this.helper.get('app');
+        if (!this.app || !this.dao?.models || this.service !== "rest") {
+            return;
+        }
+        for (let name in this.dao.models) {
+            let mod = {
+                "id": "ksmf.rest." + name,
+                "name": "ksmf",
+                "type": "lib",
+                "namespace": "dao.DataModule",
+                "options": {
+                    "db": {
+                        "modelName": name
+                    }
+                }
+            };
+            this.app.initModule(mod);
+        }
     }
 }
 module.exports = DAOWrapper;

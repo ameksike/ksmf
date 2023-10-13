@@ -10,9 +10,17 @@ const Controller = require('../app/Controller');
 
 class DataController extends Controller {
 
-    constructor() {
-        super(...arguments);
-        this.srvName = 'UserService';
+    /**
+     * @description configure action 
+     * @param {Object} cfg 
+     * @param {String} cfg.modelName
+     * @param {Object} cfg.srv
+     * @returns {Object} this
+     */
+    configure(cfg) {
+        this.modelName = cfg?.modelName || this.modelName || "";
+        this.srv = cfg?.srv || this.srv || null;
+        return this;
     }
 
     async init() {
@@ -25,6 +33,7 @@ class DataController extends Controller {
                 name: this.srvName,
                 path: 'service',
                 module: this.module,
+                moduleType: this.module._?.type,
                 dependency: {
                     dao: 'dao',
                     helper: 'helper'

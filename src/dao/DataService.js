@@ -10,7 +10,7 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
-     * 
+     * @description configure action 
      * @param {Object} cfg 
      * @param {String} cfg.modelName
      * @param {String} cfg.modelKey
@@ -22,6 +22,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} cfg.constant
      * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
      * @param {Object} cfg.logger 
+     * @returns {Object} this
      */
     configure(cfg) {
         this.modelName = cfg?.modelName || this.modelName || "";

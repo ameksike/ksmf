@@ -247,69 +247,7 @@ class AppWEB {
         this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load, this]);
         const modules = [];
         if (this.cfg?.srv?.module?.load) {
-            this.cfg.srv.module.load.forEach(item => {
-                const name = (typeof (item) === 'string') ? item : item.name;
-                const options = {
-                    // ... EXPRESS APP
-                    app: this.web,
-                    web: this.web,
-                    drv: this.drv,
-                    // ... DATA ACCESS Object 
-                    opt: {
-                        // ... CONFIGURE 
-                        'cfg': this.cfg.srv,
-                        // ... ENV
-                        'env': this.cfg.env,
-                        'eid': this.cfg.eid,
-                        // ... PATH
-                        'path': {
-                            'prj': path.resolve(this.path),
-                            'mod': path.join(this.cfg.srv.module.path, name),
-                            'app': path.join(this.cfg.srv.module.path, "app")
-                        },
-                        // ... NAME
-                        'name': name,
-                        'prefix': this.cfg.srv?.prefix || ""
-                    }
-                };
-
-                const dependency = {
-                    'helper': 'helper'
-                };
-
-                if (typeof (item) === 'string') {
-                    item = {
-                        options,
-                        dependency,
-                        name,
-                        type: 'module'
-                    };
-                } else {
-                    item.options = {
-                        ...item.options,
-                        ...options
-                    };
-
-                    item.dependency = {
-                        ...item.dependency,
-                        ...dependency
-                    };
-                }
-                let obj = this.helper.get(item);
-                if (!obj) {
-                    obj = this.helper.get({
-                        options,
-                        dependency,
-                        name,
-                        type: 'lib'
-                    });
-                }
-
-                if (obj) {
-                    modules.push(obj);
-                    this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
-                }
-            });
+            this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
         }
         this.emit('onLoadedModules', "ksmf", [modules, this]);
         this.modules = modules;
@@ -317,33 +255,117 @@ class AppWEB {
     }
 
     /**
+     * @description initialize a module
+     * @param {Array} modules 
+     * @param {Object|String} item 
+     * @param {String} item.name 
+     * @param {String} item.type 
+     * @param {Object} item.options 
+     * @param {Object} item.params 
+     * @param {Object} item.dependency 
+     * @returns {Object} module
+     */
+    initModule(item, modules) {
+        const name = (typeof (item) === 'string') ? item : item.name;
+        const options = {
+            // ... EXPRESS APP
+            frm: this,
+            app: this.web,
+            web: this.web,
+            drv: this.drv,
+            // ... DATA ACCESS Object 
+            opt: {
+                // ... CONFIGURE 
+                'cfg': this.cfg.srv,
+                // ... ENV
+                'env': this.cfg.env,
+                'eid': this.cfg.eid,
+                // ... PATH
+                'path': {
+                    'prj': path.resolve(this.path),
+                    'mod': path.join(this.cfg.srv.module.path, name),
+                    'app': path.join(this.cfg.srv.module.path, "app")
+                },
+                // ... NAME
+                'name': name,
+                'prefix': this.cfg.srv?.prefix || ""
+            }
+        };
+        const dependency = { 'helper': 'helper' };
+        if (typeof (item) === 'string') {
+            item = {
+                options,
+                dependency,
+                name,
+                type: 'module'
+            };
+        } else {
+            item.options = {
+                ...item.options,
+                ...item.params,
+                ...options
+            };
+            item.dependency = {
+                ...item.dependency,
+                ...dependency
+            };
+        }
+        let obj = this.helper.get(item);
+        if (!obj) {
+            item.type = 'lib';
+            obj = this.helper.get(item);
+        }
+        if (obj) {
+            modules?.push(obj);
+            this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
+        }
+        return obj;
+    }
+
+    /**
      * @description load application routes
+     * @returns {Object} this
      */
     initRoutes() {
         this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route, this]);
-        if (this.cfg.srv.route) {
+        if (this.cfg?.srv?.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
-                if (this.web[route.method]) {
-                    this.web[route.method](i, (req, res, next) => {
-                        route.path = route.path || 'controller';
-                        route.name = route.name || route.controller;
-                        const controller = this.helper.get(route);
-                        if (!controller || !controller[route.action]) {
-                            this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
-                        }
-                        controller[route.action](req, res, next);
-                    });
-                    this.emit('onLoadRoutes', "ksmf", [i, route, this.web, this]);
-                }
+                this.initRoute(route);
             }
         }
-
         this.web.get('*', (req, res, next) => {
             this.emit('on404', "ksmf", [req, res, next]);
             next();
         });
         return this;
+    }
+
+    /**
+     * @description initialize a route
+     * @param {Object} route 
+     * @param {String} route.id
+     * @param {String} route.name
+     * @param {String} route.action
+     * @param {String} route.controller
+     * @param {String} route.module 
+     * @param {String} route.path 
+     * @returns {Object} route
+     */
+    initRoute(route) {
+        if (this.web[route.method]) {
+            this.web[route.method](i, (req, res, next) => {
+                route.path = route.path || 'controller';
+                route.name = route.name || route.controller;
+                const controller = this.helper.get(route);
+                if (!controller || !controller[route.action]) {
+                    this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+                }
+                controller[route.action](req, res, next);
+            });
+            this.emit('onLoadRoutes', "ksmf", [i, route, this.web, this]);
+        }
+        return route;
     }
 
     /**
