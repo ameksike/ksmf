@@ -17,9 +17,13 @@ class DataModule extends Module {
     }
 
     init() {
+        if (!this.db?.modelName) {
+            return null;
+        }
         const controller = {
             route: this.prefix + "/" + this.db.modelName,
             strict: true,
+            id: "ksmf.dao.Controller." + this.db.modelName,
             name: "ksmf",
             type: "lib",
             namespace: "dao.DataController",
@@ -29,6 +33,7 @@ class DataModule extends Module {
                 srv: {
                     name: "ksmf",
                     type: "lib",
+                    id: "ksmf.dao.Service." + this.db.modelName,
                     namespace: "dao.DataService",
                     dependency: {
                         helper: "helper",

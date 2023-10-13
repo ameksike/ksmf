@@ -10,11 +10,6 @@ const Controller = require('../app/Controller');
 
 class DataController extends Controller {
 
-    constructor() {
-        super(...arguments);
-        this.srvName = 'UserService';
-    }
-
     /**
      * @description configure action 
      * @param {Object} cfg 
