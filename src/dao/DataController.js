@@ -15,6 +15,19 @@ class DataController extends Controller {
         this.srvName = 'UserService';
     }
 
+    /**
+     * @description configure action 
+     * @param {Object} cfg 
+     * @param {String} cfg.modelName
+     * @param {Object} cfg.srv
+     * @returns {Object} this
+     */
+    configure(cfg) {
+        this.modelName = cfg?.modelName || this.modelName || "";
+        this.srv = cfg?.srv || this.srv || null;
+        return this;
+    }
+
     async init() {
         //... Define logger service as global for his controller
         this.logger = this.helper.get('logger');
@@ -25,6 +38,7 @@ class DataController extends Controller {
                 name: this.srvName,
                 path: 'service',
                 module: this.module,
+                moduleType: this.module._?.type,
                 dependency: {
                     dao: 'dao',
                     helper: 'helper'

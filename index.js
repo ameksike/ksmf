@@ -35,6 +35,7 @@ const KsMf = {
         Sequelize: require('./src/dao/DAOSequelize'),
         Redis: require('./src/dao/DAORedis'),
         Wrapper: require('./src/dao/DAOWrapper'),
+        DataModule: require('./src/dao/DataModule'),
         DataService: require('./src/dao/DataService'),
         DataController: require('./src/dao/DataController')
     },

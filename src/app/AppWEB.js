@@ -272,11 +272,7 @@ class AppWEB {
                         'prefix': this.cfg.srv?.prefix || ""
                     }
                 };
-
-                const dependency = {
-                    'helper': 'helper'
-                };
-
+                const dependency = { 'helper': 'helper' };
                 if (typeof (item) === 'string') {
                     item = {
                         options,
@@ -287,9 +283,9 @@ class AppWEB {
                 } else {
                     item.options = {
                         ...item.options,
+                        ...item.params,
                         ...options
                     };
-
                     item.dependency = {
                         ...item.dependency,
                         ...dependency
@@ -297,14 +293,9 @@ class AppWEB {
                 }
                 let obj = this.helper.get(item);
                 if (!obj) {
-                    obj = this.helper.get({
-                        options,
-                        dependency,
-                        name,
-                        type: 'lib'
-                    });
+                    item.type = 'lib';
+                    obj = this.helper.get(item);
                 }
-
                 if (obj) {
                     modules.push(obj);
                     this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);

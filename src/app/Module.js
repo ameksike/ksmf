@@ -83,26 +83,19 @@ class Module {
 
     /**
      * @description allow customized web routes initialization by module
+     * @param {Object} opt
+     * @param {String} opt.route
+     * @param {String} opt.name
+     * @param {String} opt.controller
+     * @param {String} opt.path
      */
     initRoutesWeb(opt) {
         if (!opt?.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
         // ... load controller 
         const _route = this.app[opt.method];
-        const _prefix = opt.route;
-        const _controller = this.helper.get({
-            name: opt.controller,
-            path: 'controller',
-            module: this.name,
-            moduleType: this._?.type,
-            options: {
-                opt: this.opt,
-                module: this.name
-            },
-            dependency: {
-                'helper': 'helper',
-                'app': 'app'
-            }
-        });
+        const _locator = this.getLocator(opt);
+        const _prefix = _locator?.route || opt?.route;
+        const _controller = this.helper.get(_locator);
         // ... define routes  
         _route.apply(this.app, [_prefix,
             ...this.getMiddlewareList(_controller, opt),
@@ -113,30 +106,22 @@ class Module {
                 }
             }]);
     }
-
     /**
      * @description allow customized REST routes initialization by module
+     * @param {Object} opt
+     * @param {String} opt.route
+     * @param {String} opt.name
+     * @param {String} opt.controller
+     * @param {String} opt.path
      */
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
             return null;
         }
         // ... load controller 
-        const _prefix = opt.route;
-        const _controller = this.helper.get({
-            name: opt.controller,
-            path: 'controller',
-            module: this.name,
-            moduleType: this._?.type,
-            options: {
-                opt: this.opt,
-                module: this.name
-            },
-            dependency: {
-                'helper': 'helper',
-                'app': 'app'
-            }
-        });
+        const _locator = this.getLocator(opt);
+        const _prefix = _locator?.route || opt?.route;
+        const _controller = this.helper.get(_locator);
         if (!_controller) return null;
         // ... define route select
         this.app.get.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
@@ -210,6 +195,39 @@ class Module {
         middleware.options = middleware.options instanceof Array ? middleware.options : [];
         middleware.option = middleware.option instanceof Array ? middleware.option : [];
         return middleware;
+    }
+
+    /**
+     * @description get IoC locator options 
+     * @param {Object} opt
+     * @param {String} opt.route
+     * @param {String} opt.name
+     * @param {String} opt.controller
+     * @param {String} opt.path
+     * @returns {Object} locator
+     */
+    getLocator(opt) {
+        opt = typeof opt === "string" ? { name: opt } : opt;
+        if (opt.strict) {
+            return opt;
+        }
+        return {
+            name: opt.controller,
+            path: opt.path || 'controller',
+            module: this.name,
+            moduleType: this._?.type,
+            options: {
+                opt: this.opt,
+                module: this.name,
+                ...opt.options,
+                ...opt.params
+            },
+            dependency: {
+                'helper': 'helper',
+                'app': 'app',
+                ...opt.dependency
+            }
+        }
     }
 
     /**
