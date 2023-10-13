@@ -1,30 +1,43 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class Module {
     /**
      * @description initialize module
-     * @param {OBJECT} payload 
-     * @param {OBJECT} payload.app 
-     * @param {OBJECT} payload.web
-     * @param {OBJECT} payload.opt 
+     * @param {Object} payload 
+     * @param {Object} payload.app 
+     * @param {Object} payload.web
+     * @param {Object} payload.opt 
      */
     constructor(payload) {
-        this.app = payload ? payload.app : null;
-        this.web = payload ? payload.web : null;
-        this.drv = payload ? payload.drv : null;
-        this.opt = payload ? payload.opt : {};
+        this.configure(payload);
+    }
 
-        this.name = this.opt.name;
-        this.prefix = "/" + this.name;
-        this.rest = true;
-        this.routes = [];
-        this.middleware = this.initMiddlewareList(this.middleware);
+    /**
+     * @description initialize module
+     * @param {Object} payload 
+     * @param {Object} payload.app 
+     * @param {Object} payload.web
+     * @param {Object} payload.opt 
+     */
+    configure(payload) {
+        this.app = payload?.app || this.app || null;
+        this.web = payload?.web || this.web || null;
+        this.drv = payload?.drv || this.drv || null;
+        this.opt = payload?.opt || this.opt || null;
+
+        this.name = this.opt?.name || "";
+        this.prefix = payload?.prefix || payload?.opt?.prefix || "/" + this.name;
+        this.rest = payload?.rest ?? this.rest ?? true;
+        this.routes = payload?.routes || this.routes || [];
+
+        this.middleware = this.initMiddlewareList(payload?.middleware || this.middleware);
+        return this;
     }
 
     /**
@@ -70,25 +83,19 @@ class Module {
 
     /**
      * @description allow customized web routes initialization by module
+     * @param {Object} opt
+     * @param {String} opt.route
+     * @param {String} opt.name
+     * @param {String} opt.controller
+     * @param {String} opt.path
      */
     initRoutesWeb(opt) {
         if (!opt?.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
         // ... load controller 
         const _route = this.app[opt.method];
-        const _prefix = opt.route;
-        const _controller = this.helper.get({
-            name: opt.controller,
-            path: 'controller',
-            module: this.name,
-            options: {
-                opt: this.opt,
-                module: this.name
-            },
-            dependency: {
-                'helper': 'helper',
-                'app': 'app'
-            }
-        });
+        const _locator = this.getLocator(opt);
+        const _prefix = _locator?.route || opt?.route;
+        const _controller = this.helper.get(_locator);
         // ... define routes  
         _route.apply(this.app, [_prefix,
             ...this.getMiddlewareList(_controller, opt),
@@ -99,29 +106,22 @@ class Module {
                 }
             }]);
     }
-
     /**
      * @description allow customized REST routes initialization by module
+     * @param {Object} opt
+     * @param {String} opt.route
+     * @param {String} opt.name
+     * @param {String} opt.controller
+     * @param {String} opt.path
      */
     initRoutesREST(opt) {
         if (!this.app || !this.helper) {
             return null;
         }
         // ... load controller 
-        const _prefix = opt.route;
-        const _controller = this.helper.get({
-            name: opt.controller,
-            path: 'controller',
-            module: this.name,
-            options: {
-                opt: this.opt,
-                module: this.name
-            },
-            dependency: {
-                'helper': 'helper',
-                'app': 'app'
-            }
-        });
+        const _locator = this.getLocator(opt);
+        const _prefix = _locator?.route || opt?.route;
+        const _controller = this.helper.get(_locator);
         if (!_controller) return null;
         // ... define route select
         this.app.get.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
@@ -180,7 +180,7 @@ class Module {
 
     /**
      * @description initialize module middleware list
-     * @param {OBJECT} middleware 
+     * @param {Object} middleware 
      * @returns 
      */
     initMiddlewareList(middleware) {
@@ -198,10 +198,43 @@ class Module {
     }
 
     /**
+     * @description get IoC locator options 
+     * @param {Object} opt
+     * @param {String} opt.route
+     * @param {String} opt.name
+     * @param {String} opt.controller
+     * @param {String} opt.path
+     * @returns {Object} locator
+     */
+    getLocator(opt) {
+        opt = typeof opt === "string" ? { name: opt } : opt;
+        if (opt.strict) {
+            return opt;
+        }
+        return {
+            name: opt.controller,
+            path: opt.path || 'controller',
+            module: this.name,
+            moduleType: this._?.type,
+            options: {
+                opt: this.opt,
+                module: this.name,
+                ...opt.options,
+                ...opt.params
+            },
+            dependency: {
+                'helper': 'helper',
+                'app': 'app',
+                ...opt.dependency
+            }
+        }
+    }
+
+    /**
      * @description get middleware list by controller
-     * @param {OBJECT} controller 
-     * @param {OBJECT} opt 
-     * @param {STRING} action 
+     * @param {Object} controller 
+     * @param {Object} opt 
+     * @param {String} action 
      * @returns 
      */
     getMiddlewareList(controller, opt, action = null) {

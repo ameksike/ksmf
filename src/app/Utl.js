@@ -367,7 +367,7 @@ class Utl {
         req = req || {};
         let act = type => typeof (type) === "function" ? type : (type && this["as" + type] ? this["as" + type] : null);
         // get data from a request object
-        let opt = Object.assign({}, req.query || {}, req.params || {}, req.body || req);
+        let opt = this.mixReq(req);
         if (req.files) {
             for (let i in req.files) {
                 const file = req.files[i];
@@ -426,6 +426,45 @@ class Utl {
             }
         }
         return tmp;
+    }
+
+    /**
+     * @description Define if child array is contained into a parent array
+     * @param {Array} parent 
+     * @param {Array} child 
+     * @param {Function} check 
+     * @returns {Array} contained items
+     */
+    contains(child, parent, check) {
+        if (!child) {
+            return [];
+        }
+        child = Array.isArray(child) ? child : [child];
+        if (!parent.length) {
+            return [];
+        }
+        check = check instanceof Function ? check : ((item, lst) => lst.includes(item));
+        return child.filter(item => check(item, parent));
+    }
+    
+    /**
+     * @description get all request params [POST, GET, Path] 
+     * @param {Object} req 
+     * @param {Object} req.params
+     * @param {Object} req.query
+     * @param {Object} req.body 
+     * @returns {Object} params
+     */
+    mixReq(req) {
+        return { ...req.params || {}, ...req.query || {}, ...req.body || req };
+    }
+
+    static #instance;
+    static self() {
+        if (!this.#instance) {
+            this.#instance = new Utl();
+        }
+        return this.#instance;
     }
 }
 

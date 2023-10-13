@@ -1,4 +1,5 @@
 const ksdp = require("ksdp");
+const kscrip = require("kscryp");
 const Utl = require("../app/Utl");
 class DataService extends ksdp.integration.Dip {
 
@@ -9,27 +10,50 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
-     * 
+     * @description configure action 
      * @param {Object} cfg 
      * @param {String} cfg.modelName
      * @param {String} cfg.modelKey
+     * @param {Array} cfg.modelKeys
      * @param {String} cfg.modelKeyStr
      * @param {Object} cfg.modelInclude
      * @param {String} cfg.modelStatus
+     * @param {Array} cfg.updateOnDuplicate
      * @param {Object} cfg.constant
      * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
      * @param {Object} cfg.logger 
+     * @returns {Object} this
      */
     configure(cfg) {
         this.modelName = cfg?.modelName || this.modelName || "";
         this.modelKey = cfg?.modelKey || this.modelKey || "";
+        this.modelKeys = cfg?.modelKeys || this.modelKeys || null;
         this.modelKeyStr = cfg?.modelKeyStr || this.modelKeyStr || "";
         this.modelInclude = cfg?.modelInclude || this.modelInclude || null;
         this.modelStatus = cfg?.modelStatus || this.modelStatus || null;
-        this.constant = cfg?.constant || this.constant || {};
+        this.updateOnDuplicate = cfg?.updateOnDuplicate || this.updateOnDuplicate || null;
         this.dao = cfg?.dao || this.dao || {};
         this.logger = cfg?.logger || this.logger || null;
         this.utl = cfg?.utl || this.utl || null;
+        this.constant = cfg?.constant || this.constant || {
+            action: {
+                none: 0,
+                read: 1,
+                update: 2,
+                create: 3,
+                write: 4,
+                all: 5
+            },
+            quantity: {
+                all: "all",
+                one: "one"
+            },
+            status: {
+                disabled: 0,
+                activated: 1,
+                blocked: 3
+            }
+        };
     }
 
     /**
@@ -39,10 +63,10 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     getPaginator(payload, options) {
-        let { page, size, jump } = payload;
+        let { page, size, limit, jump } = payload;
         page = parseInt(page) || 1;
         jump = page > 0 ? page - 1 : 0;
-        size = parseInt(size) || 10;
+        size = parseInt(limit) || parseInt(size) || 10;
         return {
             page,
             size,
@@ -60,7 +84,8 @@ class DataService extends ksdp.integration.Dip {
     getWhere({ where, query }, options) {
         let subFilter = {};
         if (typeof query === "number" || !isNaN(query)) {
-            subFilter[this.getPK()] = parseInt(query);
+            let pks = this.modelKey || this.getPKs()[0] || "id"; // TODO: check this PK selection
+            subFilter[pks] = parseInt(query);
         } else if (typeof query === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
             subFilter[this.modelKeyStr] = query;
         }
@@ -94,16 +119,22 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get if it is single or multiple selection 
      * @param {Object} payload 
+     * @param {Object} payload.where
+     * @param {Boolean} payload.auto 
      * @param {Object} opt 
      * @returns {Boolean}
      */
     iSingle(payload, opt) {
-        const pk = this.getPK();
-        const map = payload?.where || [];
-        if (map[pk] || map[this.modelKeyStr]) {
-            return true;
+        const map = payload?.where || {};
+        if (payload.auto || payload.auto === undefined) {
+            const pks = this.getPKs();
+            const con = this.utl.contains(pks, Object.keys(map));
+            if (con.length === pks.length || map[this.modelKeyStr]) {
+                return true;
+            }
         }
-        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.one;
+        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
+        payload.quantity = payload?.limit === 1 ? this.constant?.quantity?.one : payload.quantity;
         return Boolean(payload.quantity === this.constant?.quantity?.one);
     }
 
@@ -111,8 +142,15 @@ class DataService extends ksdp.integration.Dip {
      * @description overload action for findAll/findOne
      * @param {Object} payload
      * @param {Object|String|Number} payload.query 
-     * @param {String} payload.quantity 
      * @param {Array} payload.attributes 
+     * @param {Object} payload.include 
+     * @param {Object} payload.where 
+     * @param {String} payload.quantity 
+     * @param {Number} payload.limit
+     * @param {Number} payload.page
+     * @param {Number} payload.size
+     * @param {Number} payload.jump
+     * @param {Boolean} payload.auto
      * @returns {Object} row
      */
     async select(payload, opt) {
@@ -212,11 +250,18 @@ class DataService extends ksdp.integration.Dip {
 
     /**
      * @description get attributes map
-     * @param {Object} lst 
+     * @param {Object|Array} lst 
      * @param {Number} mode 
      * @returns {Object} attributes
      */
     getAttrs(lst, mode = 0) {
+        if (Array.isArray(lst)) {
+            let tmp = [];
+            for (let i in lst) {
+                tmp[i] = this.getAttrs(lst[i], mode);
+            }
+            return tmp;
+        }
         const model = this.getModel();
         if (!model || (!lst && !mode)) return {};
         if (!lst) {
@@ -246,9 +291,11 @@ class DataService extends ksdp.integration.Dip {
      * @description get the primary key 
      * @returns {String}
      */
-    getPK() {
+    getPKs() {
         const model = this.getModel();
-        return this.modelKey || Object.keys(model?.primaryKeys || {})[0];
+        return (Array.isArray(this.modelKeys) && this.modelKeys) ||
+            Object.keys(model?.primaryKeys || {}) ||
+            [this.modelKey];
     }
 
     /**
@@ -267,44 +314,65 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} payload.where 
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
+     * @param {Boolean} payload.strict 
+     * @param {Boolean} payload.error 
+     * @param {Array} payload.updateOnDuplicate 
      * @param {Object} payload.transaction 
-     * @returns {Object} row
+     * @returns {Object} row 
      */
     async save(payload, opt) {
-        let { data, where, row, mode = this.constant?.action?.read, transaction = null } = payload || {};
+        let { data, row, mode = this.constant?.action?.read, transaction = null, error = false, strict = false } = payload || {};
         opt = opt || {};
         try {
             payload.flow = payload.flow || opt?.flow;
-            const model = this.getModel();
             payload.tmp = {};
-            where = this.getWhere(payload, opt);
+            opt.action = opt.action || "select";
+            const model = this.getModel();
+            const where = this.getWhere(payload, opt);
             if (!row && this.utl?.asBoolean(where) && !Array.isArray(data)) {
-                row = await model.findOne({ where }, { transaction });
+                row = await this.select({ ...payload, limit: 1 }, opt);
             }
-
-            if (mode <= this.constant?.action?.read) {
-                return row;
+            if (mode <= this.constant?.action?.read || row && mode === this.constant?.action?.create) {
+                return this.getResponse(row, "read", payload);
             }
-
-            const modelKey = this.getPK();
-
-            const options = modelKey && Array.isArray(data) ? {
-                updateOnDuplicate: Array.isArray(modelKey) ? modelKey : [modelKey], transaction
-            } : { transaction };
-
+            const options = {};
+            if (transaction) {
+                options.transaction = transaction;
+            }
+            if (!error && mode === this.constant?.action?.create) {
+                options.ignoreDuplicates = true;
+            }
+            if (!error && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update)) {
+                options.updateOnDuplicate = (Array.isArray(payload.updateOnDuplicate) && payload.updateOnDuplicate) ||
+                    (Array.isArray(this.updateOnDuplicate) && this.updateOnDuplicate)
+                    || this.getPKs();
+            }
             if (!row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.create)) {
-                let res = model[Array.isArray(data) ? "bulkCreate" : "create"](this.getRequest(data, "create", payload), options);
-                return this.getResponse(await res, "create", payload);
+                opt.action = "create";
+                let res = model[Array.isArray(data) ? "bulkCreate" : opt.action](this.getRequest(data, opt.action, payload), options);
+                return this.getResponse(await res, opt.action, payload);
             }
-
             if (row && (mode >= this.constant?.action?.write || mode === this.constant?.action?.update) && this.utl?.isDifferent(row, data)) {
+                opt.action = "update";
+                if (strict && !Array.isArray(data) && options.updateOnDuplicate) {
+                    let tmp = {};
+                    for (let i of options.updateOnDuplicate) {
+                        if (data[i] !== undefined && row[i] !== data[i]) {
+                            tmp[i] = data[i];
+                        }
+                    }
+                    if (Object.keys(tmp).length === 0) {
+                        return this.getResponse(row, opt.action, payload);
+                    }
+                    payload.tmp.data = data;
+                    data = tmp;
+                }
                 let res = Array.isArray(data) ?
-                    model.bulkCreate(this.getRequest(data, "update", payload, row), options) :
-                    row.update(this.getRequest(data, "update", payload, row), options);
-                return this.getResponse(await res, "update", payload);
+                    model.bulkCreate(this.getRequest(data, opt.action, payload, row), options) :
+                    row.update(this.getRequest(data, opt.action, payload, row), options);
+                return this.getResponse(await res, opt.action, payload);
             }
-
-            return this.getResponse(row, "none", payload);
+            return this.getResponse(row, opt.action, payload);
         } catch (error) {
             const logger = this.getLogger();
             logger?.error({
@@ -458,8 +526,8 @@ class DataService extends ksdp.integration.Dip {
      * @param {ARRAY} filter 
      */
     asQuery(filter) {
+        filter = kscrip.decode(filter, "json");
         if (!filter) return {};
-        filter = typeof (filter) === 'string' ? JSON.parse(filter) : filter;
         const Sequelize = this.getManager();
         const model = this.getModel();
         const where = {};
@@ -484,10 +552,10 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Array} order options
      */
     asOrder(sort) {
-        if (!sort) return [];
+        const list = kscrip.decode(sort, "json");
+        if (!list) return [];
         const model = this.getModel();
-        const list = typeof (sort) === 'string' ? JSON.parse(sort) : sort;
-        return list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
+        return list?.filter && list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
     }
 
     /**
@@ -502,6 +570,37 @@ class DataService extends ksdp.integration.Dip {
         if (this.helper) {
             return this.helper.get('logger');
         }
+    }
+
+    /**
+     * @description Extract hotkeys from request parameters 
+     * @param {Object} req 
+     * @returns { page: Number, size: Number, filter: Object, query: Object, order:Array }
+     */
+    extract(req) {
+        const res = {};
+        if (req.page) {
+            res.page = req.page;
+            delete req["page"];
+        }
+        if (req.size) {
+            res.size = req.size;
+            delete req["size"];
+        }
+        if (req.filter) {
+            res.where = this.asQuery(req.filter);
+            delete req["filter"];
+        }
+        if (req.order) {
+            res.order = this.asOrder(req.order);
+            delete req["order"];
+        }
+        if (req.limit) {
+            res.limit = parseInt(req.limit);
+            delete req["limit"];
+        }
+        res.query = { ...req };
+        return res;
     }
 }
 

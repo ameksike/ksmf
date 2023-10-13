@@ -145,6 +145,46 @@ describe('Utl', () => {
     });
 
     describe('ARRAY', () => {
+
+        it('full contaned array', () => {
+            const child = ["first", "second", "third"];
+            const parent = ["first", "other", "second", "third"];
+            const result = utl.contains(child, parent);
+            expect(typeof (result)).toBe("object");
+            expect(result.length).toBe(3);
+        });
+
+        it('partial contaned array', () => {
+            const parent = ["test2", "first", "test1", "second"];
+            const child = ["first", "second", "third", "other"];
+            const result = utl.contains(child, parent);
+            expect(typeof (result)).toBe("object");
+            expect(result.length).toBe(2);
+        });
+
+        it('fully contained array using a custom comparison method', () => {
+            const child = [{ val: "first" }, { val: "second" }, { val: "third" }];
+            const parent = [["first", "other", "second", "third"]];
+            const result = utl.contains(child, parent, (item, lst) => lst[0].includes(item.val));
+            expect(typeof (result)).toBe("object");
+            expect(result.length).toBe(3);
+        });
+
+        it('simple value contained in array', () => {
+            const parent = ["first", "other", "second", "third"];
+            const result = utl.contains("first", parent);
+            expect(typeof (result)).toBe("object");
+            expect(result.length).toBe(1);
+        });
+
+        it('none contaned array', () => {
+            const parent = ["test2", "test4", "test1", "test3"];
+            const child = ["first", "second", "third", "other"];
+            const result = utl.contains(child, parent);
+            expect(typeof (result)).toBe("object");
+            expect(result.length).toBe(0);
+        });
+
         it('map a bad input', () => {
             expect(utl.asMap(1234)).toBe(undefined);
             expect(utl.asMap("12345")).toBe(undefined);
@@ -231,7 +271,7 @@ describe('Utl', () => {
 
         it('req extration by keys', () => {
             const req = { sex: "", address: "1&2", age: "15", time: "1,5", params: { id: undefined }, query: { name: "tomy" } };
-            const res = utl.getFrom(req, { key: ["age", "time" ], type: "Number" });
+            const res = utl.getFrom(req, { key: ["age", "time"], type: "Number" });
             expect(res.age).toBe(15);
             expect(res.time).toBe(1.5);
         });

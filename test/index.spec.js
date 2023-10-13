@@ -18,7 +18,7 @@ describe('LOAD', () => {
         expect(KsMf.dao.DataService).toBeInstanceOf(Object);
 
         expect(KsMf.task.Cron).toBeInstanceOf(Object);
-        expect(KsMf.view.TPL).toBeInstanceOf(Object);
+        expect(KsMf.view.Tpl).toBeInstanceOf(Object);
 
         expect(KsMf.proxy.App).toBeInstanceOf(Object);
         expect(KsMf.proxy.Rule).toBeInstanceOf(Object);
