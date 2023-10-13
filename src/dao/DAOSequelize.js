@@ -104,9 +104,10 @@ class DAOSequelize extends DAOBase {
     /**
      * @description load load models from dirname
      * @param {String} dirname 
+     * @param {Function} callback 
      * @returns {Object}
      */
-    load(dirname) {
+    load(dirname, callback) {
         const fs = require('fs');
         const path = require('path');
         const Sequelize = this.manager;
@@ -124,6 +125,9 @@ class DAOSequelize extends DAOBase {
                     if (target instanceof Function) {
                         const model = target(this.driver, Sequelize.DataTypes);
                         this.models[model.name] = model;
+                        if (callback instanceof Function) {
+                            callback(model.name, model, this.models);
+                        }
                     }
                 });
         }
