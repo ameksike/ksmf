@@ -129,8 +129,8 @@ class LoggerManager {
         this.skip.add(action);
         Reflect.set(obj, action, () => {
             return (req, res, next) => {
+                req.flow = req.flow || this.getFlowId();
                 if (!this.isExcluded(req.path)) {
-                    req.flow = req.flow || this.getFlowId();
                     obj.debug({
                         flow: req.flow,
                         level: _this.level.debug,
