@@ -181,7 +181,7 @@ class LoggerManager {
         const _this = this;
         this.skip.add(action);
         Reflect.set(obj, action, () => {
-            const outboundTrack = (opt) => obj?.info && obj.info({
+            const outboundTrack = (opt) => (!opt?.path || !this.isExcluded(opt.path)) && obj?.info && obj.info({
                 flow: opt.flow || _this.getFlowId(),
                 level: _this.level.info,
                 src: "KsMf:Logger:Track:Outbound",
