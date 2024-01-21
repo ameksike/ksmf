@@ -20,8 +20,8 @@ class CorsWrapper {
 
     /**
      * @description Allow all origin request, CORS on ExpressJS
-     * @param {Array} cfg 
-     * @returns {Function} middleware
+     * @param {Object} cfg 
+     * @returns {Object} [env=process.env]
      */
     getCors(cfg, env = process.env) {
         function reg(val) {

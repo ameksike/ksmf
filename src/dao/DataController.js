@@ -15,7 +15,7 @@ class DataController extends Controller {
      * @param {Object} cfg 
      * @param {String} cfg.modelName
      * @param {Object} cfg.srv
-     * @returns {Object} this
+     * @returns {DataController} self
      */
     configure(cfg) {
         this.modelName = cfg?.modelName || this.modelName || "";
@@ -53,7 +53,7 @@ class DataController extends Controller {
      * @description get the DTO list
      * @param {Object} req 
      * @param {Object} res 
-     * @returns { page: Number, size: Number, total: Number, data: [DTO] }
+     * @returns {{page: Number, size: Number, total: Number, data: Object[] }}
      */
     async list(req, res) {
         const query = this.srv?.extract(req.query);

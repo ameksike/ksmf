@@ -25,7 +25,7 @@ class DAORedis extends DAOBase {
 
     /**
      * @description redefine connect method
-     * @returns {OBJECT} self
+     * @returns {DAORedis} self
      */
     connect() {
         const cfg = this.option.url ? this.option.url : {
@@ -57,7 +57,7 @@ class DAORedis extends DAOBase {
 
     /**
      * @description redefine disconnect method
-     * @returns {OBJECT} self
+     * @returns {DAORedis} self
      */
     disconnect() {
         this.driver.disconnect();
@@ -66,7 +66,7 @@ class DAORedis extends DAOBase {
 
     /**
      * @description redefine error event method
-     * @param {OBJECT} option 
+     * @param {Object} option 
      */
     onError(error) {
         const message = error.message ? error.message : error;
@@ -77,7 +77,7 @@ class DAORedis extends DAOBase {
 
     /**
      * @description redefine connect event method
-     * @param {OBJECT} option 
+     * @param {Object} option 
      */
     onConnect(option = null) {
         if (this.option.logging) {
@@ -88,8 +88,8 @@ class DAORedis extends DAOBase {
 
     /**
      * @description allow support for saving json-encoded object as the value of a specific key
-     * @param {STRING} key 
-     * @param {ANY} value 
+     * @param {String} key 
+     * @param {*} value 
      * @returns {Promise}
      */
     async set(key, value) {
@@ -104,8 +104,8 @@ class DAORedis extends DAOBase {
 
     /**
      * @description allow retrieval of json encoded objects from a specific key
-     * @param {STRING} key 
-     * @param {FUNCTION} callback 
+     * @param {String} key 
+     * @param {Function} callback 
      * @returns 
      */
     async get(key, callback) {

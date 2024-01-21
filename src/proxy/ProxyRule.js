@@ -2,13 +2,13 @@ class ProxyRule {
 
     /**
      * @description ACL rule-based verification method
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} inf 
-     * @returns {BOOLEAN} [false for deny or true for allow]
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} inf 
+     * @returns {Boolean} [false for deny or true for allow]
      */
     verify(req, res, inf) {
-        if (!inf || !inf.security || !inf.security.acl) {
+        if (!inf?.security?.acl) {
             return true;
         }
         if (!inf.security.acl.strategy || inf.security.acl.strategy === 'deny') {
@@ -20,13 +20,13 @@ class ProxyRule {
 
     /**
      * @description Apply the strategy: Allow First 
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} inf 
-     * @returns {BOOLEAN} [false for deny or true for allow]
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} inf 
+     * @returns {Boolean} [false for deny or true for allow]
      */
     allow(req, res, inf) {
-        if (!inf || !inf.security || !inf.security.acl || !inf.security.acl.deny) {
+        if (!inf?.security?.acl?.deny) {
             return true;
         }
         return !this.checkScope(inf.security.acl.deny, inf.origin, inf.destination);
@@ -34,13 +34,13 @@ class ProxyRule {
 
     /**
      * @description Apply the strategy: Deny First
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} inf 
-     * @returns {BOOLEAN} [false for deny or true for allow]
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} inf 
+     * @returns {Boolean} [false for deny or true for allow]
      */
     deny(req, res, inf) {
-        if (!inf || !inf.security || !inf.security.acl || !inf.security.acl.allow) {
+        if (!inf?.security?.acl?.allow) {
             return false;
         }
         return this.checkScope(inf.security.acl.allow, inf.origin, inf.destination);
@@ -48,27 +48,22 @@ class ProxyRule {
 
     /**
      * @description Check an acl scope for origin on destination
-     * @param {OBJECT} scope 
-     * @param {OBJECT} origin 
-     * @param {OBJECT} destination 
-     * @returns {BOOLEAN}
+     * @param {Object} scope 
+     * @param {Object} origin 
+     * @param {Object} destination 
+     * @returns {Boolean}
      */
     checkScope(scope, origin, destination) {
         // ... scope user
-        if (this.checkOrigin(scope.user, origin.user.username, destination)) {
-            return true;
-        }
-        // ... scope host
-        // ... scope host
-        return false;
+        return !!(this.checkOrigin(scope.user, origin.user.username, destination));
     }
 
     /**
      * @description Check origin target from scope on destination
-     * @param {STRING} origin [<username>|<ip>]
-     * @param {OBJECT} destination 
-     * @param {OBJECT} scope ACL scope
-     * @returns {ARRAY} 
+     * @param {String} origin [<username>|<ip>]
+     * @param {Object} destination 
+     * @param {Object} scope ACL scope
+     * @returns {Array} 
      */
     checkOrigin(scope, origin, destination) {
         if (!origin || !scope || !destination)
@@ -84,10 +79,10 @@ class ProxyRule {
 
     /**
      * @description Get ACL for especific origin on destination, Ex: scope[origin][destination] ==> scope['gest']['url']
-     * @param {STRING} origin origin target [<username>|<ip>]
-     * @param {STRING} destination key destination for acl [url|ip|port] 
-     * @param {OBJECT} scope ACL scope
-     * @returns {ARRAY} 
+     * @param {String} origin origin target [<username>|<ip>]
+     * @param {String} destination key destination for acl [url|ip|port] 
+     * @param {Object} scope ACL scope
+     * @returns {Array} 
      */
     getAcl(scope, origin, destination = "url") {
         if (!scope) return [];
@@ -98,15 +93,15 @@ class ProxyRule {
 
     /**
      * @description check value in a list of regular expresions 
-     * @param {ARRAY} acl 
-     * @param {STRING} value 
-     * @returns {BOOLEAN}
+     * @param {Array} acl 
+     * @param {String} value 
+     * @returns {Boolean}
      */
     check(value, acl) {
         if (!acl || !value || acl.length < 1) return false;
         for (let i in acl) {
             const rex = new RegExp(acl[i]);
-            if (rex && rex.test(value)) {
+            if (rex?.test(value)) {
                 return true;
             }
         }

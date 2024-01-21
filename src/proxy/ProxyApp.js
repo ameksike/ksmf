@@ -80,10 +80,10 @@ class ProxyApp {
 
     /**
      * @description Get request information
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} head 
-     * @returns {OBJECT}
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} head 
+     * @returns {Object}
      */
     initInfo(req, res, head) {
         const to = url.parse(`//${req.url}`, false, true);
@@ -109,13 +109,13 @@ class ProxyApp {
 
     /**
      * @description Run rules handler and get if is valid request or not 
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @returns {BOOLEAN}
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Boolean}
      */
     async initRules(req, res) {
         const srvRules = this.app.helper.get('rule');
-        if (!srvRules || !srvRules.verify instanceof Function) {
+        if (!(srvRules?.verify instanceof Function)) {
             return true;
         }
         const verification = await srvRules.verify(req, res, this.inf);
@@ -133,13 +133,13 @@ class ProxyApp {
 
     /**
      * @description Run authentication handler and get if is valid request or not 
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @returns {BOOLEAN}
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Boolean}
      */
     async initAuth(req, res) {
         const srvAuth = this.app.helper.get('auth');
-        if (!srvAuth || !srvAuth.verify instanceof Function) {
+        if (!(srvAuth?.verify instanceof Function)) {
             return true;
         }
         res.user = await srvAuth.verify(req, res, this.inf);

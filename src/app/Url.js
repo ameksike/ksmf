@@ -43,7 +43,7 @@ class UrlUtil {
      * @returns {String}
      */
     format(req, opt) {
-        let hosh = ((req.get && req.get('host')) || '').split(':');
+        let hosh = ((req.get instanceof Function && req.get('host')) || '').split(':');
         let host = opt?.host || req.host || hosh[0];
         let port = opt?.port || req.port || hosh[1];
         host = port && parseInt(port) !== 80 ? host + ':' + port : host;
@@ -63,7 +63,7 @@ class UrlUtil {
      * @returns {String}
      */
     str(req) {
-        return `${req.protocol}://${(req.get && req.get('host') || req.host)}`;
+        return `${req.protocol}://${(req.get instanceof Function && req.get('host') || req.host)}`;
     }
 
     /**

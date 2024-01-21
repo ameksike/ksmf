@@ -12,7 +12,7 @@ class DAOWrapper {
 
     /**
      * @description Initialize options on construct DATAWrapper
-     * @param {OBJECT} opt 
+     * @param {Object} opt 
      */
     constructor(opt) {
         this.dao = null;
@@ -23,7 +23,7 @@ class DAOWrapper {
 
     /**
      * @description Set options on Initialize Configuration Event 
-     * @param {OBJECT} cfg 
+     * @param {Object} cfg 
      */
     onInitConfig(cfg) {
         this.cfg = cfg;
@@ -47,7 +47,7 @@ class DAOWrapper {
 
     /**
      * @description load models for each module 
-     * @param {OBJECT} mod 
+     * @param {Object} mod 
      * @returns 
      */
     onLoadModule(mod) {
@@ -63,7 +63,7 @@ class DAOWrapper {
 
     /**
      * @description create all models associations
-     * @param {ARRAY} modules 
+     * @param {Array} modules 
      */
     onLoadedModules(modules) {
         this.dao?.associate && this.dao.associate();
@@ -72,7 +72,7 @@ class DAOWrapper {
 
     /**
      * @description create all models associations
-     * @param {ARRAY} modules 
+     * @param {Array} modules 
      */
     loadModules() {
         this.dao = this.dao || this.helper?.get('dao');

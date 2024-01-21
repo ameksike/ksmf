@@ -22,7 +22,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} cfg.constant
      * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
      * @param {Object} cfg.logger 
-     * @returns {Object} this
+     * @returns {DataService} self
      */
     configure(cfg) {
         this.modelName = cfg?.modelName || this.modelName || "";
@@ -504,9 +504,9 @@ class DataService extends ksdp.integration.Dip {
 
     /**
      * @description get count of data from model
-     * @param {OBJECT} options 
-     * @param {STRING} options.col specify the column on which you want to call the count() method with the col
-     * @param {BOOLEAN} options.distinct tell Sequelize to generate and execute a COUNT( DISTINCT( lastName ) ) query 
+     * @param {Object} options 
+     * @param {String} options.col specify the column on which you want to call the count() method with the col
+     * @param {Boolean} options.distinct tell Sequelize to generate and execute a COUNT( DISTINCT( lastName ) ) query 
      * @returns {NUMBER}
      */
     async count(options = {}) {
@@ -526,7 +526,7 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get filters as query 
      *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
-     * @param {ARRAY} filter 
+     * @param {Array} filter 
      */
     asQuery(filter) {
         filter = kscrip.decode(filter, "json");

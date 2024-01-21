@@ -15,7 +15,7 @@ class LoggerSimple {
 
     /**
      * @description Set the initial configuration for this lib
-     * @param {Object} config [OPTIONAL]
+     * @param {Object} [config] [OPTIONAL]
      * @param {Object} config.drv
      * @param {Object} config.level
      * @param {String} config.sep
@@ -68,7 +68,7 @@ class LoggerSimple {
      * @description Define if it is allowed to print data based on the log level in a specific environment
      * @param {String} level
      * @param {String} env
-     * @returns
+     * @returns {Boolean}
      */
     isAllow(level = null, env = null) {
         level = level || this.level.info

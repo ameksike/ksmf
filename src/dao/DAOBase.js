@@ -9,7 +9,7 @@
 class DAOBase {
     /**
      * @description initialize DAO Base model
-     * @param {OBJECT} opt 
+     * @param {Object} opt 
      */
     constructor(opt = null) {
         this.models = {};
@@ -21,7 +21,7 @@ class DAOBase {
 
     /**
      * @description set all configuration options
-     * @returns {OBJECT} self
+     * @returns {DAOBase} self
      */
     configure(payload = null) {
         payload && Object.assign(this.option, payload);
@@ -30,7 +30,7 @@ class DAOBase {
 
     /**
      * @description create database connection
-     * @returns {OBJECT} self
+     * @returns {DAOBase} self
      */
     connect() {
         return this;
@@ -38,7 +38,7 @@ class DAOBase {
 
     /**
      * @description close database connection
-     * @returns {OBJECT} self
+     * @returns {DAOBase} self
      */
     disconnect() {
         this.driver?.disconnect && this.driver.disconnect();
@@ -47,8 +47,8 @@ class DAOBase {
 
     /**
      * @description load models
-     * @param {STRING} dirname 
-     * @returns {OBJECT} self
+     * @param {String} dirname 
+     * @returns {DAOBase} self
      */
     load(dirname) {
         return this;
@@ -56,7 +56,7 @@ class DAOBase {
 
     /**
      * @description get connection options as string
-     * @returns {STRING}
+     * @returns {String}
      */
     getUri() {
         return this.conn2str(this.option);
@@ -64,13 +64,13 @@ class DAOBase {
 
     /**
      * @description format string connection dialect://username:password@host:port/database
-     * @param {OBJECT|STRING} cfg 
-     * @param {STRING} cfg.dialect
-     * @param {STRING} cfg.username
-     * @param {STRING} cfg.password
-     * @param {STRING} cfg.database
-     * @param {STRING} cfg.host
-     * @param {STRING} cfg.port
+     * @param {Object|String} cfg 
+     * @param {String} cfg.dialect
+     * @param {String} cfg.username
+     * @param {String} cfg.password
+     * @param {String} cfg.database
+     * @param {String} cfg.host
+     * @param {String} cfg.port
      */
     conn2str(cfg) {
         if (!cfg) return '';
@@ -96,7 +96,7 @@ class DAOBase {
 
     /**
      * @description on error event
-     * @param {OBJECT} error 
+     * @param {Object} error 
      */
     onError(error) {
         const message = error.message ? error.message : error;
@@ -104,7 +104,7 @@ class DAOBase {
     }
     /**
      * @description on connect event
-     * @param {OBJECT} option 
+     * @param {Object} option 
      */
     onConnect(option) {
         this.log('info', 'DATABASE CONNECTION SUCCESS');
@@ -112,7 +112,7 @@ class DAOBase {
 
     /**
      * @description on disconnect event
-     * @param {OBJECT} option 
+     * @param {Object} option 
      */
     onDisconnect(option) { }
 }

@@ -12,7 +12,7 @@ class Swagger {
 
     /**
      * @description Initialize options on construct Swagger
-     * @param {OBJECT} opt 
+     * @param {Object} opt 
      */
     constructor(opt) {
         this.cfg = {};
@@ -22,7 +22,7 @@ class Swagger {
 
     /**
      * @description Set options on Initialize Configuration Event 
-     * @param {OBJECT} cfg 
+     * @param {Object} cfg 
      */
     onInitConfig(cfg) {
         this.cfg = cfg;
@@ -30,7 +30,7 @@ class Swagger {
 
     /**
      * @description load models for each module 
-     * @param {OBJECT} mod 
+     * @param {Object} mod 
      * @returns 
      */
     onLoadModule(mod) {
@@ -45,7 +45,7 @@ class Swagger {
 
     /**
      * @description create all models associations
-     * @param {OBJECT} srv 
+     * @param {Object} srv 
      */
     onInitCompleted(app) {
         if (!app?.web) {
@@ -88,7 +88,7 @@ class Swagger {
     /**
      * @description Simple object check.
      * @param item
-     * @returns {boolean}
+     * @returns {Boolean}
      */
     isObject(item) {
         return (item && typeof item === 'object' && !Array.isArray(item));

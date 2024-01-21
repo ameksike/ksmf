@@ -24,6 +24,7 @@ class Module {
      * @param {Object} payload.app 
      * @param {Object} payload.web
      * @param {Object} payload.opt 
+     * @returns {Module} self
      */
     configure(payload) {
         this.app = payload?.app || this.app || null;
@@ -181,7 +182,7 @@ class Module {
     /**
      * @description initialize module middleware list
      * @param {Object} middleware 
-     * @returns 
+     * @returns {Object} middleware
      */
     initMiddlewareList(middleware) {
         middleware = middleware || {};
@@ -235,7 +236,7 @@ class Module {
      * @param {Object} controller 
      * @param {Object} opt 
      * @param {String} action 
-     * @returns 
+     * @returns {Array} middlewares
      */
     getMiddlewareList(controller, opt, action = null) {
         try {

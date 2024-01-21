@@ -6,7 +6,7 @@ class TPL {
      * @description get file info 
      * @param {String} name 
      * @param {Object} options 
-     * @returns {Object} { file: String, ext: String, path:String, filename: String }
+     * @returns {{ file: String, ext: String, path:String, filename: String }} 
      */
     getPath(name, options) {
         const _path = require("path");
