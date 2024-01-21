@@ -7,7 +7,8 @@
  * @version    	1.0
  * @description For more information see: https://github.com/ameksike/ksmf/wiki  
  **/
-const KsMf = {
+
+module.exports = {
     app: {
         WEB: require('./src/app/AppWEB'),
         RTA: require('./src/app/AppRTA'),
@@ -47,8 +48,6 @@ const KsMf = {
     },
     doc: {
         Swagger: require('./src/doc/Swagger')
-    }
+    },
+    default: require('./src/app/AppWEB')
 };
-
-module.exports = KsMf;
-module.exports.default = KsMf.app.WEB;
