@@ -1,11 +1,11 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class HttpHandler {
     /**
      * initialize each controller response by http code
@@ -49,9 +49,9 @@ class HttpHandler {
 
     /**
      * @description safely http response 
-     * @param {OBJECT} res 
-     * @param {STRING} code 
-     * @param {STRING} message 
+     * @param {Object} res 
+     * @param {String} code 
+     * @param {String} message 
      */
     send(res, code, message) {
         if (!res || !code || res.finished || res.writable !== true) return false;

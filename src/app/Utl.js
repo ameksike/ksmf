@@ -58,7 +58,7 @@ class Utl {
     /**
      * @description get the sign from a number 
      * @param {String|Number} value 
-     * @param {boolean} all 
+     * @param {Boolean} all 
      * @returns {String} Sing
      */
     getSign(value, all = true) {
@@ -76,7 +76,7 @@ class Utl {
     asBoolean(value, strict = true) {
         if (typeof (value) === "string") {
             value = value.trim();
-            value = !value || value.toLowerCase() === "false" ? false : true;
+            value = !(!value || value.toLowerCase() === "false");
         }
         if (strict && value && typeof (value) === "object") {
             value = Array.isArray(value) ? value.length : (Object.keys(value).length + Object.getOwnPropertySymbols(value).length);
@@ -201,7 +201,7 @@ class Utl {
      */
     round(value, config) {
         config = this.clone(this.config.number, typeof (config) === "number" ? { window: config } : (config || {}));
-        const { window, format = Number } = config;
+        let { window, format = Number } = config;
         value = this.asNumberFormat(value, config);
         if (!this.isNumber(value)) {
             return null;

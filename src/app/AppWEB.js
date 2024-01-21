@@ -34,7 +34,7 @@ class AppWEB {
 
     /**
      * @description initialize serve (Implement template method pattern)
-     * @returns {Object} self
+     * @returns {AppWEB} self
      */
     init() {
         try {
@@ -324,7 +324,7 @@ class AppWEB {
 
     /**
      * @description load application routes
-     * @returns {Object} this
+     * @returns {AppWEB} self
      */
     initRoutes() {
         this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route, this]);
@@ -370,6 +370,7 @@ class AppWEB {
 
     /**
      * @description safely trigger events
+     * @returns {AppWEB} self
      */
     emit() {
         this.event?.emit instanceof Function && this.event.emit(...arguments);

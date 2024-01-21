@@ -20,7 +20,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description initialize Sequelize manager
-     * @returns {Object} self
+     * @returns {DAOSequelize} self
      */
     initManager() {
         if (!this.manager || this.driver) {
@@ -67,7 +67,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description redefine connect method
-     * @returns {Object} self
+     * @returns {DAOSequelize} self
      */
     connect() {
         this.initManager();
@@ -92,7 +92,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description redefine disconnect method
-     * @returns {Object} self
+     * @returns {DAOSequelize} self
      */
     disconnect() {
         if (this.driver && this.driver.close instanceof Function) {
@@ -105,7 +105,7 @@ class DAOSequelize extends DAOBase {
      * @description load load models from dirname
      * @param {String} dirname 
      * @param {Function} callback 
-     * @returns {Object}
+     * @returns {DAOSequelize} self
      */
     load(dirname, callback) {
         const fs = require('fs');
@@ -137,7 +137,7 @@ class DAOSequelize extends DAOBase {
 
     /**
      * @description create models associations
-     * @returns {Object}
+     * @returns {DAOSequelize} self
      */
     associate() {
         Object.keys(this.models).forEach(modelName => {

@@ -31,7 +31,7 @@ class Logger {
     /**
      * @description allow configure options for logger
      * @param {Object} opt 
-     * @returns {Object} self
+     * @returns {Logger} self
      */
     configure(opt = null) {
         this.cfg = Object.assign(this.cfg, opt);
@@ -89,7 +89,7 @@ class Logger {
     /**
      * @description set type of logs [info|error|warn|debug]
      * @param {String} value 
-     * @returns 
+     * @returns {Logger} self
      */
     type(value) {
         this.cfg.type = value;
@@ -98,7 +98,7 @@ class Logger {
 
     /**
      * @description perform logs
-     * @returns {Object} self
+     * @returns {Logger} self
      */
     log() {
         if (this.isValid() && this.isEnabled()) {
@@ -111,7 +111,7 @@ class Logger {
 
     /**
      * @description alias for perform info logs
-     * @returns {Object} self
+     * @returns {Logger} self
      */
     info() {
         this.type(this.cfg.label.info).log(...arguments);
@@ -125,7 +125,7 @@ class Logger {
 
     /**
      * @description alias for perform warn logs
-     * @returns {Object} self
+     * @returns {Logger} self
      */
     warn() {
         this.type(this.cfg.label.warn).log(...arguments);
@@ -134,7 +134,7 @@ class Logger {
 
     /**
      * @description alias for perform debug logs
-     * @returns {Object} self
+     * @returns {Logger} self
      */
     debug() {
         this.type(this.cfg.label.debug).log(...arguments);

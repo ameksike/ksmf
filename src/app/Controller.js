@@ -1,32 +1,32 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class Controller {
     /**
      * @description initialize controller
-     * @param {OBJECT} payload 
+     * @param {Object} [payload] 
      */
     constructor(payload) {
-        this.opt = payload && payload.opt ? payload.opt : {};
-        this.module = payload && payload.module ? payload.module : {};
+        this.opt = payload?.opt || {};
+        this.module = payload?.module || {};
         this.middleware = this.initMiddlewareList(this.middleware);
     }
 
     /**
      * @description method called after constructor
      */
-    init() { }
+    init() { /* TODO document why this method 'init' is empty */  }
 
     /**
      * @description REST controller list method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     list(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> LIST.` });
@@ -34,9 +34,9 @@ class Controller {
 
     /**
      * @description REST controller select method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} next 
      */
     select(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> SELECT, ID:${req.params.id}.` });
@@ -44,9 +44,9 @@ class Controller {
 
     /**
      * @description REST controller delete method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     delete(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> DELETE, ID:${req.params.id}.` });
@@ -54,9 +54,9 @@ class Controller {
 
     /**
      * @description REST controller clean method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     clean(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> CLEAN.` });
@@ -64,9 +64,9 @@ class Controller {
 
     /**
      * @description REST controller update method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     update(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> UPDATE, ID:${req.params.id}.` });
@@ -74,9 +74,9 @@ class Controller {
 
     /**
      * @description REST controller insert method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     insert(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> INSERT.` });
@@ -84,9 +84,9 @@ class Controller {
 
     /**
      * @description REST controller options method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     options(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> OPTIONS.` });
@@ -94,9 +94,9 @@ class Controller {
 
     /**
      * @description REST controller option method    
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @param {OBJECT} next 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
      */
     option(req, res, next) {
         res.json({ "message": `REST API <${this.opt.name}> OPTION, ID:${req.params.id}.` });
@@ -104,17 +104,17 @@ class Controller {
 
     /**
      * @description initialize middleware list by method for this controller
-     * @param {OBJECT} middleware 
-     * @param {ARRAY} middleware.global 
-     * @param {ARRAY} middleware.select 
-     * @param {ARRAY} middleware.insert 
-     * @param {ARRAY} middleware.update 
-     * @param {ARRAY} middleware.delete
-     * @param {ARRAY} middleware.clean
-     * @param {ARRAY} middleware.list 
-     * @param {ARRAY} middleware.options 
-     * @param {ARRAY} middleware.option 
-     * @returns {OBJECT}
+     * @param {Object} middleware 
+     * @param {Array} middleware.global 
+     * @param {Array} middleware.select 
+     * @param {Array} middleware.insert 
+     * @param {Array} middleware.update 
+     * @param {Array} middleware.delete
+     * @param {Array} middleware.clean
+     * @param {Array} middleware.list 
+     * @param {Array} middleware.options 
+     * @param {Array} middleware.option 
+     * @returns {Object}
      */
     initMiddlewareList(middleware) {
         middleware = middleware || {};

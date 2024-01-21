@@ -1,4 +1,4 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		15/11/2021
@@ -6,7 +6,7 @@
  * @license    	GPL
  * @version    	1.0
  * @dependencies AppWEB, HttpHandler
- * */
+ **/
 const http = require('http');
 const AppWEB = require('./AppWEB');
 
@@ -32,9 +32,9 @@ class AppRTA {
 
     /**
      * @description on load module
-     * @param {OBJECT} mod 
-     * @param {STRING} name 
-     * @param {STRING} path 
+     * @param {Object} mod 
+     * @param {String} [name] 
+     * @param {String} [path] 
      */
     onLoadModule(mod, name, path) {
         this.app.cfg.srv.channel = this.app.cfg.srv.channel || [];
@@ -102,7 +102,7 @@ class AppRTA {
 
     /**
      * @description initialize channels configurations by client
-     * @param {ARRAY} list 
+     * @param {Array} list 
      */
     initChannels(wsc, list) {
         if (!list) return;
@@ -125,9 +125,9 @@ class AppRTA {
 
     /**
      * @description Run authentication handler and get if is valid request or not 
-     * @param {OBJECT} req 
-     * @param {OBJECT} res 
-     * @returns {BOOLEAN}
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Boolean}
      */
     async initAuth(req, res) {
         const srvAuth = this.app.helper.get('auth');
