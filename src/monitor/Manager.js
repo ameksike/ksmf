@@ -96,17 +96,32 @@ class Manager {
      * @returns {Object} info
      */
     info() {
-        const cpuUsage = (process.cpuUsage instanceof Function) && process.cpuUsage(this.startUsage);
-        const memory = (process.constrainedMemory instanceof Function) && process.constrainedMemory();
+        let cpuUsage = (process.cpuUsage instanceof Function) && process.cpuUsage(this.startUsage);
+        let memory = (process.constrainedMemory instanceof Function) && process.constrainedMemory();
+        let memuse = (process.memoryUsage instanceof Function) && process.memoryUsage();
         return {
-            memory: memory ?? "none",
-            cpu_usage_system: cpuUsage?.system ? cpuUsage?.system / 1000000 : "none",
-            cpu_usage_user: cpuUsage?.user ? cpuUsage?.user / 1000000 : "none",
-            host_arch: process.config?.variables?.host_arch ?? "none",
-            target_arch: process.config?.variables?.target_arch ?? "none",
-            node_use_openssl: process.config?.variables?.node_use_openssl ?? "none",
+            rsc_memory: memory ?? "none",
+            rsc_memory_buffers: memuse?.arrayBuffers ?? "none",
+            rsc_memory_external: memuse?.external ?? "none",
+            rsc_memory_heap_total: memuse?.heapTotal ?? "none",
+            rsc_memory_heap_used: memuse?.heapUsed ?? "none",
+            rsc_memory_heap_rss: memuse?.rss ?? "none",
+            rsc_cpu_usage_system: cpuUsage?.system ? cpuUsage?.system / 1000000 : "none",
+            rsc_cpu_usage_user: cpuUsage?.user ? cpuUsage?.user / 1000000 : "none",
+            prd_connected: process.connected ?? "none",
+            prd_pid: process.pid ?? "none",
+            host_arch: process.config?.variables?.host_arch ?? process.arch ?? "none",
+            host_platform: process.platform,
+            host_target_arch: process.config?.variables?.target_arch ?? "none",
+            node_openssl_use: process.config?.variables?.node_use_openssl ?? "none",
+            node_openssl_version: process?.versions?.openssl ?? "none",
+            node_version: process?.versions?.node || process?.version || "none",
+            node_modules: process.versions?.modules ?? "none",
+            node_lts: process.release?.lts ?? "none",
+            node_name: process.release?.name ?? "none",
             v8_use_snapshot: process.config?.variables?.v8_use_snapshot ?? "none",
-            connected: process.connected ?? "none",
+            v8_version: process.versions?.v8 ?? "none",
+            env: process.env
         };
     }
 }

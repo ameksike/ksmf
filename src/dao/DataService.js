@@ -332,7 +332,10 @@ class DataService extends ksdp.integration.Dip {
             if (!row && this.utl?.asBoolean(where) && !Array.isArray(data)) {
                 row = await this.select({ ...payload, limit: 1 }, opt);
             }
-            if (mode <= this.constant?.action?.read || row && mode === this.constant?.action?.create) {
+            if (mode < this.constant?.action?.read) {
+                return null;
+            }
+            if (mode === this.constant?.action?.read || row && mode === this.constant?.action?.create) {
                 return this.getResponse(row, "read", payload);
             }
             const options = {};
