@@ -39,4 +39,4 @@ This framework provides different **Skeleton App** with the aim of speeding up t
 ### Angular 
 This framework provides a template to easily create a web application based on [Angular](https://angular.io/) and [Angular Material](https://material.angular.io/). It implements an example where three main entities are managed: Users, Tags and Comments. For more information about this project, see [Angular Web App Skeleton](https://github.com/ameksike/ksmf-skeleton-web-angular).
 
-The next recomended topic: [Project Skeleton](./common.project.skeleton.md).
+The next recomended topic: [Project Skeleton](./common.project_skeleton.md).

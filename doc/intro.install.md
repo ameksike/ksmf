@@ -93,4 +93,4 @@ Package config example **[PROJECT_PATH]/package.json**
 npm start
 ```
 
-Ok you already have the framework installed, now you need to see the next topic [Hello World](./intro.hello.world.md) tutorial.
+Ok you already have the framework installed, now you need to see the next topic [Hello World](./intro.hello_world.md) tutorial.

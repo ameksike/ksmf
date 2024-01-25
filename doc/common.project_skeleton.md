@@ -41,7 +41,7 @@ This is a common structure for a KsMf WEB API project:
 ```
 
 ### Description by directories
-* **bin:** it contains the web server executable, see section: [Web Server](./advanced.app.web.md).
+* **bin:** it contains the web server executable, see section: [Web Server](./advanced.app_web.md).
 * **cfg:** it contains the configurations files, config.json for app configurations and core.json for framework, see section: [Setting](./advanced.setting.md).
 * **src:** would be the source code that is grouped by modules, where the app should be the main module although this is not mandatory. Each module has a main file that responds to the actions of the module, this is composed as required by controllers, services, models, etc, see section: [Modules](./common.modules.md).
 * **db:** it contains the models and migrations, it is not mandatory, see section: [Data Base / DAO](./common.DAO.md).

@@ -73,4 +73,4 @@ http://localhost:3030/
 
 This is a simple example, although it is recommended that client requests be managed in different controllers. For more information about Modules and Controllers, see the following [link](./common.modules.md).
 
-The next recomended topic: [REST API Service](./intro.REST.API.md).
+The next recomended topic: [REST API Service](./intro.REST_API.md).

@@ -108,8 +108,8 @@ module.exports = PersonModule ;
 See the sections on [controllers ](./common.controllers.md) and [middleware](./advanced.middleware.md). In case of developing a REST API, it is recommended to evaluate the deployment of your service through libraries such as [KsWc](https://github.com/ameksike/kswc/wiki). 
 
 ### Related topics 
-+ [Skeleton](./common.project.skeleton.md)
-+ [Web Server](./advanced.app.web.md)
++ [Skeleton](./common.project_skeleton.md)
++ [Web Server](./advanced.app_web.md)
 + [Modules](./common.modules.md)
 + [Settings](./advanced.setting.md)
 + [Events](./advanced.events.md)

@@ -115,8 +115,8 @@ onInitConfig
 + **app:** Object; groups all the configuration variables of the kernel of the app located in the file *[PROJECT_PATH]/cfg/config.json* 
 
 ### Related topics 
-+ [Skeleton](./common.project.skeleton.md)
-+ [Web Server](./advanced.app.web.md)
++ [Skeleton](./common.project_skeleton.md)
++ [Web Server](./advanced.app_web.md)
 + [Modules](./common.modules.md)
 + [Settings](./advanced.setting.md)
 + [Events](./advanced.events.md)

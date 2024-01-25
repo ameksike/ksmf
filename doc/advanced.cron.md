@@ -111,8 +111,8 @@ in this case, a list of elements to be executed in time is obtained
 + **env:** if it is specified, it will look for an environment variable with the specified name that contains the *schedule value in Crontab format*
 
 ### Related topics 
-+ [Skeleton](./common.project.skeleton.md)
-+ [Web Server](./advanced.app.web.md)
++ [Skeleton](./common.project_skeleton.md)
++ [Web Server](./advanced.app_web.md)
 + [Modules](./common.modules.md)
 + [Settings](./advanced.setting.md)
 + [Events](./advanced.events.md)
