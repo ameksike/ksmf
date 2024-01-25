@@ -18,7 +18,7 @@ class DAOSequelize extends DAOBase {
     /**
      * @type {Object|null}
      */
-    models = null;
+    models = {};
     
     /**
      * @type {Object|null}
