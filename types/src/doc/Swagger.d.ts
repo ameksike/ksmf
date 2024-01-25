@@ -21,7 +21,7 @@ declare class Swagger {
     onLoadModule(mod: any): void;
     /**
      * @description create all models associations
-     * @param {Object} srv
+     * @param {Object} app
      */
     onInitCompleted(app: any): any;
     /**
@@ -33,7 +33,6 @@ declare class Swagger {
     /**
      * @description Deep merge two objects.
      * @param target
-     * @param ...sources
      */
     mergeDeep(target: any, ...sources: any[]): any;
 }

@@ -2,33 +2,47 @@ export = DataService;
 declare const DataService_base: typeof import("ksdp/types/src/integration/Dip");
 declare class DataService extends DataService_base {
     constructor(cfg: any);
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     utl: Utl;
     /**
      * @description configure action
      * @param {Object} cfg
-     * @param {String} cfg.modelName
-     * @param {String} cfg.modelKey
-     * @param {Array} cfg.modelKeys
-     * @param {String} cfg.modelKeyStr
-     * @param {Object} cfg.modelInclude
-     * @param {String} cfg.modelStatus
-     * @param {Array} cfg.updateOnDuplicate
-     * @param {Object} cfg.constant
-     * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
-     * @param {Object} cfg.logger
+     * @param {String} [cfg.modelName]
+     * @param {String} [cfg.modelKey]
+     * @param {Array} [cfg.modelKeys]
+     * @param {String} [cfg.modelKeyStr]
+     * @param {Object} [cfg.modelInclude]
+     * @param {String} [cfg.modelStatus]
+     * @param {Array} [cfg.updateOnDuplicate]
+     * @param {Object} [cfg.constant]
+     * @param {Object} [cfg.utl]
+     * @param {{ models?: Object; driver?: Object; manager?: Object}} [cfg.dao]
+     * @param {Object} [cfg.logger]
      * @returns {DataService} self
      */
     configure(cfg: {
-        modelName: string;
-        modelKey: string;
-        modelKeys: any[];
-        modelKeyStr: string;
-        modelInclude: any;
-        modelStatus: string;
-        updateOnDuplicate: any[];
-        constant: any;
-        dao: any;
-        logger: any;
+        modelName?: string;
+        modelKey?: string;
+        modelKeys?: any[];
+        modelKeyStr?: string;
+        modelInclude?: any;
+        modelStatus?: string;
+        updateOnDuplicate?: any[];
+        constant?: any;
+        utl?: any;
+        dao?: {
+            models?: any;
+            driver?: any;
+            manager?: any;
+        };
+        logger?: any;
     }): DataService;
     modelName: any;
     modelKey: any;
@@ -38,22 +52,21 @@ declare class DataService extends DataService_base {
     modelStatus: any;
     updateOnDuplicate: any;
     dao: any;
-    logger: any;
     constant: any;
     /**
      * @description get paginator options
      * @param {Object} payload
-     * @param {Object} options
+     * @param {Object} [options]
      * @returns {Object}
      */
-    getPaginator(payload: any, options: any): any;
+    getPaginator(payload: any, options?: any): any;
     /**
      * @description format the where clause
      * @param {Object} payload
-     * @param {Object} options
+     * @param {Object} [options]
      * @returns {Object}
      */
-    getWhere({ where, query }: any, options: any): any;
+    getWhere({ where, query }: any, options?: any): any;
     /**
      * @description format the include clause
      * @param {Object} payload
@@ -71,59 +84,69 @@ declare class DataService extends DataService_base {
     /**
      * @description get if it is single or multiple selection
      * @param {Object} payload
-     * @param {Object} payload.where
-     * @param {Boolean} payload.auto
+     * @param {Object} [payload.where]
+     * @param {Boolean} [payload.auto]
+     * @param {Number} [payload.limit]
+     * @param {String} [payload.quantity]
      * @param {Object} opt
      * @returns {Boolean}
      */
     iSingle(payload: {
-        where: any;
-        auto: boolean;
+        where?: any;
+        auto?: boolean;
+        limit?: number;
+        quantity?: string;
     }, opt: any): boolean;
     /**
      * @description overload action for findAll/findOne
      * @param {Object} payload
-     * @param {Object|String|Number} payload.query
-     * @param {Array} payload.attributes
-     * @param {Object} payload.include
-     * @param {Object} payload.where
-     * @param {String} payload.quantity
-     * @param {Number} payload.limit
-     * @param {Number} payload.page
-     * @param {Number} payload.size
-     * @param {Number} payload.jump
-     * @param {Boolean} payload.auto
-     * @returns {Object} row
+     * @param {Object|String|Number} [payload.query]
+     * @param {Array} [payload.attributes]
+     * @param {Object} [payload.include]
+     * @param {Object} [payload.where]
+     * @param {String} [payload.quantity]
+     * @param {Number} [payload.limit]
+     * @param {Number} [payload.page]
+     * @param {Number} [payload.size]
+     * @param {String} [payload.order]
+     * @param {Number} [payload.jump]
+     * @param {Boolean} [payload.auto]
+     * @param {Boolean} [payload.valid]
+     * @param {Object} [payload.tmp]
+     * @returns {Promise<any>} row
      */
     select(payload: {
-        query: any | string | number;
-        attributes: any[];
-        include: any;
-        where: any;
-        quantity: string;
-        limit: number;
-        page: number;
-        size: number;
-        jump: number;
-        auto: boolean;
-    }, opt: any): any;
+        query?: any | string | number;
+        attributes?: any[];
+        include?: any;
+        where?: any;
+        quantity?: string;
+        limit?: number;
+        page?: number;
+        size?: number;
+        order?: string;
+        jump?: number;
+        auto?: boolean;
+        valid?: boolean;
+        tmp?: any;
+    }, opt: any): Promise<any>;
     /**
      * @description format request payload before perform the query
      * @param {Object} data
-     * @param {String} action
-     * @param {Object} options
-     * @param {Object} row
+     * @param {String} [action]
+     * @param {Object} [options]
+     * @param {Object} [row]
      * @returns {Object}
      */
-    getRequest(data: any, action: string, options: any, row: any): any;
+    getRequest(data: any, action?: string, options?: any, row?: any): any;
     /**
      * @description format the result of the query
      * @param {Object} data
-     * @param {String} action
-     * @param {Object} options
+     * @param {String} [action]
+     * @param {Object} [options]
      * @returns {Object}
      */
-    getResponse(data: any, action: string, options: any): any;
+    getResponse(data: any, action?: string, options?: any): any;
     /**
      * @description get the object model
      * @returns {Object}
@@ -136,7 +159,7 @@ declare class DataService extends DataService_base {
     /**
      * @description get attributes map
      * @param {Object|Array} lst
-     * @param {Number} mode
+     * @param {Number} [mode]
      * @returns {Object} attributes
      */
     getAttrs(lst: any | any[], mode?: number): any;
@@ -149,9 +172,9 @@ declare class DataService extends DataService_base {
     hasAttr(key: string, map: any): any;
     /**
      * @description get the primary key
-     * @returns {String}
+     * @returns {Array<string>}
      */
-    getPKs(): string;
+    getPKs(): Array<string>;
     /**
      * @description get the table name
      * @returns  {String}
@@ -160,43 +183,57 @@ declare class DataService extends DataService_base {
     /**
      * @description read/update/create
      * @param {Object} payload
-     * @param {Object} payload.data
-     * @param {Object} payload.where
-     * @param {Object} payload.row
-     * @param {Number} payload.mode
-     * @param {Boolean} payload.strict
-     * @param {Boolean} payload.error
-     * @param {Array} payload.updateOnDuplicate
-     * @param {Object} payload.transaction
-     * @returns {Object} row
+     * @param {Object} [payload.data]
+     * @param {Object} [payload.where]
+     * @param {Object} [payload.row]
+     * @param {Number} [payload.mode]
+     * @param {Boolean} [payload.strict]
+     * @param {Boolean} [payload.error]
+     * @param {Object} [payload.tmp]
+     * @param {String} [payload.row]
+     * @param {String} [payload.flow]
+     * @param {Array} [payload.updateOnDuplicate]
+     * @param {Object} [payload.transaction]
+     * @param {Object} [opt]
+     * @param {String} [opt.action]
+     * @param {String} [opt.flow]
+     * @returns {Promise<any>} row
      */
     save(payload: {
-        data: any;
-        where: any;
-        row: any;
-        mode: number;
-        strict: boolean;
-        error: boolean;
-        updateOnDuplicate: any[];
-        transaction: any;
-    }, opt: any): any;
+        data?: any;
+        where?: any;
+        row?: any;
+        mode?: number;
+        strict?: boolean;
+        error?: boolean;
+        tmp?: any;
+        row?: any;
+        flow?: string;
+        updateOnDuplicate?: any[];
+        transaction?: any;
+    }, opt?: {
+        action?: string;
+        flow?: string;
+    }): Promise<any>;
     /**
      * @description perform a raw query
      * @param {Object} payload
-     * @param {String} payload.sql
-     * @param {Object} payload.params
-     * @param {Object} payload.options
-     * @param {String} payload.src
-     * @param {String} payload.flow
-     * @returns {Array|undefined} result
+     * @param {String} [payload.sql]
+     * @param {Object} [payload.params]
+     * @param {Object} [payload.options]
+     * @param {String} [payload.src]
+     * @param {String} [payload.flow]
+     * @param {Error} [payload.error]
+     * @returns {Promise<any>} result
      */
     query(payload?: {
-        sql: string;
-        params: any;
-        options: any;
-        src: string;
-        flow: string;
-    }): any[] | undefined;
+        sql?: string;
+        params?: any;
+        options?: any;
+        src?: string;
+        flow?: string;
+        error?: Error;
+    }): Promise<any>;
     /**
      * @description read/update/create
      * @param {Object} payload
@@ -205,7 +242,7 @@ declare class DataService extends DataService_base {
      * @param {Object} payload.row
      * @param {Number} payload.mode
      * @param {Object} payload.transaction
-     * @returns {Object} row
+     * @returns {Promise<any>} row
      */
     delete(payload: {
         data: any;
@@ -213,7 +250,7 @@ declare class DataService extends DataService_base {
         row: any;
         mode: number;
         transaction: any;
-    }, opt: any): any;
+    }, opt: any): Promise<any>;
     /**
      * @description insert an entity
      * @param {Object} payload
@@ -251,31 +288,38 @@ declare class DataService extends DataService_base {
     /**
      * @description update an entity
      * @param {Object} payload
-     * @param {Object} payload.data
-     * @param {Object} payload.where
-     * @param {Object} payload.row
-     * @param {Number} payload.mode
-     * @param {Object} payload.transaction
+     * @param {Object} [payload.data]
+     * @param {Object} [payload.where]
+     * @param {Object} [payload.row]
+     * @param {Number} [payload.mode]
+     * @param {Object} [payload.transaction]
+     * @param {boolean} [payload.strict]
+     * @param {any[]} [payload.updateOnDuplicate]
+     * @param {Object} [payload.transaction]
+     * @param {Object} [opt]
      * @returns {Object} row
      */
     update(payload: {
-        data: any;
-        where: any;
-        row: any;
-        mode: number;
-        transaction: any;
-    }, opt: any): any;
+        data?: any;
+        where?: any;
+        row?: any;
+        mode?: number;
+        transaction?: any;
+        strict?: boolean;
+        updateOnDuplicate?: any[];
+        transaction?: any;
+    }, opt?: any): any;
     /**
      * @description get count of data from model
      * @param {Object} options
-     * @param {String} options.col specify the column on which you want to call the count() method with the col
-     * @param {Boolean} options.distinct tell Sequelize to generate and execute a COUNT( DISTINCT( lastName ) ) query
-     * @returns {NUMBER}
+     * @param {String} [options.col] specify the column on which you want to call the count() method with the col
+     * @param {Boolean} [options.distinct] tell Sequelize to generate and execute a COUNT( DISTINCT( lastName ) ) query
+     * @returns {Promise<number>}
      */
     count(options?: {
-        col: string;
-        distinct: boolean;
-    }): NUMBER;
+        col?: string;
+        distinct?: boolean;
+    }): Promise<number>;
     /**
      * @description get filters as query
      *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
@@ -297,8 +341,14 @@ declare class DataService extends DataService_base {
     /**
      * @description Extract hotkeys from request parameters
      * @param {Object} req
-     * @returns { page: Number, size: Number, filter: Object, query: Object, order:Array }
+     * @returns {{ page?: Number; size?: Number; filter?: Object; query?: Object; order?:Array}}
      */
-    extract(req: any): page;
+    extract(req: any): {
+        page?: number;
+        size?: number;
+        filter?: any;
+        query?: any;
+        order?: any[];
+    };
 }
 import Utl = require("../app/Utl");

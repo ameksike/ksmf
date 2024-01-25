@@ -1,6 +1,14 @@
 export = CronModule;
 declare class CronModule {
     /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
+    /**
      * @description configure on initialize configurations event
      */
     onInitConfig(cfg: any): void;

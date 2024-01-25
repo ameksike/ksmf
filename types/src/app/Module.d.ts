@@ -11,27 +11,35 @@ declare class Module {
     /**
      * @description initialize module
      * @param {Object} payload
-     * @param {Object} payload.app
-     * @param {Object} payload.web
-     * @param {Object} payload.opt
+     * @param {Object} [payload.app]
+     * @param {Object} [payload.web]
+     * @param {Object} [payload.opt]
      */
     constructor(payload: {
-        app: any;
-        web: any;
-        opt: any;
+        app?: any;
+        web?: any;
+        opt?: any;
     });
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     /**
      * @description initialize module
      * @param {Object} payload
-     * @param {Object} payload.app
-     * @param {Object} payload.web
-     * @param {Object} payload.opt
+     * @param {Object} [payload.app]
+     * @param {Object} [payload.web]
+     * @param {Object} [payload.opt]
      * @returns {Module} self
      */
     configure(payload: {
-        app: any;
-        web: any;
-        opt: any;
+        app?: any;
+        web?: any;
+        opt?: any;
     }): Module;
     app: any;
     web: any;
@@ -61,30 +69,32 @@ declare class Module {
     /**
      * @description allow customized web routes initialization by module
      * @param {Object} opt
-     * @param {String} opt.route
-     * @param {String} opt.name
-     * @param {String} opt.controller
-     * @param {String} opt.path
+     * @param {String} [opt.route]
+     * @param {String} [opt.name]
+     * @param {String} [opt.controller]
+     * @param {String} [opt.method]
+     * @param {String} [opt.path]
      */
     initRoutesWeb(opt: {
-        route: string;
-        name: string;
-        controller: string;
-        path: string;
+        route?: string;
+        name?: string;
+        controller?: string;
+        method?: string;
+        path?: string;
     }): void;
     /**
      * @description allow customized REST routes initialization by module
      * @param {Object} opt
-     * @param {String} opt.route
-     * @param {String} opt.name
-     * @param {String} opt.controller
-     * @param {String} opt.path
+     * @param {String} [opt.route]
+     * @param {String} [opt.name]
+     * @param {String} [opt.controller]
+     * @param {String} [opt.path]
      */
     initRoutesREST(opt: {
-        route: string;
-        name: string;
-        controller: string;
-        path: string;
+        route?: string;
+        name?: string;
+        controller?: string;
+        path?: string;
     }): any;
     /**
      * @description initialize module middleware list
@@ -95,17 +105,25 @@ declare class Module {
     /**
      * @description get IoC locator options
      * @param {Object} opt
-     * @param {String} opt.route
-     * @param {String} opt.name
-     * @param {String} opt.controller
-     * @param {String} opt.path
+     * @param {String} [opt.route]
+     * @param {String} [opt.name]
+     * @param {String} [opt.controller]
+     * @param {String} [opt.path]
+     * @param {String} [opt.strict]
+     * @param {Object} [opt.params]
+     * @param {Object} [opt.options]
+     * @param {Object} [opt.dependency]
      * @returns {Object} locator
      */
     getLocator(opt: {
-        route: string;
-        name: string;
-        controller: string;
-        path: string;
+        route?: string;
+        name?: string;
+        controller?: string;
+        path?: string;
+        strict?: string;
+        params?: any;
+        options?: any;
+        dependency?: any;
     }): any;
     /**
      * @description get middleware list by controller

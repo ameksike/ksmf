@@ -11,14 +11,31 @@ const Controller = require('../app/Controller');
 class DataController extends Controller {
 
     /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+	
+    /**
+     * @type {String}
+     */
+    srvName;
+    
+    /**
      * @description configure action 
      * @param {Object} cfg 
-     * @param {String} cfg.modelName
-     * @param {Object} cfg.srv
+     * @param {String} [cfg.modelName] 
+     * @param {String} [cfg.srvName] 
+     * @param {Object} [cfg.srv]
      * @returns {DataController} self
      */
     configure(cfg) {
         this.modelName = cfg?.modelName || this.modelName || "";
+        this.srvName = cfg?.srvName || this.srvName || this.modelName || "";
         this.srv = cfg?.srv || this.srv || null;
         return this;
     }
@@ -53,7 +70,7 @@ class DataController extends Controller {
      * @description get the DTO list
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {{page: Number, size: Number, total: Number, data: Object[] }}
+     * @example {{page?: Number; size?: Number; total?: Number; data?: Object[] }}
      */
     async list(req, res) {
         const query = this.srv?.extract(req.query);
@@ -76,7 +93,7 @@ class DataController extends Controller {
      * @description get the DTO by id
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Object} DTO
+     * @returns {Promise<any>} DTO
      */
     async select(req, res) {
         const params = this.srv?.extract(req.query);
@@ -100,7 +117,7 @@ class DataController extends Controller {
      * @description create new DTO
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Object} DTO
+     * @returns {Promise<any>} DTO
      */
     async insert(req, res) {
         const payload = req.body;
@@ -128,7 +145,7 @@ class DataController extends Controller {
      * @description update user by id
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Object} DTO
+     * @returns {Promise<any>} DTO
      */
     async update(req, res) {
         const params = this.srv?.extract(req.query);
@@ -158,7 +175,7 @@ class DataController extends Controller {
      * @description delete user by id
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Object} DTO
+     * @returns {Promise<any>} DTO
      */
     async delete(req, res) {
         const params = this.srv?.extract(req.query);

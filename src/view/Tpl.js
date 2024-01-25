@@ -1,11 +1,17 @@
 class TPL {
+    /**
+     * @type {Console}
+     */
+    logger;
+
     constructor(cfg = {}) {
         this.logger = cfg?.logger;
     }
     /**
      * @description get file info 
      * @param {String} name 
-     * @param {Object} options 
+     * @param {Object} [options]
+     * @param {String} [options.ext] 
      * @returns {{ file: String, ext: String, path:String, filename: String }} 
      */
     getPath(name, options) {
@@ -20,9 +26,15 @@ class TPL {
     /**
      * @description Render templates based on twing lib
      * @param {String} name 
+     * @param {Object} data 
+     * @param {String} [data.flow]
      * @param {Object} options 
+     * @param {String} [options.path] 
+     * @param {String} [options.ext] 
+     * @param {String} [options.flow] 
+     * @param {Array} [options.functions] 
      * @requires twing
-     * @returns {String}
+     * @returns {Promise<string>}
      * @example
      * ................. TEMPLATE FILE
      *	<ul>  
@@ -71,10 +83,13 @@ class TPL {
 
     /**
      * @description Compile template 
-     * @param {String} name 
-     * @param {Object} options 
-     * @param {String} options.path 
-     * @param {String} options.ext 
+     * @param {String} file 
+     * @param {Object} [data] 
+     * @param {String} [data.flow] 
+     * @param {Object} [options] 
+     * @param {String} [options.path] 
+     * @param {String} [options.ext] 
+     * @param {String} [options.flow] 
      * @returns {String}
      */
     compile(file, data = {}, options = {}) {
@@ -97,8 +112,13 @@ class TPL {
     }
     /**
      * @description Interpolate all the options into data string
-     * @param {String} data 
-     * @param {Object} options 
+     * @param {String} content 
+     * @param {Object} [params] 
+     * @param {String} [params.flow] 
+     * @param {Object} [options] 
+     * @param {String} [options.flow] 
+     * @param {String} [options.open] 
+     * @param {String} [options.close] 
      * @returns {String}
      */
     interpolate(content, params, options = {}) {
@@ -122,7 +142,7 @@ class TPL {
                 flow: params?.flow || options?.flow,
                 src: "util:TPLHandler:interpolate",
                 error: { message: error?.message || error, stack: error?.stack },
-                data: { content, params, opt }
+                data: { content, params, options }
             });
             return null;
         }

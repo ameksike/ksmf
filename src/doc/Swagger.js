@@ -45,7 +45,7 @@ class Swagger {
 
     /**
      * @description create all models associations
-     * @param {Object} srv 
+     * @param {Object} app 
      */
     onInitCompleted(app) {
         if (!app?.web) {
@@ -97,7 +97,6 @@ class Swagger {
     /**
      * @description Deep merge two objects.
      * @param target
-     * @param ...sources
      */
     mergeDeep(target, ...sources) {
         if (!sources.length) return target;

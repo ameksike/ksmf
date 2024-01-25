@@ -15,6 +15,29 @@ const path = require('path');
 const KsDp = require('ksdp');
 
 class AppWEB {
+
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Object|null}
+     */
+    dao = null;
+
+
+    /**
+     * @type {Object|null}
+     */
+    web = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+	
+	
     /**
      * @description initialize library
      * @param {String} path 
@@ -256,13 +279,13 @@ class AppWEB {
 
     /**
      * @description initialize a module
-     * @param {Array} modules 
      * @param {Object|String} item 
-     * @param {String} item.name 
-     * @param {String} item.type 
-     * @param {Object} item.options 
-     * @param {Object} item.params 
-     * @param {Object} item.dependency 
+     * @param {String} [item.name] 
+     * @param {String} [item.type] 
+     * @param {Object} [item.options] 
+     * @param {Object} [item.params] 
+     * @param {Object} [item.dependency] 
+     * @param {Array} modules 
      * @returns {Object} module
      */
     initModule(item, modules) {
@@ -344,12 +367,13 @@ class AppWEB {
     /**
      * @description initialize a route
      * @param {Object} route 
-     * @param {String} route.id
-     * @param {String} route.name
-     * @param {String} route.action
-     * @param {String} route.controller
-     * @param {String} route.module 
-     * @param {String} route.path 
+     * @param {String} [route.id]
+     * @param {String} [route.name]
+     * @param {String} [route.action]
+     * @param {String} [route.controller]
+     * @param {String} [route.module] 
+     * @param {String} [route.method] 
+     * @param {String} [route.path] 
      * @returns {Object} route
      */
     initRoute(route) {

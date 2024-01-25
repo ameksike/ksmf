@@ -35,7 +35,6 @@ class LoggerManager {
      * @param {Object} obj 
      * @param {String} name 
      * @param {Function} callback 
-     * @param {String} tag 
      * @returns {Object} scope
      */
     wrap(obj, name, callback) {
@@ -85,10 +84,10 @@ class LoggerManager {
     /**
      * @description verify if a value is included in a list
      * @param {String} value 
-     * @param {Array} lst 
+     * @param {Array|null} [lst] 
      * @returns {Boolean} 
      */
-    isExcluded(value, lst) {
+    isExcluded(value, lst = null) {
         lst = lst || this.excluded;
         return lst.some(elm => new RegExp(elm, "g").test(value));
     }

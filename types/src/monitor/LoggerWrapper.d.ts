@@ -9,13 +9,25 @@ export = LoggerWrapper;
  **/
 declare class LoggerWrapper {
     /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Object|null}
+     */
+    manager: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
+    /**
      * @description Set options on Initialize Configuration Event
      * @param {Object} cfg
      */
     onInitConfig(cfg: any): void;
     /**
      * @description Set options on Initialize App Event
-     * @param {Object} cfg
+     * @param {Object} web
      */
     onInitApp(web: any): void;
 }

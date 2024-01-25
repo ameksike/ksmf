@@ -5,6 +5,14 @@ declare class DAOWrapper {
      * @param {Object} opt
      */
     constructor(opt: any);
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     dao: any;
     cfg: {};
     exclude: any;

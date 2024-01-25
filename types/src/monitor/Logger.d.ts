@@ -47,10 +47,10 @@ declare class Logger {
     isEnabled(): boolean;
     /**
      * @description set the correct log format
-     * @param {Boolean|String} data
-     * @returns {String}
+     * @param {Object} data
+     * @returns {Object} log format
      */
-    format(data: boolean | string): string;
+    format(data: any): any;
     /**
      * @description set log prefix
      * @param {String} value

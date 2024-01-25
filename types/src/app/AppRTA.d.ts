@@ -39,9 +39,9 @@ declare class AppRTA {
      * @description Run authentication handler and get if is valid request or not
      * @param {Object} req
      * @param {Object} res
-     * @returns {Boolean}
+     * @returns {Promise<boolean>}
      */
-    initAuth(req: any, res: any): boolean;
+    initAuth(req: any, res: any): Promise<boolean>;
 }
 import AppWEB = require("./AppWEB");
 import http = require("http");

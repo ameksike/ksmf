@@ -9,9 +9,16 @@ export = Manager;
  **/
 declare class Manager {
     constructor(cfg: any);
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     startUsage: NodeJS.CpuUsage;
     configure(cfg: any): void;
-    logger: any;
     /**
      * @description KsMf Wrapper
      * @param {Object} info

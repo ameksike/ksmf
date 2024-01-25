@@ -9,8 +9,15 @@ export = ErrorHandler;
  **/
 declare class ErrorHandler {
     constructor(cfg: any);
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     configure(cfg: any): void;
-    logger: any;
     /**
      * @description Set options on Initialize Configuration Event
      * @param {Object} cfg

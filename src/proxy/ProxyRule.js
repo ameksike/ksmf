@@ -67,14 +67,14 @@ class ProxyRule {
      */
     checkOrigin(scope, origin, destination) {
         if (!origin || !scope || !destination)
-            return false;
+            return null;
         for (let i in destination) {
             const acl = this.getAcl(scope, origin, i);
             if (this.check(destination[i], acl)) {
-                return true;
+                return null;
             }
         }
-        return false;
+        return null;
     }
 
     /**

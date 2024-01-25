@@ -3,6 +3,16 @@ const kscrip = require("kscryp");
 const Utl = require("../app/Utl");
 class DataService extends ksdp.integration.Dip {
 
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+
     constructor(cfg) {
         super();
         this.utl = new Utl();
@@ -12,16 +22,17 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description configure action 
      * @param {Object} cfg 
-     * @param {String} cfg.modelName
-     * @param {String} cfg.modelKey
-     * @param {Array} cfg.modelKeys
-     * @param {String} cfg.modelKeyStr
-     * @param {Object} cfg.modelInclude
-     * @param {String} cfg.modelStatus
-     * @param {Array} cfg.updateOnDuplicate
-     * @param {Object} cfg.constant
-     * @param {Object} cfg.dao  { models: Object, driver: Object, manager: Object}
-     * @param {Object} cfg.logger 
+     * @param {String} [cfg.modelName]
+     * @param {String} [cfg.modelKey]
+     * @param {Array} [cfg.modelKeys]
+     * @param {String} [cfg.modelKeyStr]
+     * @param {Object} [cfg.modelInclude]
+     * @param {String} [cfg.modelStatus]
+     * @param {Array} [cfg.updateOnDuplicate]
+     * @param {Object} [cfg.constant]
+     * @param {Object} [cfg.utl]
+     * @param {{ models?: Object; driver?: Object; manager?: Object}} [cfg.dao]
+     * @param {Object} [cfg.logger] 
      * @returns {DataService} self
      */
     configure(cfg) {
@@ -59,7 +70,7 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get paginator options
      * @param {Object} payload 
-     * @param {Object} options 
+     * @param {Object} [options] 
      * @returns {Object}
      */
     getPaginator(payload, options) {
@@ -78,7 +89,7 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description format the where clause
      * @param {Object} payload 
-     * @param {Object} options 
+     * @param {Object} [options] 
      * @returns {Object}
      */
     getWhere({ where, query }, options) {
@@ -119,8 +130,10 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get if it is single or multiple selection 
      * @param {Object} payload 
-     * @param {Object} payload.where
-     * @param {Boolean} payload.auto 
+     * @param {Object} [payload.where]
+     * @param {Boolean} [payload.auto] 
+     * @param {Number} [payload.limit] 
+     * @param {String} [payload.quantity] 
      * @param {Object} opt 
      * @returns {Boolean}
      */
@@ -141,17 +154,20 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description overload action for findAll/findOne
      * @param {Object} payload
-     * @param {Object|String|Number} payload.query 
-     * @param {Array} payload.attributes 
-     * @param {Object} payload.include 
-     * @param {Object} payload.where 
-     * @param {String} payload.quantity 
-     * @param {Number} payload.limit
-     * @param {Number} payload.page
-     * @param {Number} payload.size
-     * @param {Number} payload.jump
-     * @param {Boolean} payload.auto
-     * @returns {Object} row
+     * @param {Object|String|Number} [payload.query] 
+     * @param {Array} [payload.attributes] 
+     * @param {Object} [payload.include] 
+     * @param {Object} [payload.where] 
+     * @param {String} [payload.quantity] 
+     * @param {Number} [payload.limit]
+     * @param {Number} [payload.page]
+     * @param {Number} [payload.size]
+     * @param {String} [payload.order] 
+     * @param {Number} [payload.jump]
+     * @param {Boolean} [payload.auto] 
+     * @param {Boolean} [payload.valid]
+     * @param {Object} [payload.tmp]
+     * @returns {Promise<any>} row
      */
     async select(payload, opt) {
         try {
@@ -210,9 +226,9 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description format request payload before perform the query
      * @param {Object} data
-     * @param {String} action
-     * @param {Object} options
-     * @param {Object} row
+     * @param {String} [action]
+     * @param {Object} [options]
+     * @param {Object} [row]
      * @returns {Object}
      */
     getRequest(data, action, options, row) {
@@ -222,8 +238,8 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description format the result of the query
      * @param {Object} data
-     * @param {String} action
-     * @param {Object} options
+     * @param {String} [action]
+     * @param {Object} [options]
      * @returns {Object}
      */
     getResponse(data, action, options) {
@@ -251,7 +267,7 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get attributes map
      * @param {Object|Array} lst 
-     * @param {Number} mode 
+     * @param {Number} [mode] 
      * @returns {Object} attributes
      */
     getAttrs(lst, mode = 0) {
@@ -289,7 +305,7 @@ class DataService extends ksdp.integration.Dip {
 
     /**
      * @description get the primary key 
-     * @returns {String}
+     * @returns {Array<string>}
      */
     getPKs() {
         const model = this.getModel();
@@ -310,15 +326,21 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description read/update/create 
      * @param {Object} payload 
-     * @param {Object} payload.data 
-     * @param {Object} payload.where 
-     * @param {Object} payload.row 
-     * @param {Number} payload.mode 
-     * @param {Boolean} payload.strict 
-     * @param {Boolean} payload.error 
-     * @param {Array} payload.updateOnDuplicate 
-     * @param {Object} payload.transaction 
-     * @returns {Object} row 
+     * @param {Object} [payload.data] 
+     * @param {Object} [payload.where] 
+     * @param {Object} [payload.row] 
+     * @param {Number} [payload.mode] 
+     * @param {Boolean} [payload.strict] 
+     * @param {Boolean} [payload.error] 
+     * @param {Object} [payload.tmp] 
+     * @param {String} [payload.row] 
+     * @param {String} [payload.flow] 
+     * @param {Array} [payload.updateOnDuplicate] 
+     * @param {Object} [payload.transaction] 
+     * @param {Object} [opt] 
+     * @param {String} [opt.action] 
+     * @param {String} [opt.flow] 
+     * @returns {Promise<any>} row 
      */
     async save(payload, opt) {
         let { data, row, mode = this.constant?.action?.read, transaction = null, error = false, strict = false } = payload || {};
@@ -395,12 +417,13 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description perform a raw query 
      * @param {Object} payload 
-     * @param {String} payload.sql
-     * @param {Object} payload.params 
-     * @param {Object} payload.options 
-     * @param {String} payload.src 
-     * @param {String} payload.flow 
-     * @returns {Array|undefined} result 
+     * @param {String} [payload.sql]
+     * @param {Object} [payload.params] 
+     * @param {Object} [payload.options] 
+     * @param {String} [payload.src] 
+     * @param {String} [payload.flow] 
+     * @param {Error} [payload.error] 
+     * @returns {Promise<any>} result 
      */
     async query(payload = {}) {
         try {
@@ -436,7 +459,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
      * @param {Object} payload.transaction 
-     * @returns {Object} row
+     * @returns {Promise<any>} row
      */
     async delete(payload, opt) {
         const model = this.getModel();
@@ -490,11 +513,15 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description update an entity
      * @param {Object} payload 
-     * @param {Object} payload.data 
-     * @param {Object} payload.where 
-     * @param {Object} payload.row 
-     * @param {Number} payload.mode 
-     * @param {Object} payload.transaction 
+     * @param {Object} [payload.data] 
+     * @param {Object} [payload.where] 
+     * @param {Object} [payload.row] 
+     * @param {Number} [payload.mode] 
+     * @param {Object} [payload.transaction] 
+     * @param {boolean} [payload.strict] 
+     * @param {any[]} [payload.updateOnDuplicate] 
+     * @param {Object} [payload.transaction] 
+     * @param {Object} [opt] 
      * @returns {Object} row
      */
     update(payload, opt) {
@@ -505,9 +532,9 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description get count of data from model
      * @param {Object} options 
-     * @param {String} options.col specify the column on which you want to call the count() method with the col
-     * @param {Boolean} options.distinct tell Sequelize to generate and execute a COUNT( DISTINCT( lastName ) ) query 
-     * @returns {NUMBER}
+     * @param {String} [options.col] specify the column on which you want to call the count() method with the col
+     * @param {Boolean} [options.distinct] tell Sequelize to generate and execute a COUNT( DISTINCT( lastName ) ) query 
+     * @returns {Promise<number>}
      */
     async count(options = {}) {
         if (!this.dao) return null;
@@ -578,7 +605,7 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description Extract hotkeys from request parameters 
      * @param {Object} req 
-     * @returns { page: Number, size: Number, filter: Object, query: Object, order:Array }
+     * @returns {{ page?: Number; size?: Number; filter?: Object; query?: Object; order?:Array}}
      */
     extract(req) {
         const res = {};

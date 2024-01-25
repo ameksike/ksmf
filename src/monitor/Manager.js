@@ -8,7 +8,19 @@
  **/
 class Manager {
 
+    /**
+     * @type {Object|null}
+     */
+    helper;
+
+    /**
+     * @type {Console|null}
+     */
+    logger;
+
     constructor(cfg) {
+        this.helper = null;
+        this.logger = null;
         this.startUsage = process?.cpuUsage && process.cpuUsage();
         this.configure(cfg);
     }

@@ -31,11 +31,11 @@ declare class Utl {
     /**
      * @description For legacy code. Replace all instances of a substring in a string, using a regular expression or search string.
      * @param {String} str
-     * @param {String|RegExp} find A string to search for.
-     * @param {String} replace A string containing the text to replace for every successful match of searchValue in this string.
+     * @param {String|RegExp} [find] A string to search for.
+     * @param {String} [replace] A string containing the text to replace for every successful match of searchValue in this string.
      * @returns {String}
      */
-    replace(str: string, find: string | RegExp, replace?: string): string;
+    replace(str: string, find?: string | RegExp, replace?: string): string;
     /**
      * @description get the marging value among two numbers
      * @param {String|Number} max
@@ -53,10 +53,10 @@ declare class Utl {
     getSign(value: string | number, all?: boolean): string;
     /**
      * @description get a valid value for boolean format
-     * @param {String|Number} value
+     * @param {String|Number|Boolean} value
      * @returns {Boolean}
      */
-    asBoolean(value: string | number, strict?: boolean): boolean;
+    asBoolean(value: string | number | boolean, strict?: boolean): boolean;
     /**
      * @description check a valid value for number format
      * @param {String|Number} value
@@ -86,39 +86,49 @@ declare class Utl {
     /**
      * @description get a valid number
      * @param {String|Number} value
-     * @param {Object} contentConfig
+     * @param {Object} [config]
      * @returns {Number} Number
      */
-    asNumber(value: string | number, config: any): number;
+    asNumber(value: string | number, config?: any): number;
     /**
      * @description convert string to number
      * @param {String} value
-     * @param {Object} config
-     * @param {String} config.separator
-     * @param {String} config.decimals
-     * @param {String} config.force
+     * @param {Object} [config]
+     * @param {String} [config.separator]
+     * @param {String} [config.decimals]
+     * @param {String} [config.force]
+     * @param {String} [config.cleanValue]
+     * @param {String} [config.defaultValue]
      * @returns {String} number
      */
-    asNumberFormat(value: string, config: {
-        separator: string;
-        decimals: string;
-        force: string;
+    asNumberFormat(value: string, config?: {
+        separator?: string;
+        decimals?: string;
+        force?: string;
+        cleanValue?: string;
+        defaultValue?: string;
     }): string;
     /**
      * @description add thousands separators
      * @param {String|Number} value
-     * @param {Object} options
+     * @param {Object} [options]
      * @returns {String} Number
      */
     addNumberSeparator(value: string | number, options?: any): string;
     /**
      * @description Get a decimal round based on the decimal amount
      * @param {String|Number} value
-     * @param {String|Number} config.decimals
-     * @param {String|Number} config.format
+     * @param {Object} [config]
+     * @param {String|Number} [config.decimals]
+     * @param {String|Number} [config.format]
+     * @param {String|Number} [config.window]
      * @returns {String|Number}
      */
-    round(value: string | number, config: any): string | number;
+    round(value: string | number, config?: {
+        decimals?: string | number;
+        format?: string | number;
+        window?: string | number;
+    }): string | number;
     /**
      * @description Pads the current string/number with a given value (possibly repeated) so that the resulting string reaches a given length.
      * @param {String|Number} src
@@ -173,15 +183,15 @@ declare class Utl {
      * @description get all request params [POST, GET, Path]
      * @param {Object} req
      * @param {Object} option
-     * @param {Array|Boolean} option.clean
-     * @param {String|Function} option.type
-     * @param {Object|Array|String} option.key
+     * @param {Array|Boolean} [option.clean]
+     * @param {String|Function} [option.type]
+     * @param {Object|Array|String} [option.key]
      * @returns {Object} params
      */
     getFrom(req: any, option: {
-        clean: any[] | boolean;
-        type: string | Function;
-        key: any | any[] | string;
+        clean?: any[] | boolean;
+        type?: string | Function;
+        key?: any | any[] | string;
     }): any;
     /**
      * @description avaluate any key from opt into src
@@ -195,10 +205,10 @@ declare class Utl {
      * @description Define if child array is contained into a parent array
      * @param {Array} parent
      * @param {Array} child
-     * @param {Function} check
+     * @param {Function|null} [check]
      * @returns {Array} contained items
      */
-    contains(child: any[], parent: any[], check: Function): any[];
+    contains(child: any[], parent: any[], check?: Function | null): any[];
     /**
      * @description get all request params [POST, GET, Path]
      * @param {Object} req

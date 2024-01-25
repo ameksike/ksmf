@@ -5,15 +5,29 @@ declare class AppWEB {
      * @param {String} path
      **/
     constructor(path: string);
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Object|null}
+     */
+    dao: any | null;
+    /**
+     * @type {Object|null}
+     */
+    web: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     option: {
         app: {};
         srv: {};
     };
     path: string;
-    web: any;
     mod: any[];
     cfg: {};
-    helper: import("ksdp/types/src/integration/IoC/IoC");
     event: import("ksdp/types/src/behavioral/Observer");
     /**
      * @description initialize serve (Implement template method pattern)
@@ -70,13 +84,13 @@ declare class AppWEB {
     modules: any[];
     /**
      * @description initialize a module
-     * @param {Array} modules
      * @param {Object|String} item
-     * @param {String} item.name
-     * @param {String} item.type
-     * @param {Object} item.options
-     * @param {Object} item.params
-     * @param {Object} item.dependency
+     * @param {String} [item.name]
+     * @param {String} [item.type]
+     * @param {Object} [item.options]
+     * @param {Object} [item.params]
+     * @param {Object} [item.dependency]
+     * @param {Array} modules
      * @returns {Object} module
      */
     initModule(item: any | string, modules: any[]): any;
@@ -88,21 +102,23 @@ declare class AppWEB {
     /**
      * @description initialize a route
      * @param {Object} route
-     * @param {String} route.id
-     * @param {String} route.name
-     * @param {String} route.action
-     * @param {String} route.controller
-     * @param {String} route.module
-     * @param {String} route.path
+     * @param {String} [route.id]
+     * @param {String} [route.name]
+     * @param {String} [route.action]
+     * @param {String} [route.controller]
+     * @param {String} [route.module]
+     * @param {String} [route.method]
+     * @param {String} [route.path]
      * @returns {Object} route
      */
     initRoute(route: {
-        id: string;
-        name: string;
-        action: string;
-        controller: string;
-        module: string;
-        path: string;
+        id?: string;
+        name?: string;
+        action?: string;
+        controller?: string;
+        module?: string;
+        method?: string;
+        path?: string;
     }): any;
     /**
      * @description safely trigger events

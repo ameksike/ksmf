@@ -7,6 +7,17 @@
  * @dependency  node-cron
  * */
 class CronModule {
+
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+
     /**
      * @description configure on initialize configurations event
      */

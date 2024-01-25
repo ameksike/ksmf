@@ -5,9 +5,9 @@ declare class ProxyAuth {
      * @param {Object} req
      * @param {Object} res
      * @param {Object} inf
-     * @returns {OBJECT|Null} User { username: STRING; name: STRING; }
+     * @returns {Object|null} User { username: STRING; name: STRING; }
      */
-    verify(req: any, res: any, inf: any): OBJECT | null;
+    verify(req: any, res: any, inf: any): any | null;
     /**
      * @description Basic token decode: base64(username:password)
      * @param {String} token

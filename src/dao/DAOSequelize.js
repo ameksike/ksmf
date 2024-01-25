@@ -1,4 +1,4 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		07/03/2020
@@ -6,10 +6,36 @@
  * @license    	GPL
  * @version    	1.0
  * @dependencies sequelize, fs, path
- * */
+ **/
 const DAOBase = require('./DAOBase');
 
 class DAOSequelize extends DAOBase {
+    /**
+     * @type {Object|null}
+     */
+    manager = null;
+
+    /**
+     * @type {Object|null}
+     */
+    models = null;
+    
+    /**
+     * @type {Object|null}
+     */
+    driver = null;
+
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+	
+	
     /**
      * @description redefine constructor and set Sequelize ORM dependence
      */
@@ -95,7 +121,7 @@ class DAOSequelize extends DAOBase {
      * @returns {DAOSequelize} self
      */
     disconnect() {
-        if (this.driver && this.driver.close instanceof Function) {
+        if (this.driver?.close instanceof Function) {
             this.driver.close();
         }
         return this;
@@ -104,7 +130,7 @@ class DAOSequelize extends DAOBase {
     /**
      * @description load load models from dirname
      * @param {String} dirname 
-     * @param {Function} callback 
+     * @param {Function} [callback] 
      * @returns {DAOSequelize} self
      */
     load(dirname, callback) {
@@ -244,7 +270,7 @@ class DAOSequelize extends DAOBase {
     /**
      * @description allow generating models from db
      * @param {Object} config 
-     * @returns {Object} res
+     * @returns {Promise<any>} res
      */
     static async process(config, logger) {
         const path = require('path');

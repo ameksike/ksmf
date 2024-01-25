@@ -8,6 +8,16 @@
  **/
 class ErrorHandler {
 
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+
     constructor(cfg) {
         this.configure(cfg);
     }
