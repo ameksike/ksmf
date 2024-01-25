@@ -17,6 +17,11 @@ declare class DAORedis extends DAOBase {
      */
     disconnect(): DAORedis;
     /**
+     * @description redefine error event method
+     * @param {Error} error
+     */
+    onError(error: Error): void;
+    /**
      * @description redefine connect event method
      * @param {Object} option
      */

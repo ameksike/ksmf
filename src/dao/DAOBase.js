@@ -1,12 +1,13 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		22/04/2021
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * */
+ **/
 class DAOBase {
+
     /**
      * @description initialize DAO Base model
      * @param {Object} opt 
@@ -55,6 +56,13 @@ class DAOBase {
     }
 
     /**
+     * @description redefine logs
+     * @param {String|Number} type 
+     * @param {*} message 
+     */
+    onLog(type, message) { };
+
+    /**
      * @description get connection options as string
      * @returns {String}
      */
@@ -63,14 +71,18 @@ class DAOBase {
     }
 
     /**
+     * 
+     * @typedef {Object} CfgObj
+     * @property {String} [dialect]
+     * @property {String} [username]
+     * @property {String} [password]
+     * @property {String} [database] 
+     * @property {String} [protocol]
+     * @property {String} [host]
+     * @property {String} [port]
+     * 
      * @description format string connection dialect://username:password@host:port/database
-     * @param {Object|String} cfg 
-     * @param {String} cfg.dialect
-     * @param {String} cfg.username
-     * @param {String} cfg.password
-     * @param {String} cfg.database
-     * @param {String} cfg.host
-     * @param {String} cfg.port
+     * @param {CfgObj|String} cfg 
      */
     conn2str(cfg) {
         if (!cfg) return '';

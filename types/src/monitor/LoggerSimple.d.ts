@@ -2,24 +2,34 @@ export = LoggerSimple;
 declare class LoggerSimple {
     constructor(config: any);
     /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
+    /**
      * @description Set the initial configuration for this lib
-     * @param {Object} [config] [OPTIONAL]
-     * @param {Object} config.drv
-     * @param {Object} config.level
-     * @param {String} config.sep
-     * @param {String} config.env
-     * @param {String} config.envKey
-     * @param {String} config.envKeyLevel
-     * @param {Object} config.envs
+     * @param {Object} [config]
+     * @param {Object} [config.drv]
+     * @param {Object} [config.level]
+     * @param {String} [config.sep]
+     * @param {String} [config.env]
+     * @param {String} [config.type]
+     * @param {String} [config.envKey]
+     * @param {String} [config.envKeyLevel]
+     * @param {Object} [config.envs]
      */
     configure(config?: {
-        drv: any;
-        level: any;
-        sep: string;
-        env: string;
-        envKey: string;
-        envKeyLevel: string;
-        envs: any;
+        drv?: any;
+        level?: any;
+        sep?: string;
+        env?: string;
+        type?: string;
+        envKey?: string;
+        envKeyLevel?: string;
+        envs?: any;
     }): this;
     level: any;
     envKey: any;
@@ -41,24 +51,24 @@ declare class LoggerSimple {
     getLevel(env: any): number;
     /**
      * @description Define if it is allowed to print data based on the log level in a specific environment
-     * @param {String} level
-     * @param {String} env
+     * @param {Object|null} [level]
+     * @param {Number|null} [env]
      * @returns {Boolean}
      */
-    isAllow(level?: string, env?: string): boolean;
+    isAllow(level?: any | null, env?: number | null): boolean;
     /**
      * @description convert object to string safely
      * @param {Object} value
-     * @returns {String} result
+     * @returns {string | Buffer} result
      */
-    toStr(value: any): string;
+    toStr(value: any): string | Buffer;
     /**
      * @description Write data to standard I/O
-     * @param {String} level
+     * @param {Object} level
      * @param  {...any} args
      * @returns {Boolean}
      **/
-    print(level: string, ...args: any[]): boolean;
+    print(level: any, ...args: any[]): boolean;
     /**
      * @description Alias for info function
      * @param  {...any} args

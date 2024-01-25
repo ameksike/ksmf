@@ -12,7 +12,6 @@ declare class LoggerManager {
      * @param {Object} obj
      * @param {String} name
      * @param {Function} callback
-     * @param {String} tag
      * @returns {Object} scope
      */
     wrap(obj: any, name: string, callback: Function): any;
@@ -31,10 +30,10 @@ declare class LoggerManager {
     /**
      * @description verify if a value is included in a list
      * @param {String} value
-     * @param {Array} lst
+     * @param {Array|null} [lst]
      * @returns {Boolean}
      */
-    isExcluded(value: string, lst: any[]): boolean;
+    isExcluded(value: string, lst?: any[] | null): boolean;
     /**
      * @description track
      * @param {Object} obj

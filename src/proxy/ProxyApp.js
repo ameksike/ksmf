@@ -15,6 +15,15 @@ const AppWEB = require('../app/AppWEB');
 const HttpHandler = require('../app/HttpHandler');
 
 class ProxyApp {
+    /**
+     * @type {Object|null}
+     */
+    helper;
+
+    /**
+     * @type {Console|null}
+     */
+    logger;
 
     constructor(path) {
         this.app = new AppWEB(path)
@@ -61,16 +70,16 @@ class ProxyApp {
             if (err) {
                 return this.app.setError(err);
             }
-            const info = listener.address();
-            this.app.setLog('INFO', { server: 'on', host: info.address, port: info.port });
+            const info = /** @type {{ address: string; family: string; port: number; }} */ listener.address();
+            this.app?.emit('onStart', "ksmf", [{ server: 'on', host: typeof info === "object" && info.address, port: typeof info === "object" && info.port }, this]);
         });
         server.on('connect', async (req, res, head) => {
             //... Only for HTTP/1.1 CONNECT method
             this.inf = this.initInfo(req, res, head);
-            this.app.emit('onConnect', 'ksmf', [req, res, this.inf]);
+            this.app.emit('onConnectStart', 'ksmf', [req, res, this.inf]);
             this.inf.status = this.inf.status && await this.initAuth(req, res);
             this.inf.status = this.inf.status && await this.initRules(req, res);
-            this.app.setLog('INFO', { state: this.inf.status ? 'ALLOW' : 'DENY', url: this.inf.destination.url, ...this.inf.origin });
+            this.app?.emit('onConnectEnd', "ksmf", [req, res, { state: this.inf.status ? 'ALLOW' : 'DENY', url: this.inf.destination.url, ...this.inf.origin }, this]);
             if (this.inf.status) {
                 this.pipe(req, res, this);
             }
@@ -111,7 +120,7 @@ class ProxyApp {
      * @description Run rules handler and get if is valid request or not 
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Boolean}
+     * @returns {Promise<boolean>}
      */
     async initRules(req, res) {
         const srvRules = this.app.helper.get('rule');
@@ -135,7 +144,7 @@ class ProxyApp {
      * @description Run authentication handler and get if is valid request or not 
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Boolean}
+     * @returns {Promise<boolean>}
      */
     async initAuth(req, res) {
         const srvAuth = this.app.helper.get('auth');

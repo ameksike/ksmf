@@ -8,21 +8,33 @@
  */
 const KsCryp = require("kscryp");
 class LoggerSimple {
+    /**
+     * @type {Object|null}
+     */
+    helper;
+
+    /**
+     * @type {Console|null}
+     */
+    logger;
 
     constructor(config) {
+        this.helper = null;
+        this.logger = null;
         this.configure(config);
     }
 
     /**
      * @description Set the initial configuration for this lib
-     * @param {Object} [config] [OPTIONAL]
-     * @param {Object} config.drv
-     * @param {Object} config.level
-     * @param {String} config.sep
-     * @param {String} config.env
-     * @param {String} config.envKey
-     * @param {String} config.envKeyLevel
-     * @param {Object} config.envs
+     * @param {Object} [config]
+     * @param {Object} [config.drv]
+     * @param {Object} [config.level]
+     * @param {String} [config.sep]
+     * @param {String} [config.env]
+     * @param {String} [config.type]
+     * @param {String} [config.envKey]
+     * @param {String} [config.envKeyLevel]
+     * @param {Object} [config.envs]
      */
     configure(config) {
         this.level = config?.level || this.level || {
@@ -66,8 +78,8 @@ class LoggerSimple {
 
     /**
      * @description Define if it is allowed to print data based on the log level in a specific environment
-     * @param {String} level
-     * @param {String} env
+     * @param {Object|null} [level]
+     * @param {Number|null} [env]
      * @returns {Boolean}
      */
     isAllow(level = null, env = null) {
@@ -78,7 +90,7 @@ class LoggerSimple {
     /**
      * @description convert object to string safely
      * @param {Object} value 
-     * @returns {String} result
+     * @returns {string | Buffer} result
      */
     toStr(value) {
         try {
@@ -90,7 +102,7 @@ class LoggerSimple {
 
     /**
      * @description Write data to standard I/O
-     * @param {String} level
+     * @param {Object} level
      * @param  {...any} args
      * @returns {Boolean}
      **/

@@ -127,7 +127,7 @@ class AppRTA {
      * @description Run authentication handler and get if is valid request or not 
      * @param {Object} req 
      * @param {Object} res 
-     * @returns {Boolean}
+     * @returns {Promise<boolean>}
      */
     async initAuth(req, res) {
         const srvAuth = this.app.helper.get('auth');

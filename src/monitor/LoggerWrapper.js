@@ -8,6 +8,21 @@
  **/
 class LoggerWrapper {
     /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Object|null}
+     */
+    manager = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+
+    /**
      * @description Set options on Initialize Configuration Event 
      * @param {Object} cfg 
      */
@@ -19,7 +34,7 @@ class LoggerWrapper {
 
     /**
      * @description Set options on Initialize App Event 
-     * @param {Object} cfg 
+     * @param {Object} web 
      */
     onInitApp(web) {
         const logger = this.helper?.get('logger');

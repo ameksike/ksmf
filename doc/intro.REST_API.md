@@ -66,4 +66,4 @@ And most importantly, every interaction with the server must be stateless.
 
 All these principles help RESTful applications to be simple, lightweight, and fast.
 
-The next recomended topic: [Full Stack App (Angular, React, VueJs)](./intro.fullstack.app.md).
+The next recomended topic: [Full Stack App (Angular, React, VueJs)](./intro.fullstack_app.md).

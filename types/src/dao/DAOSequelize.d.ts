@@ -45,13 +45,25 @@ declare class DAOSequelize extends DAOBase {
     /**
      * @description allow generating models from db
      * @param {Object} config
-     * @returns {Object} res
+     * @returns {Promise<any>} res
      */
-    static process(config: any, logger: any): any;
+    static process(config: any, logger: any): Promise<any>;
     /**
      * @description redefine constructor and set Sequelize ORM dependence
      */
     constructor();
+    /**
+     * @type {Object|null}
+     */
+    models: any | null;
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
     /**
      * @description initialize Sequelize manager
      * @returns {DAOSequelize} self
@@ -70,10 +82,10 @@ declare class DAOSequelize extends DAOBase {
     /**
      * @description load load models from dirname
      * @param {String} dirname
-     * @param {Function} callback
+     * @param {Function} [callback]
      * @returns {DAOSequelize} self
      */
-    load(dirname: string, callback: Function): DAOSequelize;
+    load(dirname: string, callback?: Function): DAOSequelize;
     /**
      * @description create models associations
      * @returns {DAOSequelize} self

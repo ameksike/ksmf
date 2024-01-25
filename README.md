@@ -12,12 +12,12 @@ This library belong to the **Ksike** ecosystem:
 
 ### Get started
 1. [Install](./doc/intro.install.md)
-2. [Hello World](./doc/intro.hello.world.md)
-3. [REST API Service](./doc/intro.REST.API.md)
-4. [Full Stack App (Angular, React, VueJs)](./doc/intro.fullstack.app.md)
+2. [Hello World](./doc/intro.hello_world.md)
+3. [REST API Service](./doc/intro.REST_API.md)
+4. [Full Stack App (Angular, React, VueJs)](./doc/intro.fullstack_app.md)
 
 ### Common topics
-1. [Project Skeleton](./doc/common.project.skeleton.md)
+1. [Project Skeleton](./doc/common.project_skeleton.md)
 2. [Modules](./doc/common.modules.md)
 3. [Controllers](./doc/common.controllers.md)
 4. [Services](./doc/common.services.md)
@@ -25,8 +25,8 @@ This library belong to the **Ksike** ecosystem:
 
 ### Advanced topics
 1. [Test](./doc/advanced.test.md)
-2. [Web App](./doc/advanced.app.web.md) 
-3. [CLI App](./doc/advanced.app.cli.md) 
+2. [Web App](./doc/advanced.app_web.md) 
+3. [CLI App](./doc/advanced.app_cli.md) 
 4. [Settings](./doc/advanced.setting.md)
 5. [Routes](./doc/advanced.routes.md)
 6. [Events](./doc/advanced.events.md)
@@ -35,6 +35,6 @@ This library belong to the **Ksike** ecosystem:
 
 ### Applications
 1. [Dashboard](./doc/application.dashboard.md)
-2. [Proxy Server](./doc/application.proxy.server.md)
+2. [Proxy Server](./doc/application.proxy_server.md)
 
 In case of developing a REST API, it is recommended to evaluate the deployment of your service through libraries such as [KsWc](https://github.com/ameksike/kswc/wiki).  

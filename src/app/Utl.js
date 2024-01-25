@@ -31,8 +31,8 @@ class Utl {
     /**
      * @description For legacy code. Replace all instances of a substring in a string, using a regular expression or search string.
      * @param {String} str 
-     * @param {String|RegExp} find A string to search for.
-     * @param {String} replace A string containing the text to replace for every successful match of searchValue in this string.
+     * @param {String|RegExp} [find] A string to search for.
+     * @param {String} [replace] A string containing the text to replace for every successful match of searchValue in this string.
      * @returns {String}
      */
     replace(str, find, replace = "") {
@@ -65,12 +65,12 @@ class Utl {
         if (!value) {
             return "";
         }
-        return value > 0 ? "+" : (all ? "-" : "");
+        return parseFloat(value) > 0 ? "+" : (all ? "-" : "");
     }
 
     /**
      * @description get a valid value for boolean format 
-     * @param {String|Number} value 
+     * @param {String|Number|Boolean} value 
      * @returns {Boolean}
      */
     asBoolean(value, strict = true) {
@@ -133,7 +133,7 @@ class Utl {
     /**
      * @description get a valid number 
      * @param {String|Number} value 
-     * @param {Object} contentConfig 
+     * @param {Object} [config] 
      * @returns {Number} Number 
      */
     asNumber(value, config) {
@@ -145,14 +145,16 @@ class Utl {
     /**
      * @description convert string to number
      * @param {String} value 
-     * @param {Object} config 
-     * @param {String} config.separator
-     * @param {String} config.decimals
-     * @param {String} config.force 
+     * @param {Object} [config] 
+     * @param {String} [config.separator]
+     * @param {String} [config.decimals]
+     * @param {String} [config.force] 
+     * @param {String} [config.cleanValue] 
+     * @param {String} [config.defaultValue] 
      * @returns {String} number
      */
     asNumberFormat(value, config) {
-        config = this.clone(this.config.number, config || {});
+        config = this.clone(this.config?.number, config || {});
         if (typeof (value) === "string") {
             if (config.separator !== ".") {
                 value = this.replace(value, config.separator);
@@ -174,7 +176,7 @@ class Utl {
     /**
      * @description add thousands separators
      * @param {String|Number} value 
-     * @param {Object} options 
+     * @param {Object} [options] 
      * @returns {String} Number
      */
     addNumberSeparator(value, options = null) {
@@ -195,8 +197,10 @@ class Utl {
     /**
      * @description Get a decimal round based on the decimal amount
      * @param {String|Number} value 
-     * @param {String|Number} config.decimals 
-     * @param {String|Number} config.format 
+     * @param {Object} [config] 
+     * @param {String|Number} [config.decimals] 
+     * @param {String|Number} [config.format] 
+     * @param {String|Number} [config.window] 
      * @returns {String|Number}
      */
     round(value, config) {
@@ -357,9 +361,9 @@ class Utl {
      * @description get all request params [POST, GET, Path] 
      * @param {Object} req 
      * @param {Object} option 
-     * @param {Array|Boolean} option.clean 
-     * @param {String|Function} option.type 
-     * @param {Object|Array|String} option.key 
+     * @param {Array|Boolean} [option.clean] 
+     * @param {String|Function} [option.type] 
+     * @param {Object|Array|String} [option.key] 
      * @returns {Object} params
      */
     getFrom(req, option) {
@@ -432,10 +436,10 @@ class Utl {
      * @description Define if child array is contained into a parent array
      * @param {Array} parent 
      * @param {Array} child 
-     * @param {Function} check 
+     * @param {Function|null} [check] 
      * @returns {Array} contained items
      */
-    contains(child, parent, check) {
+    contains(child, parent, check = null) {
         if (!child) {
             return [];
         }
@@ -446,7 +450,7 @@ class Utl {
         check = check instanceof Function ? check : ((item, lst) => lst.includes(item));
         return child.filter(item => check(item, parent));
     }
-    
+
     /**
      * @description get all request params [POST, GET, Path] 
      * @param {Object} req 

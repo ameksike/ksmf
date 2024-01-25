@@ -56,8 +56,8 @@ class Logger {
 
     /**
      * @description set the correct log format
-     * @param {Boolean|String} data 
-     * @returns {String}
+     * @param {Object} data 
+     * @returns {Object} log format
      */
     format(data) {
         if (this.cfg.level >= 2) {

@@ -13,4 +13,4 @@ In our development package, we have templates that can be taken as a basis for t
 
 For more information on this template, see the following link: [ksmf-skeleton-proxy](https://github.com/ameksike/ksmf-skeleton-proxy).
 
-
+The next recomended topic: [Home](../README.md).

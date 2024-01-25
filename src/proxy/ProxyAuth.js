@@ -5,7 +5,7 @@ class ProxyAuth {
      * @param {Object} req 
      * @param {Object} res 
      * @param {Object} inf 
-     * @returns {OBJECT|Null} User { username: STRING; name: STRING; } 
+     * @returns {Object|null} User { username: STRING; name: STRING; } 
      */
     verify(req, res, inf) {
         if (!inf?.security || !inf?.origin?.token) {
@@ -26,14 +26,11 @@ class ProxyAuth {
         if (!(bearer instanceof Array)) {
             return null;
         }
-        bearer = Buffer.from(bearer[1], 'base64').toString();
-        if (!(bearer instanceof Array)) {
-            return null;
-        }
-        bearer = bearer.split(':');
+        let tmp = Buffer.from(bearer[1], 'base64').toString();
+        let bea = tmp.split(':');
         return {
-            username: bearer[0],
-            password: bearer[1]
+            username: bea[0],
+            password: bea[1]
         }
     }
 

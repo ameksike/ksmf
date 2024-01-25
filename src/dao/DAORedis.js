@@ -1,4 +1,4 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		22/04/2021
@@ -6,7 +6,7 @@
  * @license    	GPL
  * @version    	1.0
  * @dependencies ioredis
- * */
+ **/
 const DAOBase = require('./DAOBase');
 
 class DAORedis extends DAOBase {
@@ -49,7 +49,7 @@ class DAORedis extends DAOBase {
         };
         const Redis = require("ioredis");
         this.driver = new Redis(cfg);
-        redis.on('connect', () => {
+        this.driver.on('connect', () => {
             this.onConnect(this.option);
         });
         return this;
@@ -66,7 +66,7 @@ class DAORedis extends DAOBase {
 
     /**
      * @description redefine error event method
-     * @param {Object} option 
+     * @param {Error} error 
      */
     onError(error) {
         const message = error.message ? error.message : error;

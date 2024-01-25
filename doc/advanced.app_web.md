@@ -21,12 +21,7 @@ module.exports = PersonModule;
 ```
 
 Note that the *Module::web* property has the **[Express Js](https://expressjs.com/es/)** app instance.
+advanced.app_web
 
-### Related topics 
-+ [Skeleton](./common.project.skeleton.md)
-+ [Web Server](./advanced.app.web.md)
-+ [Modules](./common.modules.md)
-+ [Settings](./advanced.setting.md)
-+ [Events](./advanced.events.md)
 
-The next recomended topic: [CLI App](./advanced.app.cli.md).
+The next recomended topic: [CLI APP](./advanced.app_cli.md).

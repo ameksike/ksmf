@@ -11,6 +11,16 @@ const path = require('path');
 class DAOWrapper {
 
     /**
+     * @type {Object|null}
+     */
+    helper = null;
+
+    /**
+     * @type {Console|null}
+     */
+    logger = null;
+	
+    /**
      * @description Initialize options on construct DATAWrapper
      * @param {Object} opt 
      */

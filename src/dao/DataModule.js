@@ -11,9 +11,19 @@ const Module = require('../app/Module');
 
 class DataModule extends Module {
 
+    /**
+     * @description initialize module
+     * @param {Object} payload 
+     * @param {Object} [payload.app] 
+     * @param {Object} [payload.web]
+     * @param {Object} [payload.opt] 
+     * @param {Object} [payload.db] 
+     * @returns {DataModule} self
+     */
     configure(payload) {
         super.configure(payload);
         this.db = payload?.db || this.db || {};
+        return this;
     }
 
     init() {

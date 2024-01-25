@@ -1,14 +1,20 @@
 export = TPL;
 declare class TPL {
     constructor(cfg?: {});
-    logger: any;
+    /**
+     * @type {Console}
+     */
+    logger: Console;
     /**
      * @description get file info
      * @param {String} name
-     * @param {Object} options
+     * @param {Object} [options]
+     * @param {String} [options.ext]
      * @returns {{ file: String, ext: String, path:String, filename: String }}
      */
-    getPath(name: string, options: any): {
+    getPath(name: string, options?: {
+        ext?: string;
+    }): {
         file: string;
         ext: string;
         path: string;
@@ -17,9 +23,15 @@ declare class TPL {
     /**
      * @description Render templates based on twing lib
      * @param {String} name
+     * @param {Object} data
+     * @param {String} [data.flow]
      * @param {Object} options
+     * @param {String} [options.path]
+     * @param {String} [options.ext]
+     * @param {String} [options.flow]
+     * @param {Array} [options.functions]
      * @requires twing
-     * @returns {String}
+     * @returns {Promise<string>}
      * @example
      * ................. TEMPLATE FILE
      *	<ul>
@@ -39,24 +51,48 @@ declare class TPL {
      *		});
      *	})()
      */
-    render(name: string, data?: {}, options?: any): string;
+    render(name: string, data?: {
+        flow?: string;
+    }, options?: {
+        path?: string;
+        ext?: string;
+        flow?: string;
+        functions?: any[];
+    }): Promise<string>;
     /**
      * @description Compile template
-     * @param {String} name
-     * @param {Object} options
-     * @param {String} options.path
-     * @param {String} options.ext
+     * @param {String} file
+     * @param {Object} [data]
+     * @param {String} [data.flow]
+     * @param {Object} [options]
+     * @param {String} [options.path]
+     * @param {String} [options.ext]
+     * @param {String} [options.flow]
      * @returns {String}
      */
-    compile(file: any, data?: {}, options?: {
-        path: string;
-        ext: string;
+    compile(file: string, data?: {
+        flow?: string;
+    }, options?: {
+        path?: string;
+        ext?: string;
+        flow?: string;
     }): string;
     /**
      * @description Interpolate all the options into data string
-     * @param {String} data
-     * @param {Object} options
+     * @param {String} content
+     * @param {Object} [params]
+     * @param {String} [params.flow]
+     * @param {Object} [options]
+     * @param {String} [options.flow]
+     * @param {String} [options.open]
+     * @param {String} [options.close]
      * @returns {String}
      */
-    interpolate(content: any, params: any, options?: any): string;
+    interpolate(content: string, params?: {
+        flow?: string;
+    }, options?: {
+        flow?: string;
+        open?: string;
+        close?: string;
+    }): string;
 }
