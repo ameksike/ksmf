@@ -1,3 +1,7 @@
+/**
+ * @description it's recommended to use KsTPL instead
+ * @deprecated
+ */
 class TPL {
     /**
      * @type {Console}

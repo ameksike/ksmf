@@ -1,4 +1,4 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		15/11/2021
@@ -6,7 +6,7 @@
  * @license    	GPL
  * @version    	1.0
  * @dependencies AppWEB, HttpHandler
- * */
+ **/
 const http = require('http');
 const net = require('net')
 const url = require('url')
