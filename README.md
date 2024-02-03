@@ -9,7 +9,7 @@ This library belong to the **Ksike** ecosystem:
 - [KsEval](https://www.npmjs.com/package/kseval) - Expression Evaluator Library 
 - [KsWC](https://www.npmjs.com/package/kswc) - Web API deployment Library
 - [KsTpl](https://www.npmjs.com/package/kstpl) - Template Engine
-- [KsDoc](https://www.npmjs.com/package/ksdocs) - Document Engine
+- [KsDocs](https://www.npmjs.com/package/ksdocs) - Document Engine
 
 
 ### Get started
