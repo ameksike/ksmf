@@ -1,4 +1,4 @@
-/*
+/**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
  * @date		22/02/2022
@@ -6,8 +6,9 @@
  * @license    	GPL
  * @version    	1.0
  * @require     swagger-ui-express swagger-jsdoc
- * @description swagger wrapper for creating API docs: https://swagger.io/specification/
- * */
+ * @description it's recommended to use KsDocs instead. Swagger wrapper for creating API docs: https://swagger.io/specification/
+ * @deprecated
+ **/
 class Swagger {
 
     /**

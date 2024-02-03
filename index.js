@@ -25,7 +25,8 @@ module.exports = {
         LoggerManager: require('./src/monitor/LoggerManager'),
         LoggerSimple: require('./src/monitor/LoggerSimple'),
         LoggerWrapper: require('./src/monitor/LoggerWrapper'),
-        Fingerprint: require('./src/monitor/Fingerprint')
+        Fingerprint: require('./src/monitor/Fingerprint'),
+        Session: require('./src/monitor/Session'),
     },
     proxy: {
         App: require('./src/proxy/ProxyApp'),

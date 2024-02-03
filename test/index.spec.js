@@ -2,7 +2,7 @@
 const KsMf = require('../index');
 
 describe('LOAD', () => {
-    it("should a valid lib", (done) => {
+    it("should a valid lib", () => {
         expect(KsMf).toBeInstanceOf(Object);
 
         expect(KsMf.app.WEB).toBeInstanceOf(Object);
@@ -11,28 +11,27 @@ describe('LOAD', () => {
         expect(KsMf.app.Utl).toBeInstanceOf(Object);
         expect(KsMf.app.Cors).toBeInstanceOf(Object);
 
-        expect(KsMf.dao.Base).toBeInstanceOf(Object);
-        expect(KsMf.dao.Sequelize).toBeInstanceOf(Object);
-        expect(KsMf.dao.Redis).toBeInstanceOf(Object);
-        expect(KsMf.dao.Wrapper).toBeInstanceOf(Object);
-        expect(KsMf.dao.DataService).toBeInstanceOf(Object);
+        expect(KsMf.dao.Base).toBeInstanceOf(Function);
+        expect(KsMf.dao.Sequelize).toBeInstanceOf(Function);
+        expect(KsMf.dao.Redis).toBeInstanceOf(Function);
+        expect(KsMf.dao.Wrapper).toBeInstanceOf(Function);
+        expect(KsMf.dao.DataService).toBeInstanceOf(Function);
 
-        expect(KsMf.task.Cron).toBeInstanceOf(Object);
-        expect(KsMf.view.Tpl).toBeInstanceOf(Object);
+        expect(KsMf.task.Cron).toBeInstanceOf(Function);
+        expect(KsMf.view.Tpl).toBeInstanceOf(Function);
 
-        expect(KsMf.proxy.App).toBeInstanceOf(Object);
-        expect(KsMf.proxy.Rule).toBeInstanceOf(Object);
-        expect(KsMf.proxy.Auth).toBeInstanceOf(Object);
+        expect(KsMf.proxy.App).toBeInstanceOf(Function);
+        expect(KsMf.proxy.Rule).toBeInstanceOf(Function);
+        expect(KsMf.proxy.Auth).toBeInstanceOf(Function);
 
-        expect(KsMf.doc.Swagger).toBeInstanceOf(Object);
+        expect(KsMf.doc.Swagger).toBeInstanceOf(Function);
 
-        expect(KsMf.monitor.Manager).toBeInstanceOf(Object);
-        expect(KsMf.monitor.Error).toBeInstanceOf(Object);
-        expect(KsMf.monitor.Logger).toBeInstanceOf(Object);
-        expect(KsMf.monitor.LoggerManager).toBeInstanceOf(Object);
-        expect(KsMf.monitor.LoggerSimple).toBeInstanceOf(Object);
-        expect(KsMf.monitor.LoggerWrapper).toBeInstanceOf(Object);
-
-        done();
+        expect(KsMf.monitor.Manager).toBeInstanceOf(Function);
+        expect(KsMf.monitor.Error).toBeInstanceOf(Function);
+        expect(KsMf.monitor.Logger).toBeInstanceOf(Function);
+        expect(KsMf.monitor.LoggerManager).toBeInstanceOf(Function);
+        expect(KsMf.monitor.LoggerSimple).toBeInstanceOf(Function);
+        expect(KsMf.monitor.LoggerWrapper).toBeInstanceOf(Function);
+        expect(KsMf.monitor.Session).toBeInstanceOf(Function);
     });
 });

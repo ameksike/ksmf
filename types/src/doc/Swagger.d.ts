@@ -1,4 +1,15 @@
 export = Swagger;
+/**
+ * @author		Antonio Membrides Espinosa
+ * @email		tonykssa@gmail.com
+ * @date		22/02/2022
+ * @copyright  	Copyright (c) 2020-2030
+ * @license    	GPL
+ * @version    	1.0
+ * @require     swagger-ui-express swagger-jsdoc
+ * @description it's recommended to use KsDocs instead. Swagger wrapper for creating API docs: https://swagger.io/specification/
+ * @deprecated
+ **/
 declare class Swagger {
     /**
      * @description Initialize options on construct Swagger

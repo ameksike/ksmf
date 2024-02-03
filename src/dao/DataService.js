@@ -333,7 +333,6 @@ class DataService extends ksdp.integration.Dip {
      * @param {Boolean} [payload.strict] 
      * @param {Boolean} [payload.error] 
      * @param {Object} [payload.tmp] 
-     * @param {String} [payload.row] 
      * @param {String} [payload.flow] 
      * @param {Array} [payload.updateOnDuplicate] 
      * @param {Object} [payload.transaction] 
@@ -520,7 +519,6 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} [payload.transaction] 
      * @param {boolean} [payload.strict] 
      * @param {any[]} [payload.updateOnDuplicate] 
-     * @param {Object} [payload.transaction] 
      * @param {Object} [opt] 
      * @returns {Object} row
      */

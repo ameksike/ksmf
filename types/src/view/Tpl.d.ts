@@ -1,4 +1,8 @@
 export = TPL;
+/**
+ * @description it's recommended to use KsTPL instead
+ * @deprecated
+ */
 declare class TPL {
     constructor(cfg?: {});
     /**
