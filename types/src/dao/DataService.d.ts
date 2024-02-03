@@ -190,7 +190,6 @@ declare class DataService extends DataService_base {
      * @param {Boolean} [payload.strict]
      * @param {Boolean} [payload.error]
      * @param {Object} [payload.tmp]
-     * @param {String} [payload.row]
      * @param {String} [payload.flow]
      * @param {Array} [payload.updateOnDuplicate]
      * @param {Object} [payload.transaction]
@@ -207,7 +206,6 @@ declare class DataService extends DataService_base {
         strict?: boolean;
         error?: boolean;
         tmp?: any;
-        row?: any;
         flow?: string;
         updateOnDuplicate?: any[];
         transaction?: any;
@@ -295,7 +293,6 @@ declare class DataService extends DataService_base {
      * @param {Object} [payload.transaction]
      * @param {boolean} [payload.strict]
      * @param {any[]} [payload.updateOnDuplicate]
-     * @param {Object} [payload.transaction]
      * @param {Object} [opt]
      * @returns {Object} row
      */
@@ -307,7 +304,6 @@ declare class DataService extends DataService_base {
         transaction?: any;
         strict?: boolean;
         updateOnDuplicate?: any[];
-        transaction?: any;
     }, opt?: any): any;
     /**
      * @description get count of data from model

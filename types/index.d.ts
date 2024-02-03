@@ -15,6 +15,7 @@ export declare namespace monitor {
     let LoggerSimple: typeof import("./src/monitor/LoggerSimple");
     let LoggerWrapper: typeof import("./src/monitor/LoggerWrapper");
     let Fingerprint: typeof import("./src/monitor/Fingerprint");
+    let Session: typeof import("./src/monitor/Session");
 }
 export declare namespace proxy {
     let App: typeof import("./src/proxy/ProxyApp");
