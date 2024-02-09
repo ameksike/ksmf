@@ -33,13 +33,23 @@ declare class Module {
      * @param {Object} payload
      * @param {Object} [payload.app]
      * @param {Object} [payload.web]
+     * @param {Object} [payload.drv]
      * @param {Object} [payload.opt]
+     * @param {Object} [payload.rest]
+     * @param {Object} [payload.routes]
+     * @param {Object} [payload.prefix]
+     * @param {Object} [payload.middleware]
      * @returns {Module} self
      */
     configure(payload: {
         app?: any;
         web?: any;
+        drv?: any;
         opt?: any;
+        rest?: any;
+        routes?: any;
+        prefix?: any;
+        middleware?: any;
     }): Module;
     app: any;
     web: any;
@@ -70,6 +80,7 @@ declare class Module {
      * @description allow customized web routes initialization by module
      * @param {Object} opt
      * @param {String} [opt.route]
+     * @param {String} [opt.action]
      * @param {String} [opt.name]
      * @param {String} [opt.controller]
      * @param {String} [opt.method]
@@ -77,6 +88,7 @@ declare class Module {
      */
     initRoutesWeb(opt: {
         route?: string;
+        action?: string;
         name?: string;
         controller?: string;
         method?: string;

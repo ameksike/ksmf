@@ -34,7 +34,12 @@ class Module {
      * @param {Object} payload 
      * @param {Object} [payload.app] 
      * @param {Object} [payload.web]
+     * @param {Object} [payload.drv]
      * @param {Object} [payload.opt] 
+     * @param {Object} [payload.rest] 
+     * @param {Object} [payload.routes] 
+     * @param {Object} [payload.prefix] 
+     * @param {Object} [payload.middleware] 
      * @returns {Module} self
      */
     configure(payload) {
@@ -97,6 +102,7 @@ class Module {
      * @description allow customized web routes initialization by module
      * @param {Object} opt
      * @param {String} [opt.route]
+     * @param {String} [opt.action]
      * @param {String} [opt.name]
      * @param {String} [opt.controller]
      * @param {String} [opt.method]
@@ -232,7 +238,7 @@ class Module {
             name: opt.controller,
             path: opt.path || 'controller',
             module: this.name,
-            moduleType: this._?.type,
+            moduleType: this.type || this._?.type,
             options: {
                 opt: this.opt,
                 module: this.name,

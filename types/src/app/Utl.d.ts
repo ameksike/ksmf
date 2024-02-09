@@ -84,6 +84,18 @@ declare class Utl {
      */
     clear(value: string): string;
     /**
+     * @description Transform a text string using Snake Case notation
+     * @param {String} str
+     * @returns {String} str
+     */
+    toSnakeCase(str: string): string;
+    /**
+     * @description Transform a text string using Camel Case notation
+     * @param {String} str
+     * @returns {String} str
+     */
+    toCamelCase(str: string): string;
+    /**
      * @description get a valid number
      * @param {String|Number} value
      * @param {Object} [config]
