@@ -36,8 +36,7 @@ class AppWEB {
      * @type {Console|null}
      */
     logger = null;
-	
-	
+
     /**
      * @description initialize library
      * @param {String} path 
@@ -278,13 +277,15 @@ class AppWEB {
     }
 
     /**
+     * @typedef {Object} TOption
+     * @property {String} [item.name] 
+     * @property {String} [item.type] 
+     * @property {Object} [item.options] 
+     * @property {Object} [item.params] 
+     * @property {Object} [item.dependency] 
+     * 
      * @description initialize a module
-     * @param {Object|String} item 
-     * @param {String} [item.name] 
-     * @param {String} [item.type] 
-     * @param {Object} [item.options] 
-     * @param {Object} [item.params] 
-     * @param {Object} [item.dependency] 
+     * @param {TOption|String} item 
      * @param {Array} modules 
      * @returns {Object} module
      */
@@ -354,7 +355,7 @@ class AppWEB {
         if (this.cfg?.srv?.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
-                this.initRoute(route);
+                this.initRoute(route, i);
             }
         }
         this.web.get('*', (req, res, next) => {
@@ -374,11 +375,12 @@ class AppWEB {
      * @param {String} [route.module] 
      * @param {String} [route.method] 
      * @param {String} [route.path] 
+     * @param {String} pathname 
      * @returns {Object} route
      */
-    initRoute(route) {
+    initRoute(route, pathname) {
         if (this.web[route.method]) {
-            this.web[route.method](i, (req, res, next) => {
+            this.web[route.method](pathname, (req, res, next) => {
                 route.path = route.path || 'controller';
                 route.name = route.name || route.controller;
                 const controller = this.helper.get(route);
@@ -387,7 +389,7 @@ class AppWEB {
                 }
                 controller[route.action](req, res, next);
             });
-            this.emit('onLoadRoutes', "ksmf", [i, route, this.web, this]);
+            this.emit('onLoadRoutes', "ksmf", [pathname, route, this.web, this]);
         }
         return route;
     }

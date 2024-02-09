@@ -196,6 +196,7 @@ declare class DataService extends DataService_base {
      * @param {Object} [opt]
      * @param {String} [opt.action]
      * @param {String} [opt.flow]
+     * @param {Object} [opt.error]
      * @returns {Promise<any>} row
      */
     save(payload: {
@@ -212,6 +213,7 @@ declare class DataService extends DataService_base {
     }, opt?: {
         action?: string;
         flow?: string;
+        error?: any;
     }): Promise<any>;
     /**
      * @description perform a raw query

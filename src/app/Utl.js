@@ -131,6 +131,24 @@ class Utl {
     }
 
     /**
+     * @description Transform a text string using Snake Case notation
+     * @param {String} str 
+     * @returns {String} str
+     */
+    toSnakeCase(str) {
+        return str.replace(/([a-z])([A-Z])|[\s_]+/g, '$1_$2');
+    }
+
+    /**
+     * @description Transform a text string using Camel Case notation
+     * @param {String} str 
+     * @returns {String} str
+     */
+    toCamelCase(str) {
+        return str.replace(/((_|\s)\w)/g, match => match[1].toUpperCase());
+    }
+
+    /**
      * @description get a valid number 
      * @param {String|Number} value 
      * @param {Object} [config] 

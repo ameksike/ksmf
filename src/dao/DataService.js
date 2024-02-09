@@ -65,6 +65,7 @@ class DataService extends ksdp.integration.Dip {
                 blocked: 3
             }
         };
+        return this;
     }
 
     /**
@@ -339,6 +340,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} [opt] 
      * @param {String} [opt.action] 
      * @param {String} [opt.flow] 
+     * @param {Object} [opt.error] 
      * @returns {Promise<any>} row 
      */
     async save(payload, opt) {

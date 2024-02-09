@@ -34,10 +34,18 @@ declare class UrlUtil {
      */
     strParam(req: any): string;
     /**
+     * @description Convert as request parameters string
+     * @param {Object} req
+     * @param {String|Object} option
+     * @returns {String} params
+     */
+    param2Str(req: any, option?: string | any): string;
+    /**
      * @description Add parameters to an url
      * @param {String} url
      * @param {Object} params
+     * @param {Object} [req]
      * @returns {String}
      */
-    add(url: string, params: any, req: any): string;
+    add(url: string, params: any, req?: any): string;
 }

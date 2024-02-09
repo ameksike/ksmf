@@ -78,27 +78,27 @@ declare class Controller {
     option(req: any, res: any, next?: any): void;
     /**
      * @description initialize middleware list by method for this controller
-     * @param {Object} middleware
-     * @param {Array} middleware.global
-     * @param {Array} middleware.select
-     * @param {Array} middleware.insert
-     * @param {Array} middleware.update
-     * @param {Array} middleware.delete
-     * @param {Array} middleware.clean
-     * @param {Array} middleware.list
-     * @param {Array} middleware.options
-     * @param {Array} middleware.option
+     * @param {Object} [middleware]
+     * @param {Array} [middleware.global]
+     * @param {Array} [middleware.select]
+     * @param {Array} [middleware.insert]
+     * @param {Array} [middleware.update]
+     * @param {Array} [middleware.delete]
+     * @param {Array} [middleware.clean]
+     * @param {Array} [middleware.list]
+     * @param {Array} [middleware.options]
+     * @param {Array} [middleware.option]
      * @returns {Object}
      */
-    initMiddlewareList(middleware: {
-        global: any[];
-        select: any[];
-        insert: any[];
-        update: any[];
-        delete: any[];
-        clean: any[];
-        list: any[];
-        options: any[];
-        option: any[];
+    initMiddlewareList(middleware?: {
+        global?: any[];
+        select?: any[];
+        insert?: any[];
+        update?: any[];
+        delete?: any[];
+        clean?: any[];
+        list?: any[];
+        options?: any[];
+        option?: any[];
     }): any;
 }

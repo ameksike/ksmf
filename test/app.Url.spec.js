@@ -42,5 +42,24 @@ describe('Url', () => {
         expect(uri.add('/domain/reg', { name: "mito", age: 15 })).toBe('');
         expect(uri.add(null, { name: "mito", age: 15 })).toBe('');
     });
+
+    it('Param To Str', () => {
+        expect(uri.param2Str({ name: "steve", age: 12 })).toBe("name=steve&age=12");
+        expect(uri.param2Str({ name: "steve", age: 12 }, "group=max")).toBe("group=max&name=steve&age=12");
+    });
+
+    it('add params custom', () => {
+        const req = { protocol: "http" };
+
+        expect(uri.add("/person", { name: "steve", age: 12 }, req)).toBe("http://person/?name=steve&age=12");
+        expect(uri.add("/person", { name: "steve", age: 12 }, { force: true })).toBe("/person?name=steve&age=12");
+        expect(uri.add("/person/", { name: "steve", age: 12 }, { force: true })).toBe("/person/?name=steve&age=12");
+        expect(uri.add("/person?group=max", { name: "steve", age: 12 }, { force: true })).toBe("/person?group=max&name=steve&age=12");
+
+        expect(uri.add("http://localhost/person?group=max", { name: "steve", age: 12 }, { force: true })).toBe("http://localhost/person?group=max&name=steve&age=12");
+        expect(uri.add("http://127.0.0.1:8080/person", { name: "steve", age: 12 })).toBe("http://127.0.0.1:8080/person?name=steve&age=12");
+        expect(uri.add("http://127.0.0.1:8080/person/", { name: "steve", age: 12 })).toBe("http://127.0.0.1:8080/person/?name=steve&age=12");
+        expect(uri.add("http://127.0.0.1:8080/person?group=max", { name: "steve", age: 12 })).toBe("http://127.0.0.1:8080/person?group=max&name=steve&age=12");
+    });
 });
 

@@ -20,7 +20,7 @@ class Controller {
     /**
      * @description method called after constructor
      */
-    init() { /* TODO document why this method 'init' is empty */  }
+    init() { /* TODO document why this method 'init' is empty */ }
 
     /**
      * @description REST controller list method    
@@ -104,16 +104,16 @@ class Controller {
 
     /**
      * @description initialize middleware list by method for this controller
-     * @param {Object} middleware 
-     * @param {Array} middleware.global 
-     * @param {Array} middleware.select 
-     * @param {Array} middleware.insert 
-     * @param {Array} middleware.update 
-     * @param {Array} middleware.delete
-     * @param {Array} middleware.clean
-     * @param {Array} middleware.list 
-     * @param {Array} middleware.options 
-     * @param {Array} middleware.option 
+     * @param {Object} [middleware] 
+     * @param {Array} [middleware.global] 
+     * @param {Array} [middleware.select] 
+     * @param {Array} [middleware.insert] 
+     * @param {Array} [middleware.update] 
+     * @param {Array} [middleware.delete]
+     * @param {Array} [middleware.clean]
+     * @param {Array} [middleware.list] 
+     * @param {Array} [middleware.options] 
+     * @param {Array} [middleware.option] 
      * @returns {Object}
      */
     initMiddlewareList(middleware) {

@@ -82,7 +82,6 @@ class DAOWrapper {
 
     /**
      * @description create all models associations
-     * @param {Array} modules 
      */
     loadModules() {
         this.dao = this.dao || this.helper?.get('dao');

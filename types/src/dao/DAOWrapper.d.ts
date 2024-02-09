@@ -41,7 +41,6 @@ declare class DAOWrapper {
     onLoadedModules(modules: any[]): void;
     /**
      * @description create all models associations
-     * @param {Array} modules
      */
     loadModules(): void;
 }

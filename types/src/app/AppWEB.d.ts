@@ -83,17 +83,25 @@ declare class AppWEB {
     initModules(): this;
     modules: any[];
     /**
+     * @typedef {Object} TOption
+     * @property {String} [item.name]
+     * @property {String} [item.type]
+     * @property {Object} [item.options]
+     * @property {Object} [item.params]
+     * @property {Object} [item.dependency]
+     *
      * @description initialize a module
-     * @param {Object|String} item
-     * @param {String} [item.name]
-     * @param {String} [item.type]
-     * @param {Object} [item.options]
-     * @param {Object} [item.params]
-     * @param {Object} [item.dependency]
+     * @param {TOption|String} item
      * @param {Array} modules
      * @returns {Object} module
      */
-    initModule(item: any | string, modules: any[]): any;
+    initModule(item: string | {
+        name?: string;
+        type?: string;
+        options?: any;
+        params?: any;
+        dependency?: any;
+    }, modules: any[]): any;
     /**
      * @description load application routes
      * @returns {AppWEB} self
@@ -109,6 +117,7 @@ declare class AppWEB {
      * @param {String} [route.module]
      * @param {String} [route.method]
      * @param {String} [route.path]
+     * @param {String} pathname
      * @returns {Object} route
      */
     initRoute(route: {
@@ -119,7 +128,7 @@ declare class AppWEB {
         module?: string;
         method?: string;
         path?: string;
-    }): any;
+    }, pathname: string): any;
     /**
      * @description safely trigger events
      * @returns {AppWEB} self
