@@ -58,6 +58,17 @@ describe('Utl', () => {
             expect(utl.replace("ll.{+}.+.ll", /\{|\}/g, "-")).toBe("ll.-+-.+.ll");
         });
 
+        it('conver to Snake Case', () => {
+            expect(utl.toSnakeCase("my_Variable_Name")).toBe("my_Variable_Name");
+            expect(utl.toSnakeCase("my Variable Name")).toBe("my_Variable_Name");
+            expect(utl.toSnakeCase("myVariableName")).toBe("my_Variable_Name");
+        });
+
+        it('conver to Camel Case', () => {
+            expect(utl.toCamelCase("my_Variable_Name")).toBe("myVariableName");
+            expect(utl.toCamelCase("my Variable Name")).toBe("myVariableName");
+            expect(utl.toCamelCase("myVariableName")).toBe("myVariableName");
+        });
     });
 
     describe('NUMBER', () => {

@@ -84,20 +84,38 @@ class UrlUtil {
     }
 
     /**
+     * @description Convert as request parameters string  
+     * @param {Object} req 
+     * @param {String|Object} option 
+     * @returns {String} params 
+     */
+    param2Str(req, option = null) {
+        const searchParams = new URLSearchParams(option);
+        for (let i in req) {
+            searchParams.append(i, req[i]);
+        }
+        return searchParams.toString();
+    }
+
+    /**
      * @description Add parameters to an url
      * @param {String} url 
      * @param {Object} params 
+     * @param {Object} [req] 
      * @returns {String}
      */
     add(url, params, req) {
+        if (req?.force) {
+            url = url.replace(/^\//, "i://");
+        }
         const tmp = url ? this.parse(url, req) : false;
         if (!tmp || !params) {
             return "";
         }
         for (let i in params) {
-            params[i] && tmp.searchParams.append(i, params[i]);
+            params[i] !== undefined && tmp?.searchParams?.append(i, params[i]);
         }
-        return tmp.href;
+        return req?.force ? tmp?.href?.replace("i://", "/") : tmp?.href;
     }
 
     static #instance;
