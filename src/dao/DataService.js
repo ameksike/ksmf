@@ -216,7 +216,7 @@ class DataService extends ksdp.integration.Dip {
             const logger = this.getLogger();
             logger?.error({
                 flow: opt?.flow,
-                src: "Service:" + this.modelName + ":Select",
+                src: "KsMf:DAO:" + this.modelName + ":Select",
                 data: payload,
                 error: { message: error?.message || error, stack: error?.stack },
             });
@@ -393,17 +393,22 @@ class DataService extends ksdp.integration.Dip {
                     payload.tmp.data = data;
                     data = tmp;
                 }
+                if (opt?.reload || opt?.reload === undefined) {
+                    options.returning = true;
+                    options.include = this.getInclude(payload, opt);
+                }
                 let res = Array.isArray(data) ?
-                    model.bulkCreate(this.getRequest(data, opt.action, payload, row), options) :
-                    row.update(this.getRequest(data, opt.action, payload, row), options);
-                return this.getResponse(await res, opt.action, payload);
+                    await model.bulkCreate(this.getRequest(data, opt.action, payload, row), options) :
+                    await row.update(this.getRequest(data, opt.action, payload, row), options);
+                options.returning && options.include && (res = await res.reload({ include: options.include }));
+                return this.getResponse(res, opt.action, payload);
             }
             return this.getResponse(row, opt.action, payload);
         } catch (error) {
             const logger = this.getLogger();
             logger?.error({
                 flow: opt?.flow,
-                src: "Service:" + this.modelName + ":Save",
+                src: "KsMf:DAO:" + this.modelName + ":Save",
                 data,
                 error: { message: error?.message || error, stack: error?.stack },
             });
@@ -445,7 +450,7 @@ class DataService extends ksdp.integration.Dip {
             logger?.error({
                 flow: payload.flow,
                 data: payload.params,
-                src: "Service:" + this.modelName + ":" + (payload.src || "Query"),
+                src: "KsMf:DAO:" + this.modelName + ":" + (payload.src || "Query"),
                 error: { message: error?.message || error, stack: error?.stack, sql: payload.sql },
             });
             return null;
@@ -474,7 +479,7 @@ class DataService extends ksdp.integration.Dip {
             const logger = this.getLogger();
             logger?.error({
                 flow: opt?.flow,
-                src: "Service:" + this.modelName + ":Delete",
+                src: "KsMf:DAO:" + this.modelName + ":Delete",
                 data: payload,
                 error: { message: error?.message || error, stack: error?.stack },
             });
