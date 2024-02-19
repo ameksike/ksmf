@@ -179,7 +179,7 @@ declare class DataService extends DataService_base {
      * @description get the table name
      * @returns  {String}
      */
-    getTableName(): string;
+    getTableName(name?: any): string;
     /**
      * @description read/update/create
      * @param {Object} payload
@@ -197,6 +197,7 @@ declare class DataService extends DataService_base {
      * @param {String} [opt.action]
      * @param {String} [opt.flow]
      * @param {Object} [opt.error]
+     * @param {Boolean} [opt.reload]
      * @returns {Promise<any>} row
      */
     save(payload: {
@@ -214,6 +215,7 @@ declare class DataService extends DataService_base {
         action?: string;
         flow?: string;
         error?: any;
+        reload?: boolean;
     }): Promise<any>;
     /**
      * @description perform a raw query

@@ -319,8 +319,8 @@ class DataService extends ksdp.integration.Dip {
      * @description get the table name
      * @returns  {String}
      */
-    getTableName() {
-        const model = this.getModel();
+    getTableName(name = null) {
+        const model = this.getModel(name);
         return model.tableName;
     }
 
@@ -341,6 +341,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {String} [opt.action] 
      * @param {String} [opt.flow] 
      * @param {Object} [opt.error] 
+     * @param {Boolean} [opt.reload] 
      * @returns {Promise<any>} row 
      */
     async save(payload, opt) {
@@ -442,6 +443,7 @@ class DataService extends ksdp.integration.Dip {
             if (/^[\n|\r|\s]*SELECT/ig.test(sql)) {
                 options.type = driver.QueryTypes.SELECT
             }
+            sql = sql.replace(/\n/g, "").replace(/\s\s/g, " ");
             return await driver.query(sql, payload.options || options);
         }
         catch (error) {
