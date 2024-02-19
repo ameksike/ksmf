@@ -341,6 +341,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {String} [opt.action] 
      * @param {String} [opt.flow] 
      * @param {Object} [opt.error] 
+     * @param {Boolean} [opt.reload] 
      * @returns {Promise<any>} row 
      */
     async save(payload, opt) {
