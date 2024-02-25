@@ -29,6 +29,10 @@ declare class Module {
      */
     logger: Console | null;
     /**
+     * @type {Console|null}
+     */
+    _: Console | null;
+    /**
      * @description initialize module
      * @param {Object} payload
      * @param {Object} [payload.app]

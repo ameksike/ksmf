@@ -5,14 +5,14 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.3
- * @dependencies express, express-session, dotenv, ksdp, cookie-parser
+ * @dependencies express-session, dotenv, ksdp, cookie-parser
  **/
-const express = require("express");
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const path = require('path');
 const KsDp = require('ksdp');
+const ServerExpress = require('./ServerExpress');
 
 class AppWEB {
 
@@ -22,15 +22,22 @@ class AppWEB {
     helper = null;
 
     /**
+     * @deprecated
      * @type {Object|null}
      */
-    dao = null;
+    web = null;
 
+    /**
+     * @deprecated
+     * @type {Object|null}
+     */
+    drv = null;
 
     /**
      * @type {Object|null}
      */
-    web = null;
+    server = null;
+
 
     /**
      * @type {Console|null}
@@ -55,16 +62,17 @@ class AppWEB {
     }
 
     /**
-     * @description initialize serve (Implement template method pattern)
+     * @description Initialize the application (Implement template method pattern)
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
      * @returns {AppWEB} self
      */
-    init() {
+    init(options) {
         try {
             this.initConfig();
-            this.initApp();
+            this.initApp(options);
             this.initModules();
             this.initRoutes();
-            this.initErrorHandler();
             this.emit('onInitCompleted', "ksmf", [this]);
         } catch (error) {
             this.setError(error);
@@ -79,11 +87,11 @@ class AppWEB {
         if (!this.web) {
             this.init();
         }
-        return this.web.listen(this.cfg.srv.port, () => {
+        return this.web?.listen(this.cfg?.srv?.port, () => {
             this.emit('onStart', "ksmf", [{
-                srv: this.cfg.srv,
-                message: 'LISTENING SERVER',
-                url: `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`
+                srv: this.cfg?.srv,
+                message: 'SERVER_LISTENING',
+                url: `${this.cfg.srv.protocol}://${this.cfg?.srv?.host}:${this.cfg?.srv?.port}`
             }]);
         });
     }
@@ -100,20 +108,17 @@ class AppWEB {
      */
     stop() {
         this.emit('onStop', "ksmf", [this.web]);
-        if (this.dao && this.dao.disconnect instanceof Function) {
-            this.dao.disconnect();
-        }
-        if (this.web && this.web.close instanceof Function) {
-            this.web.close();
-        }
+        this.server?.stop();
     }
 
     /**
      * @description load file config
      * @param {String} target 
+     * @param {String} [dir]
+     * @param {String} [id] 
      * @returns {Object}
      */
-    loadConfig(target, dir, id) {
+    loadConfig(target, dir = null, id = null) {
         try {
             let file = dir ? path.join(dir, target) : target;
             let tmp = require(file) || {};
@@ -121,7 +126,7 @@ class AppWEB {
             if (tmp.import) {
                 for (let i in tmp.import) {
                     if (tmp.import[i]) {
-                        if (!isNaN(i)) {
+                        if (!isNaN(parseInt(i))) {
                             Object.assign(tmp, this.loadConfig(tmp.import[i], dir, id));
                         } else {
                             tmp[i] = this.loadConfig(tmp.import[i], dir, id);
@@ -181,9 +186,29 @@ class AppWEB {
         // ... configure Events ...
         this.initEvents();
         this.emit('onInitConfig', "ksmf", [this.cfg]);
-        this.web = express();
-        this.drv = express;
         return this;
+    }
+
+    /**
+     * @description get the web server
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @returns {Object} server
+     */
+    getServer(options) {
+        if (this.server) {
+            return this.server;
+        }
+        this.server = this.helper.get('server');
+        if (!this.server) {
+            this.server = new ServerExpress();
+            this.server.configure(options);
+            this.helper.set(this.server, 'server');
+            // maintain backward compatibility
+            this.web = this.server.web;
+            this.drv = this.server.drv;
+        }
+        return this.server;
     }
 
     /**
@@ -203,41 +228,36 @@ class AppWEB {
     }
 
     /**
-     * @description set error handler middleware
-     */
-    initErrorHandler() {
-        this.web.use((err, req, res, next) => {
-            this.setError(err, req, res, next);
-        });
-    }
-
-    /**
      * @description initialize middleware applications
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
      */
-    initApp() {
+    initApp(options) {
+        let server = this.getServer(options)
+
         this.emit('onInitApp', "ksmf", [this.web, this]);
 
         //... Allow cookie Parser
-        this.web.use(cookieParser());
-
-        //... Allow body Parser
-        this.web.use(express.urlencoded({ extended: true }));
+        server.add(cookieParser());
 
         //... Allow session
-        this.web.use(session({
+        server.add(session({
             resave: true,
             saveUninitialized: true,
             secret: process?.env?.SESSION_KEY || 'ksksksks'
         }));
 
         //... Allow static files
-        this.web.use(this.cfg.srv.static, express.static(path.join(this.cfg.path, this.cfg.srv.public)));
+        server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
 
         //... Log requests 
-        this.web.use((req, res, next) => {
+        server.add((req, res, next) => {
             this.emit('onRequest', "ksmf", [req, res, next]);
             return next();
         });
+
+        //... init Error Handler
+        server.add((err, req, res, next) => this.setError(err, req, res, next));
         return this;
     }
 
@@ -398,8 +418,8 @@ class AppWEB {
      * @description safely trigger events
      * @returns {AppWEB} self
      */
-    emit() {
-        this.event?.emit instanceof Function && this.event.emit(...arguments);
+    emit(...arg) {
+        this.event?.emit instanceof Function && this.event.emit(...arg);
         return this;
     }
 }

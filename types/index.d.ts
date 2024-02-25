@@ -3,6 +3,7 @@ export declare namespace app {
     let RTA: typeof import("./src/app/AppRTA");
     let Controller: typeof import("./src/app/Controller");
     let Module: typeof import("./src/app/Module");
+    let Server: typeof import("./src/app/ServerExpress");
     let Utl: typeof import("./src/app/Utl");
     let Url: typeof import("./src/app/Url");
     let Cors: typeof import("./src/app/Cors");

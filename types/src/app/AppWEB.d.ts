@@ -10,13 +10,19 @@ declare class AppWEB {
      */
     helper: any | null;
     /**
-     * @type {Object|null}
-     */
-    dao: any | null;
-    /**
+     * @deprecated
      * @type {Object|null}
      */
     web: any | null;
+    /**
+     * @deprecated
+     * @type {Object|null}
+     */
+    drv: any | null;
+    /**
+     * @type {Object|null}
+     */
+    server: any | null;
     /**
      * @type {Console|null}
      */
@@ -30,10 +36,14 @@ declare class AppWEB {
     cfg: {};
     event: import("ksdp/types/src/behavioral/Observer");
     /**
-     * @description initialize serve (Implement template method pattern)
+     * @description Initialize the application (Implement template method pattern)
+     * @param {Object} [options]
+     * @param {Object} [options.web]
      * @returns {AppWEB} self
      */
-    init(): AppWEB;
+    init(options?: {
+        web?: any;
+    }): AppWEB;
     /**
      * @description start server
      */
@@ -49,26 +59,36 @@ declare class AppWEB {
     /**
      * @description load file config
      * @param {String} target
+     * @param {String} [dir]
+     * @param {String} [id]
      * @returns {Object}
      */
-    loadConfig(target: string, dir: any, id: any): any;
+    loadConfig(target: string, dir?: string, id?: string): any;
     /**
      * @description preload configuration file, variables, environments, etc
      */
     initConfig(): this;
-    drv: any;
+    /**
+     * @description get the web server
+     * @param {Object} [options]
+     * @param {Object} [options.web]
+     * @returns {Object} server
+     */
+    getServer(options?: {
+        web?: any;
+    }): any;
     /**
      * @description initialize event handler
      */
     initEvents(): this;
     /**
-     * @description set error handler middleware
-     */
-    initErrorHandler(): void;
-    /**
      * @description initialize middleware applications
+     * @param {Object} [options]
+     * @param {Object} [options.web]
      */
-    initApp(): this;
+    initApp(options?: {
+        web?: any;
+    }): this;
     /**
      * @description throw application error
      * @param {Object} error
@@ -133,5 +153,5 @@ declare class AppWEB {
      * @description safely trigger events
      * @returns {AppWEB} self
      */
-    emit(...args: any[]): AppWEB;
+    emit(...arg: any[]): AppWEB;
 }

@@ -19,6 +19,11 @@ class Module {
     logger = null;
 
     /**
+     * @type {Console|null}
+     */
+    _ = null;
+
+    /**
      * @description initialize module
      * @param {Object} payload 
      * @param {Object} [payload.app] 
@@ -144,10 +149,10 @@ class Module {
         if (!_controller) return null;
         // ... define route select
         this.app.get.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'select'),
-            (req, res, next) => {
-                _controller.select(req, res, next);
-            }]);
+        ...this.getMiddlewareList(_controller, opt, 'select'),
+        (req, res, next) => {
+            _controller.select(req, res, next);
+        }]);
         // ... define route list 
         this.app.get.apply(this.app, [_prefix,
             ...this.getMiddlewareList(_controller, opt, 'list'),
@@ -162,21 +167,21 @@ class Module {
             }]);
         // ... define route update
         this.app.put.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'update'),
-            (req, res, next) => {
-                _controller.update(req, res, next);
-            }]);
+        ...this.getMiddlewareList(_controller, opt, 'update'),
+        (req, res, next) => {
+            _controller.update(req, res, next);
+        }]);
         this.app.patch.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'update'),
-            (req, res, next) => {
-                _controller.update(req, res, next);
-            }]);
+        ...this.getMiddlewareList(_controller, opt, 'update'),
+        (req, res, next) => {
+            _controller.update(req, res, next);
+        }]);
         // ... define route delete
         this.app.delete.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'delete'),
-            (req, res, next) => {
-                _controller.delete(req, res, next);
-            }]);
+        ...this.getMiddlewareList(_controller, opt, 'delete'),
+        (req, res, next) => {
+            _controller.delete(req, res, next);
+        }]);
         // ... define route clean
         this.app.delete.apply(this.app, [_prefix,
             ...this.getMiddlewareList(_controller, opt, 'clean'),
@@ -191,10 +196,10 @@ class Module {
             }]);
         // ... define route option
         this.app.options.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'option'),
-            (req, res, next) => {
-                _controller.option(req, res, next);
-            }]);
+        ...this.getMiddlewareList(_controller, opt, 'option'),
+        (req, res, next) => {
+            _controller.option(req, res, next);
+        }]);
     }
 
     /**

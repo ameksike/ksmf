@@ -14,6 +14,7 @@ module.exports = {
         RTA: require('./src/app/AppRTA'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
+        Server: require('./src/app/ServerExpress'),
         Utl: require('./src/app/Utl'),
         Url: require('./src/app/Url'),
         Cors: require('./src/app/Cors')

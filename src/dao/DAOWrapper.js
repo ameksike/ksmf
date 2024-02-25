@@ -19,7 +19,7 @@ class DAOWrapper {
      * @type {Console|null}
      */
     logger = null;
-	
+
     /**
      * @description Initialize options on construct DATAWrapper
      * @param {Object} opt 
@@ -102,6 +102,13 @@ class DAOWrapper {
                 }
             };
             this.app.initModule(mod);
+        }
+    }
+
+    onStop() {
+        this.dao = this.dao || this.helper?.get('dao');
+        if (this.dao?.disconnect instanceof Function) {
+            this.dao.disconnect();
         }
     }
 }
