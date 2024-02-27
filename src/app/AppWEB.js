@@ -7,8 +7,6 @@
  * @version    	1.3
  * @dependencies express-session, dotenv, ksdp, cookie-parser
  **/
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const path = require('path');
 const KsDp = require('ksdp');
@@ -65,9 +63,10 @@ class AppWEB {
      * @description Initialize the application (Implement template method pattern)
      * @param {Object} [options]
      * @param {Object} [options.web] 
+     * @param {Boolean} [options.cookie] 
      * @returns {AppWEB} self
      */
-    init(options) {
+    init(options = null) {
         try {
             this.initConfig();
             this.initApp(options);
@@ -82,18 +81,23 @@ class AppWEB {
 
     /**
      * @description start server 
+     * @param {Object} [options]
      */
-    run() {
-        if (!this.web) {
-            this.init();
+    async run(options = null) {
+        if (!this.server) {
+            this.init(options);
         }
-        return this.web?.listen(this.cfg?.srv?.port, () => {
-            this.emit('onStart', "ksmf", [{
-                srv: this.cfg?.srv,
-                message: 'SERVER_LISTENING',
-                url: `${this.cfg.srv.protocol}://${this.cfg?.srv?.host}:${this.cfg?.srv?.port}`
-            }]);
+
+        let { port, protocol, host } = await this.server?.start({
+            port: this.cfg?.srv?.port,
+            host: this.cfg?.srv?.host,
         });
+
+        this.emit('onStart', "ksmf", [{
+            srv: this.cfg?.srv,
+            message: 'SERVER_LISTENING',
+            url: `${protocol}://${host}:${port}`
+        }]);
     }
 
     /**
@@ -107,8 +111,9 @@ class AppWEB {
      * @description stop server 
      */
     stop() {
-        this.emit('onStop', "ksmf", [this.web]);
-        this.server?.stop();
+        const server = this.getServer();
+        this.emit('onStop', "ksmf", [server]);
+        server?.stop();
     }
 
     /**
@@ -193,9 +198,10 @@ class AppWEB {
      * @description get the web server
      * @param {Object} [options]
      * @param {Object} [options.web] 
+     * @param {Boolean} [options.cookie] 
      * @returns {Object} server
      */
-    getServer(options) {
+    getServer(options = null) {
         if (this.server) {
             return this.server;
         }
@@ -231,21 +237,12 @@ class AppWEB {
      * @description initialize middleware applications
      * @param {Object} [options]
      * @param {Object} [options.web] 
+     * @param {Boolean} [payload.cookie] 
      */
-    initApp(options) {
-        let server = this.getServer(options)
+    initApp(options = null) {
+        const server = this.getServer(options);
 
-        this.emit('onInitApp', "ksmf", [this.web, this]);
-
-        //... Allow cookie Parser
-        server.add(cookieParser());
-
-        //... Allow session
-        server.add(session({
-            resave: true,
-            saveUninitialized: true,
-            secret: process?.env?.SESSION_KEY || 'ksksksks'
-        }));
+        this.emit('onInitApp', "ksmf", [server, this]);
 
         //... Allow static files
         server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
@@ -317,6 +314,7 @@ class AppWEB {
             app: this.web,
             web: this.web,
             drv: this.drv,
+            srv: this.server,
             // ... DATA ACCESS Object 
             opt: {
                 // ... CONFIGURE 
@@ -378,7 +376,7 @@ class AppWEB {
                 this.initRoute(route, i);
             }
         }
-        this.web.get('*', (req, res, next) => {
+        this.server?.get('*', (req, res, next) => {
             this.emit('on404', "ksmf", [req, res, next]);
             next();
         });
@@ -399,8 +397,8 @@ class AppWEB {
      * @returns {Object} route
      */
     initRoute(route, pathname) {
-        if (this.web[route.method]) {
-            this.web[route.method](pathname, (req, res, next) => {
+        if (this.server[route.method]) {
+            this.server[route.method](pathname, (req, res, next) => {
                 route.path = route.path || 'controller';
                 route.name = route.name || route.controller;
                 const controller = this.helper.get(route);
@@ -409,7 +407,7 @@ class AppWEB {
                 }
                 controller[route.action](req, res, next);
             });
-            this.emit('onLoadRoutes', "ksmf", [pathname, route, this.web, this]);
+            this.emit('onLoadRoutes', "ksmf", [pathname, route, this.server, this]);
         }
         return route;
     }

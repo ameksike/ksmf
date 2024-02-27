@@ -6,7 +6,9 @@
  * @license    	GPL
  * @version    	1.0
  */
-const express = require("express");
+const express = require('express');
+const cookieParser = require('cookie-parser');
+
 const https = require('https');
 
 class ServerExpress {
@@ -25,14 +27,19 @@ class ServerExpress {
      * @description configure the web server
      * @param {Object} [payload]
      * @param {Object} [payload.web] 
+     * @param {Boolean} [payload.cookie] 
      * @returns {ServerExpress} self
      */
     configure(payload) {
         this.web = payload?.web || express();
         this.drv = express;
 
+        //... Allow cookie Parser
+        payload?.cookie && server.add(cookieParser());
+
         //... Allow body Parser
         this.web.use(express.urlencoded({ extended: true }));
+
         return this;
     }
 
@@ -119,7 +126,7 @@ class ServerExpress {
 
     /**
      * @description start the server
-     * @param {Object} payload 
+     * @param {Object} [payload] 
      * @param {Number} [payload.port]
      * @param {String} [payload.key]
      * @param {String} [payload.cert] 
@@ -127,13 +134,20 @@ class ServerExpress {
      * @param {Object} [payload.app] 
      * @param {Function} [payload.callback] 
      */
-    start(payload) {
-        const { key, cert, port = 3003, secure, callback, app = this.web } = payload || {};
-        if (secure && key && cert) {
-            https.createServer({ key, cert }, app).listen(port, () => callback?.apply(null, [port]));
-        } else {
-            app.listen(port, () => callback?.apply(null, [port]));
-        }
+    start(payload = null) {
+        const { key, cert, protocol = 'http', port = 3003, host = '127.0.0.1', app = this.web } = payload || {};
+        return new Promise((resolve, reject) => {
+            try {
+                if (protocol === 'https' && key && cert) {
+                    https.createServer({ key, cert }, app).listen(port, () => resolve({ port, host, protocol: 'https' }));
+                } else {
+                    app.listen(port, () => resolve({ port, host, protocol: 'http' }));
+                }
+            }
+            catch (error) {
+                reject(error);
+            }
+        });
     }
 
     /**
