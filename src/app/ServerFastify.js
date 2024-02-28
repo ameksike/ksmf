@@ -1,15 +1,14 @@
 /**
  * @author		Antonio Membrides Espinosa
  * @email		tonykssa@gmail.com
- * @date		22/04/2021
+ * @date		28/02/2024
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
+ * @link https://fastify.dev/docs/latest/Reference/Server/#https
  */
 
 const https = require('https');
-const cookieParser = require('cookie-parser');
-
 class ServerFastify {
 
     /**
@@ -35,11 +34,10 @@ class ServerFastify {
         this.drv.static = require('serve-static');
 
         //... Allow cookie Parser
-        payload?.cookie && this.use(cookieParser());
-
-        //... Allow body Parser
-        this.use(express.urlencoded({ extended: true }));
-
+        this.web.register(require('@fastify/cookie'), {
+            secret: 'my-secret',
+            parseOptions: {}
+        });
         return this;
     }
 
@@ -159,6 +157,22 @@ class ServerFastify {
         if (this.web?.close instanceof Function) {
             this.web.close();
         }
+    }
+
+    onError(callback) {
+        callback instanceof Function && this.web.setErrorHandler((error, req, res) => callback(error, req, res, null));
+    }
+
+    onRequest(callback) {
+        callback instanceof Function && this.web.addHook('onRequest', (req, res, next) => callback(req, res, next));
+    }
+
+    onResponse(callback) {
+        callback instanceof Function && this.web.addHook('onResponse', (req, res, next) => callback(req, res, next));
+    }
+
+    on404(callback) {
+        callback instanceof Function && this.web?.setDefaultRoute((req, res) => callback(req, res, null));
     }
 }
 module.exports = ServerFastify;

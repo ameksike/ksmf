@@ -158,5 +158,21 @@ class ServerExpress {
             this.web.close();
         }
     }
+
+    onError(callback) {
+        callback instanceof Function && this.web.use((error, req, res, next) => callback(error, req, res, next));
+    }
+
+    onRequest(callback) {
+        callback instanceof Function && this.web.use((req, res, next) => callback(req, res, next));
+    }
+
+    onResponse(callback) {
+        callback instanceof Function && this.web.use((req, res, next) => callback(req, res, next));
+    }
+
+    on404(callback) {
+        callback instanceof Function && this.web?.use('*', (req, res, next) => callback(req, res, next));
+    }
 }
 module.exports = ServerExpress;

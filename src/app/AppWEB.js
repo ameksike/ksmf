@@ -248,13 +248,13 @@ class AppWEB {
         server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
 
         //... Log requests 
-        server.add((req, res, next) => {
+        server.onRequest((req, res, next) => {
             this.emit('onRequest', "ksmf", [req, res, next]);
-            return next();
+            next instanceof Function && next();
         });
 
         //... init Error Handler
-        server.add((err, req, res, next) => this.setError(err, req, res, next));
+        server.onError((err, req, res, next) => this.setError(err, req, res, next));
         return this;
     }
 
@@ -376,9 +376,9 @@ class AppWEB {
                 this.initRoute(route, i);
             }
         }
-        this.server?.get('*', (req, res, next) => {
+        this.server?.on404((req, res, next) => {
             this.emit('on404', "ksmf", [req, res, next]);
-            next();
+            next instanceof Function && next();
         });
         return this;
     }

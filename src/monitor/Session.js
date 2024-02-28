@@ -38,8 +38,8 @@ class SessionService extends ksdp.integration.Dip {
                 name: option?.resave ?? 'api.sec',
                 ...option?.overwrite
             };
-            app.set("trust proxy", 1);
-            app.use(sessionMw(config));
+            app?.set instanceof Function && app.set("trust proxy", 1);
+            app?.use(sessionMw(config));
         }
         return this;
     }
