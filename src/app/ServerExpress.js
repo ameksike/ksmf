@@ -35,10 +35,10 @@ class ServerExpress {
         this.drv = express;
 
         //... Allow cookie Parser
-        payload?.cookie && server.add(cookieParser());
+        payload?.cookie && this.use(cookieParser());
 
         //... Allow body Parser
-        this.web.use(express.urlencoded({ extended: true }));
+        this.use(express.urlencoded({ extended: true }));
 
         return this;
     }
