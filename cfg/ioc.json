@@ -1,0 +1,79 @@
+{
+  "server": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "server.Express",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "utl": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "app.Utl"
+  },
+  "dao": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "dao.Sequelize",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "dao.wrapper": {
+    "name": "ksmf",
+    "type": "lib",
+    "params": {
+      "exclude": ["forest"],
+      "service": "rest"
+    },
+    "namespace": "dao.Wrapper",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "error.wrapper": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "monitor.Error",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "logger.wrapper": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "monitor.LoggerWrapper",
+    "dependency": {
+      "helper": "helper",
+      "manager": {
+        "name": "ksmf",
+        "type": "lib",
+        "namespace": "monitor.LoggerManager",
+        "dependency": {
+          "driver": {
+            "name": "ksmf",
+            "type": "lib",
+            "namespace": "monitor.LoggerSimple"
+          }
+        }
+      }
+    }
+  },
+  "monitor.wrapper": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "monitor.Manager",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "data.service": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "dao.DataService",
+    "dependency": {
+      "helper": "helper"
+    }
+  }
+}
