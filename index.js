@@ -29,9 +29,9 @@ module.exports = {
         Session: require('./src/monitor/Session'),
     },
     server: {
-        default: require('./src/server/ServerExpress'),
-        Express: require('./src/server/ServerExpress'),
-        Fastify: require('./src/server/ServerFastify'),
+        default: require('./src/server/ExpressServer'),
+        Express: require('./src/server/ExpressServer'),
+        Fastify: require('./src/server/FastifyServer'),
     },
     proxy: {
         App: require('./src/proxy/ProxyApp'),

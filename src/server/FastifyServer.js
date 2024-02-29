@@ -13,7 +13,7 @@
  */
 
 const https = require('https');
-class ServerFastify {
+class FastifyServer {
 
     /**
      * @type {String}
@@ -35,7 +35,7 @@ class ServerFastify {
      * @param {Object} [payload]
      * @param {Object} [payload.web] 
      * @param {Boolean} [payload.cookie] 
-     * @returns {ServerFastify} self
+     * @returns {FastifyServer} self
      */
     async configure(payload) {
         this.web = payload?.web || require('fastify')({ logger: !!payload?.logger });
@@ -218,4 +218,4 @@ class ServerFastify {
         callback instanceof Function && this.web?.setDefaultRoute((req, res) => callback(req, res, null));
     }
 }
-module.exports = ServerFastify;
+module.exports = FastifyServer;

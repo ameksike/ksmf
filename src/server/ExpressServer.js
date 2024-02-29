@@ -11,7 +11,7 @@ const cookieParser = require('cookie-parser');
 
 const https = require('https');
 
-class ServerExpress {
+class ExpressServer {
 
     /**
      * @type {String}
@@ -33,7 +33,7 @@ class ServerExpress {
      * @param {Object} [payload]
      * @param {Object} [payload.web] 
      * @param {Boolean} [payload.cookie] 
-     * @returns {ServerExpress} self
+     * @returns {ExpressServer} self
      */
     configure(payload) {
         this.web = payload?.web || express();
@@ -213,4 +213,4 @@ class ServerExpress {
         callback instanceof Function && this.web?.use('*', (req, res, next) => callback(req, res, next));
     }
 }
-module.exports = ServerExpress;
+module.exports = ExpressServer;
