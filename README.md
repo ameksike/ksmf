@@ -1,4 +1,4 @@
-**KsMf** is a modular microframework for create minimalistic Web/CLI application or REST API based on [Express Js](https://expressjs.com/es/) and [KsDp](https://github.com/ameksike/ksdp/wiki), for more information see our [wiki](https://github.com/ameksike/ksmf/wiki).
+**KsMf** is a modular microframework for create minimalistic Web/CLI application or REST API based on [KsDp](https://github.com/ameksike/ksdp/wiki) with support for several web servers or frameworks like [Express Js](https://expressjs.com) and [Fastify](https://fastify.dev), for more information see our [wiki](https://github.com/ameksike/ksmf/wiki).
 
 
 This library belong to the **Ksike** ecosystem:

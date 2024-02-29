@@ -14,6 +14,11 @@ const https = require('https');
 class ServerExpress {
 
     /**
+     * @type {String}
+     */
+    name = 'express';
+
+    /**
      * @type {Object|null}
      */
     web = null;

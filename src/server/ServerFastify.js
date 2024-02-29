@@ -16,6 +16,11 @@ const https = require('https');
 class ServerFastify {
 
     /**
+     * @type {String}
+     */
+    name = 'fastify';
+
+    /**
      * @type {Object|null}
      */
     web = null;
