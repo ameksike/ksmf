@@ -199,6 +199,7 @@ class AppWEB {
      * @param {Object} [options]
      * @param {Object} [options.web] 
      * @param {Boolean} [options.cookie] 
+     * @param {Boolean} [options.force] 
      * @returns {Object} server
      */
     getServer(options = null) {
@@ -208,12 +209,14 @@ class AppWEB {
         this.server = this.helper.get('server');
         if (!this.server) {
             this.server = new ServerExpress();
-            this.server.configure(options);
             this.helper.set(this.server, 'server');
-            // maintain backward compatibility
-            this.web = this.server.web;
-            this.drv = this.server.drv;
         }
+        if (!this.server.web || options?.force) {
+            this.server.configure(options);
+        }
+        // maintain backward compatibility
+        this.web = this.server.web;
+        this.drv = this.server.drv;
         return this.server;
     }
 
