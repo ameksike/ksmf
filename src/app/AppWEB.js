@@ -10,7 +10,7 @@
 const dotenv = require('dotenv');
 const path = require('path');
 const KsDp = require('ksdp');
-const ServerExpress = require('../server/ServerExpress');
+const Server = require('../server/ExpressServer');
 const Config = require('./Config');
 
 class AppWEB {
@@ -174,7 +174,7 @@ class AppWEB {
         }
         this.server = this.helper.get('server');
         if (!this.server) {
-            this.server = new ServerExpress();
+            this.server = new Server();
             this.helper.set(this.server, 'server');
         }
         if (!this.server.web || options?.force) {
