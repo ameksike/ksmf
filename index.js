@@ -14,7 +14,6 @@ module.exports = {
         RTA: require('./src/app/AppRTA'),
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
-        Server: require('./src/app/ServerExpress'),
         Utl: require('./src/app/Utl'),
         Url: require('./src/app/Url'),
         Cors: require('./src/app/Cors')
@@ -28,6 +27,11 @@ module.exports = {
         LoggerWrapper: require('./src/monitor/LoggerWrapper'),
         Fingerprint: require('./src/monitor/Fingerprint'),
         Session: require('./src/monitor/Session'),
+    },
+    server: {
+        default: require('./src/server/ServerExpress'),
+        Express: require('./src/server/ServerExpress'),
+        Fastify: require('./src/server/ServerFastify'),
     },
     proxy: {
         App: require('./src/proxy/ProxyApp'),

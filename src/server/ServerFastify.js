@@ -5,7 +5,11 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * @link https://fastify.dev/docs/latest/Reference/Server/#https
+ * @link        https://fastify.dev/docs/latest/Reference/Server/#https
+ * @requires    fastify 
+ * @requires    serve-static 
+ * @requires    @fastify/cookie 
+ * @requires    @fastify/middie
  */
 
 const https = require('https');

@@ -10,7 +10,7 @@
 const dotenv = require('dotenv');
 const path = require('path');
 const KsDp = require('ksdp');
-const ServerExpress = require('./ServerExpress');
+const ServerExpress = require('../server/ServerExpress');
 
 class AppWEB {
 
