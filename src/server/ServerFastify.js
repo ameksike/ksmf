@@ -37,11 +37,11 @@ class ServerFastify {
      * @param {Boolean} [payload.cookie] 
      * @returns {ServerFastify} self
      */
-    configure(payload) {
-        this.web = payload?.web || require('fastify')({ logger: !!payload.logger });
+    async configure(payload) {
+        this.web = payload?.web || require('fastify')({ logger: !!payload?.logger });
         this.drv = require('fastify');
         this.drv.static = require('serve-static');
-
+        await this.web.register(require('@fastify/middie'));
         //... Allow cookie Parser
         this.web.register(require('@fastify/cookie'), {
             secret: 'my-secret',
@@ -76,6 +76,41 @@ class ServerFastify {
     }
 
     /**
+     * @description set a route
+     * 
+     * @callback Handler
+     * @param {Object} [req]
+     * @param {Object} [res]
+     * @param {Function} [next]
+     * 
+     * @param {Object} payload 
+     * @param {String} payload.route 
+     * @param {String} payload.method 
+     * @param {Handler} payload.handler 
+     * @param {Array} payload.middlewares 
+     * @returns {Object} 
+     */
+    set(payload) {
+        const { route, middlewares, handler, method, options = {} } = payload;
+        try {
+            if (!this.web) {
+                return null;
+            }
+            let action = this.web[method];
+            if (!action) {
+                return null;
+            }
+            if (middlewares) {
+                // options.preHandler = Array.isArray(middlewares) ? middlewares : [middlewares];
+            }
+            return action.apply(this.web, [route, options, handler]);
+        }
+        catch (_) {
+            return null;
+        }
+    }
+
+    /**
      * @description add routes
      */
     add(...arg) {
@@ -86,7 +121,6 @@ class ServerFastify {
      * @description alias to use action
      */
     async use(...arg) {
-        await fastify.register(require('@fastify/middie'))
         this.web?.use(...arg);
     }
 
@@ -149,8 +183,8 @@ class ServerFastify {
                 if (protocol === 'https' && key && cert) {
                     https.createServer({ key, cert }, app).listen(port, () => resolve({ port, host, protocol: 'https' }));
                 } else {
-                    await app.listen({ port });
-                    resolve({ port, host, protocol: 'http' })
+                    let url = await app.listen({ port });
+                    resolve({ port, host, protocol: 'http', url })
                 }
             }
             catch (error) {

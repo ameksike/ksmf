@@ -11,6 +11,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const KsDp = require('ksdp');
 const ServerExpress = require('../server/ServerExpress');
+const Config = require('./Config');
 
 class AppWEB {
 
@@ -57,6 +58,7 @@ class AppWEB {
         this.cfg = {};
         this.helper = new KsDp.integration.IoC();
         this.event = new KsDp.behavioral.Observer();
+        this.config = new Config();
     }
 
     /**
@@ -66,12 +68,12 @@ class AppWEB {
      * @param {Boolean} [options.cookie] 
      * @returns {AppWEB} self
      */
-    init(options = null) {
+    async init(options = null) {
         try {
-            this.initConfig();
-            this.initApp(options);
-            this.initModules();
-            this.initRoutes();
+            await this.initConfig();
+            await this.initApp(options);
+            await this.initModules();
+            await this.initRoutes();
             this.emit('onInitCompleted', "ksmf", [this]);
         } catch (error) {
             this.setError(error);
@@ -85,10 +87,10 @@ class AppWEB {
      */
     async run(options = null) {
         if (!this.server) {
-            this.init(options);
+            await this.init(options);
         }
 
-        let { port, protocol, host } = await this.server?.start({
+        let { port, protocol, host, url } = await this.server?.start({
             port: this.cfg?.srv?.port,
             host: this.cfg?.srv?.host,
         });
@@ -96,7 +98,7 @@ class AppWEB {
         this.emit('onStart', "ksmf", [{
             srv: this.cfg?.srv,
             message: 'SERVER_LISTENING',
-            url: `${protocol}://${host}:${port}`
+            port, protocol, host, url
         }]);
     }
 
@@ -117,50 +119,14 @@ class AppWEB {
     }
 
     /**
-     * @description load file config
-     * @param {String} target 
-     * @param {String} [dir]
-     * @param {String} [id] 
-     * @returns {Object}
-     */
-    loadConfig(target, dir = null, id = null) {
-        try {
-            let file = dir ? path.join(dir, target) : target;
-            let tmp = require(file) || {};
-            tmp = tmp[id] || tmp["default"] || tmp || {};
-            if (tmp.import) {
-                for (let i in tmp.import) {
-                    if (tmp.import[i]) {
-                        if (!isNaN(parseInt(i))) {
-                            Object.assign(tmp, this.loadConfig(tmp.import[i], dir, id));
-                        } else {
-                            tmp[i] = this.loadConfig(tmp.import[i], dir, id);
-                        }
-                    }
-                }
-            }
-            return tmp;
-        } catch (error) {
-            console.log(JSON.stringify({
-                flow: String(Date.now()) + "00",
-                level: 1,
-                src: "KsMf:App:loadConfig",
-                error: error?.message,
-                data: { target, dir, id }
-            }));
-            return {};
-        }
-    }
-
-    /**
      * @description preload configuration file, variables, environments, etc
      */
     initConfig() {
         dotenv.config();
         const env = process.env || {};
         const eid = env["NODE_ENV"] || 'development';
-        const srv = this.loadConfig('cfg/core.json', this.path, eid);
-        const pac = this.loadConfig(path.join(this.path, 'package.json'));
+        const srv = this.config.load('cfg/core.json', { dir: this.path, id: eid });
+        const pac = this.config.load(path.join(this.path, 'package.json'));
 
         this.cfg.env = env;
         this.cfg.eid = eid;
@@ -202,7 +168,7 @@ class AppWEB {
      * @param {Boolean} [options.force] 
      * @returns {Object} server
      */
-    getServer(options = null) {
+    async getServer(options = null) {
         if (this.server) {
             return this.server;
         }
@@ -212,7 +178,7 @@ class AppWEB {
             this.helper.set(this.server, 'server');
         }
         if (!this.server.web || options?.force) {
-            this.server.configure(options);
+            await this.server.configure(options);
         }
         // maintain backward compatibility
         this.web = this.server.web;
@@ -242,8 +208,8 @@ class AppWEB {
      * @param {Object} [options.web] 
      * @param {Boolean} [payload.cookie] 
      */
-    initApp(options = null) {
-        const server = this.getServer(options);
+    async initApp(options = null) {
+        const server = await this.getServer(options);
 
         this.emit('onInitApp', "ksmf", [server, this]);
 
@@ -314,10 +280,9 @@ class AppWEB {
         const options = {
             // ... EXPRESS APP
             frm: this,
-            app: this.web,
+            app: this.server,
             web: this.web,
             drv: this.drv,
-            srv: this.server,
             // ... DATA ACCESS Object 
             opt: {
                 // ... CONFIGURE 

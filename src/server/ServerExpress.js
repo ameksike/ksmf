@@ -74,6 +74,39 @@ class ServerExpress {
     }
 
     /**
+     * @description set a route
+     * 
+     * @callback Handler
+     * @param {Object} [req]
+     * @param {Object} [res]
+     * @param {Function} [next]
+     * 
+     * @param {Object} payload 
+     * @param {String} payload.route 
+     * @param {String} payload.method 
+     * @param {Handler} payload.handler 
+     * @param {Array} payload.middlewares 
+     * @returns {Object} 
+     */
+    set(payload) {
+        let { route, middlewares, handler, method } = payload;
+        try {
+            if (!this.web) {
+                return null;
+            }
+            let action = this.web[method];
+            if (!action) {
+                return null;
+            }
+            middlewares = (Array.isArray(middlewares) ? middlewares : [middlewares]) || [];
+            return action.apply(this.web, [route, ...middlewares, handler]);
+        }
+        catch (_) {
+            return null;
+        }
+    }
+
+    /**
      * @description add routes
      */
     add(...arg) {
@@ -146,7 +179,7 @@ class ServerExpress {
                 if (protocol === 'https' && key && cert) {
                     https.createServer({ key, cert }, app).listen(port, () => resolve({ port, host, protocol: 'https' }));
                 } else {
-                    app.listen(port, () => resolve({ port, host, protocol: 'http' }));
+                    app.listen(port, () => resolve({ port, host, protocol: 'http', url: `${protocol}://${host}:${port}` }));
                 }
             }
             catch (error) {

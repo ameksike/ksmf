@@ -83,6 +83,16 @@ class Controller {
     }
 
     /**
+     * @description REST controller clone method
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} [next] 
+     */
+    clone(req, res, next) {
+        res.json({ "message": `REST API <${this.opt.name}> LIST.` });
+    }
+
+    /**
      * @description REST controller options method    
      * @param {Object} req 
      * @param {Object} res 

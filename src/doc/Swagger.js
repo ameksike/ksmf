@@ -55,7 +55,7 @@ class Swagger {
         const path = require("path");
         const dir = path.resolve(app.path);
         const url = app.cfg.srv.doc.url;
-        const definition = app.cfg.srv.doc.src ? app.loadConfig(path.join(app.path, app.cfg.srv.doc.src)) : null;
+        const definition = app.cfg.srv.doc.src ? app?.config?.load(path.join(app.path, app.cfg.srv.doc.src)) : null;
         definition.info = definition.info || {};
         definition.info.title = definition.info.title || app.cfg?.pack?.name;
         definition.info.version = definition.info.version || app.cfg?.pack?.version;
