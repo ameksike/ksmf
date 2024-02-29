@@ -6,8 +6,17 @@
  * @license    	GPL
  * @version    	1.0
  * @link        https://fastify.dev/docs/latest/Reference/Reply/
+ * @link        https://expressjs.com/en/4x/api.html#res
  */
 class FastifyResponse {
+
+    get request() {
+        return this.drv?.request;
+    }
+    get sent() {
+        return this.drv?.sent;
+    }
+
     constructor(driver) {
         this.name = 'fastify';
         this.drv = driver

@@ -365,15 +365,19 @@ class AppWEB {
      * @returns {Object} route
      */
     initRoute(route, pathname) {
-        if (this.server[route.method]) {
-            this.server[route.method](pathname, (req, res, next) => {
-                route.path = route.path || 'controller';
-                route.name = route.name || route.controller;
-                const controller = this.helper.get(route);
-                if (!controller || !controller[route.action]) {
-                    this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+        if (route && pathname && this.server?.set instanceof Function) {
+            this.server.set({
+                route: pathname,
+                method: route.method,
+                handler: (req, res, next) => {
+                    route.path = route.path || 'controller';
+                    route.name = route.name || route.controller;
+                    const controller = this.helper.get(route);
+                    if (!controller || !controller[route.action]) {
+                        this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+                    }
+                    controller[route.action] instanceof Function && controller[route.action](req, res, next);
                 }
-                controller[route.action](req, res, next);
             });
             this.emit('onLoadRoutes', "ksmf", [pathname, route, this.server, this]);
         }

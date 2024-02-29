@@ -13,6 +13,8 @@
  */
 
 const https = require('https');
+const Response = require('./FastifyResponse');
+const Request = require('./FastifyRequest');
 class FastifyServer {
 
     /**
@@ -103,7 +105,7 @@ class FastifyServer {
             if (middlewares) {
                 // options.preHandler = Array.isArray(middlewares) ? middlewares : [middlewares];
             }
-            return action.apply(this.web, [route, options, handler]);
+            return action.apply(this.web, [route, options, (req, res) => handler instanceof Function && handler(new Request(req), new Response(res), null)]);
         }
         catch (_) {
             return null;
@@ -203,19 +205,19 @@ class FastifyServer {
     }
 
     onError(callback) {
-        callback instanceof Function && this.web.setErrorHandler((error, req, res) => callback(error, req, res, null));
+        callback instanceof Function && this.web.setErrorHandler((error, req, res) => callback(error, new Request(req), new Response(res), null));
     }
 
     onRequest(callback) {
-        callback instanceof Function && this.web.addHook('onRequest', (req, res, next) => callback(req, res, next));
+        callback instanceof Function && this.web.addHook('onRequest', (req, res, next) => callback(new Request(req), new Response(res), next));
     }
 
     onResponse(callback) {
-        callback instanceof Function && this.web.addHook('onResponse', (req, res, next) => callback(req, res, next));
+        callback instanceof Function && this.web.addHook('onResponse', (req, res, next) => callback(new Request(req), new Response(res), next));
     }
 
     on404(callback) {
-        callback instanceof Function && this.web?.setDefaultRoute((req, res) => callback(req, res, null));
+        callback instanceof Function && this.web?.setDefaultRoute((req, res) => callback(new Request(req), new Response(res), null));
     }
 }
 module.exports = FastifyServer;
