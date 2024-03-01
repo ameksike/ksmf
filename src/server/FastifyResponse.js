@@ -61,5 +61,8 @@ class FastifyResponse {
         return this;
     }
 
+    getHeader(key) {
+        return this.drv?.getHeader(key);
+    }
 }
 module.exports = FastifyResponse;

@@ -154,6 +154,12 @@ class LoggerManager {
                         src: "KsMf:Logger:Track:Response",
                         data: KsCryp.decode(data, "json")
                     }));
+                    this.wrap(res, "write", (data) => obj?.debug && obj.debug({
+                        flow: req.flow,
+                        level: _this.level.debug,
+                        src: "KsMf:Logger:Track:Response",
+                        data: KsCryp.decode(data, "json")
+                    }));
                     this.wrap(res, "end", function (chunk, encoding) {
                         const location = res?.getHeader && res.getHeader("Location");
                         location && obj?.debug && obj.debug({
@@ -164,7 +170,7 @@ class LoggerManager {
                         })
                     });
                 }
-                next();
+                next instanceof Function && next();
             }
         });
         return obj;
