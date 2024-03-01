@@ -156,20 +156,6 @@ class Module {
             middlewares: this.getMiddlewareList(_controller, opt, 'select') || [],
             handler: (req, res, next) => _controller.select(req, res, next)
         });
-        // ... define route list 
-        this.app.set({
-            method: 'get',
-            route: _prefix,
-            middlewares: this.getMiddlewareList(_controller, opt, 'list') || [],
-            handler: (req, res, next) => _controller.list(req, res, next)
-        });
-        // ... define route insert
-        this.app.set({
-            method: 'post',
-            route: _prefix,
-            middlewares: this.getMiddlewareList(_controller, opt, 'insert') || [],
-            handler: (req, res, next) => _controller.insert(req, res, next)
-        });
         // ... define route clone
         this.app.set({
             method: 'post',
@@ -197,12 +183,26 @@ class Module {
             middlewares: this.getMiddlewareList(_controller, opt, 'delete') || [],
             handler: (req, res, next) => _controller.delete(req, res, next)
         });
-        // ... define route clean
+        // ... define route option
         this.app.set({
-            method: 'delete',
+            method: 'options',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'option') || [],
+            handler: (req, res, next) => _controller.option(req, res, next)
+        });
+        // ... define route list 
+        this.app.set({
+            method: 'get',
             route: _prefix,
-            middlewares: this.getMiddlewareList(_controller, opt, 'clean') || [],
-            handler: (req, res, next) => _controller.clean(req, res, next)
+            middlewares: this.getMiddlewareList(_controller, opt, 'list') || [],
+            handler: (req, res, next) => _controller.list(req, res, next)
+        });
+        // ... define route insert
+        this.app.set({
+            method: 'post',
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt, 'insert') || [],
+            handler: (req, res, next) => _controller.insert(req, res, next)
         });
         // ... define route options
         this.app.set({
@@ -211,11 +211,12 @@ class Module {
             middlewares: this.getMiddlewareList(_controller, opt, 'options') || [],
             handler: (req, res, next) => _controller.options(req, res, next)
         });
+        // ... define route clean
         this.app.set({
-            method: 'options',
-            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            middlewares: this.getMiddlewareList(_controller, opt, 'option') || [],
-            handler: (req, res, next) => _controller.option(req, res, next)
+            method: 'delete',
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt, 'clean') || [],
+            handler: (req, res, next) => _controller.clean(req, res, next)
         });
     }
 

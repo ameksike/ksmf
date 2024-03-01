@@ -99,13 +99,13 @@ class FastifyServer {
                 return null;
             }
             let action = this.web[method];
-            if (!action) {
+            if (!action || !handler || !(handler instanceof Function)) {
                 return null;
             }
             if (middlewares) {
                 // options.preHandler = Array.isArray(middlewares) ? middlewares : [middlewares];
             }
-            return action.apply(this.web, [route, options, (req, res) => handler instanceof Function && handler(new Request(req), new Response(res), null)]);
+            return action.apply(this.web, [route, options, (req, res) => handler(new Request(req), new Response(res), null)]);
         }
         catch (_) {
             return null;
@@ -218,6 +218,10 @@ class FastifyServer {
 
     on404(callback) {
         callback instanceof Function && this.web?.setDefaultRoute((req, res) => callback(new Request(req), new Response(res), null));
+    }
+
+    routes(web) {
+        return [];
     }
 }
 module.exports = FastifyServer;

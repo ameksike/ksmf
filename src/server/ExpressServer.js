@@ -95,7 +95,7 @@ class ExpressServer {
                 return null;
             }
             let action = this.web[method];
-            if (!action) {
+            if (!action || !handler || !(handler instanceof Function)) {
                 return null;
             }
             middlewares = (Array.isArray(middlewares) ? middlewares : [middlewares]) || [];
@@ -211,6 +211,47 @@ class ExpressServer {
 
     on404(callback) {
         callback instanceof Function && this.web?.use('*', (req, res, next) => callback(req, res, next));
+    }
+
+    /**
+     * @description get list of available routes
+     * @param {Object} web 
+     * @returns {Array} list
+     */
+    routes(web = null) {
+        web = web || this.web;
+        const list = [];
+        const epss = [];
+        function print(path, layer) {
+            if (layer.route) {
+                layer.route.stack.forEach(print.bind(null, path.concat(split(layer.route.path))))
+            } else if (layer.name === 'router' && layer.handle.stack) {
+                layer.handle.stack.forEach(print.bind(null, path.concat(split(layer.regexp))))
+            } else if (layer.method) {
+                const endpoint = `${layer.method.toUpperCase()} ${path.concat(split(layer.regexp)).filter(Boolean).join('/')}`;
+                if (epss.indexOf(endpoint) === -1) {
+                    epss.push(endpoint);
+                    list.push([layer.method.toUpperCase(), path.concat(split(layer.regexp)).filter(Boolean).join('/')]);
+                }
+            }
+        }
+        function split(thing) {
+            if (typeof thing === 'string') {
+                return thing.split('/')
+            } else if (thing.fast_slash) {
+                return ''
+            } else {
+                let match = thing.toString()
+                    .replace('\\/?', '')
+                    .replace('(?=\\/|$)', '$')
+                    .match(/^\/\^((?:\\[.*+?^${}()|[\]\\\/]|[^.*+?^${}()|[\]\\\/])*)\$\//)
+                return match ?
+                    match[1].replace(/\\(.)/g, '$1').split('/') :
+                    '<complex:' + thing.toString() + '>'
+            }
+        }
+        web?._router?.stack?.forEach(print.bind(null, []));
+        return list;
     }
 }
 module.exports = ExpressServer;
