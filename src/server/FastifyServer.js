@@ -186,7 +186,7 @@ class FastifyServer {
                     https.createServer({ key, cert }, app).listen(port, () => resolve({ port, host, protocol: 'https' }));
                 } else {
                     let url = await app.listen({ port });
-                    resolve({ port, host, protocol: 'http', url })
+                    resolve({ port, host, protocol: 'http', url, provider: 'fastify' })
                 }
             }
             catch (error) {

@@ -90,7 +90,7 @@ class AppWEB {
             await this.init(options);
         }
 
-        let { port, protocol, host, url } = await this.server?.start({
+        let metadata = await this.server?.start({
             port: this.cfg?.srv?.port,
             host: this.cfg?.srv?.host,
         });
@@ -98,7 +98,7 @@ class AppWEB {
         this.emit('onStart', "ksmf", [{
             srv: this.cfg?.srv,
             message: 'SERVER_LISTENING',
-            port, protocol, host, url
+            ...metadata
         }]);
     }
 

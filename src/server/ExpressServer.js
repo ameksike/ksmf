@@ -179,7 +179,7 @@ class ExpressServer {
                 if (protocol === 'https' && key && cert) {
                     https.createServer({ key, cert }, app).listen(port, () => resolve({ port, host, protocol: 'https' }));
                 } else {
-                    app.listen(port, () => resolve({ port, host, protocol: 'http', url: `${protocol}://${host}:${port}` }));
+                    app.listen(port, () => resolve({ port, host, protocol: 'http', url: `${protocol}://${host}:${port}`, provider: 'express' }));
                 }
             }
             catch (error) {
