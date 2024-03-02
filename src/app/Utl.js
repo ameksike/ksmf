@@ -156,7 +156,7 @@ class Utl {
      */
     asNumber(value, config) {
         config = config ?? this.config.number;
-        value = this.asNumberFormat(value, config);
+        value = typeof value === "string" ? this.asNumberFormat(value, config) : value;
         return this.isNumber(value) ? parseFloat(value) : null;
     }
 
@@ -224,7 +224,7 @@ class Utl {
     round(value, config) {
         config = this.clone(this.config.number, typeof (config) === "number" ? { window: config } : (config || {}));
         let { window, format = Number } = config;
-        value = this.asNumberFormat(value, config);
+        value = typeof value === "string" ? this.asNumberFormat(value, config) : value;
         if (!this.isNumber(value)) {
             return null;
         }
@@ -234,6 +234,8 @@ class Utl {
         if (!(format instanceof Function)) {
             format = Number;
         }
+        window = typeof window === "string" ? parseInt(window) : window;
+        value = typeof value === "string" ? parseFloat(value) : value;
         return format((Math.round(value * Math.pow(10, window)) / Math.pow(10, window)).toFixed(window));
     };
 
