@@ -41,7 +41,7 @@
     "express-fingerprint": "^1.2.2",
     "express-session": "^1.18.0",
     "kscryp": "^1.0.18",
-    "ksdp": "^1.2.18"
+    "ksdp": "^1.2.19"
   },
   "devDependencies": {
     "jest": "^29.7.0"
