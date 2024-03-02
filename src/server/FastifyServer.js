@@ -37,7 +37,7 @@ class FastifyServer {
      * @param {Object} [payload]
      * @param {Object} [payload.web] 
      * @param {Boolean} [payload.cookie] 
-     * @returns {FastifyServer} self
+     * @returns {Promise<FastifyServer>} self
      */
     async configure(payload) {
         this.web = payload?.web || require('fastify')({ logger: !!payload?.logger });
@@ -174,6 +174,8 @@ class FastifyServer {
      * @param {Number} [payload.port]
      * @param {String} [payload.key]
      * @param {String} [payload.cert] 
+     * @param {String} [payload.host] 
+     * @param {String} [payload.protocol] 
      * @param {Boolean} [payload.secure] 
      * @param {Object} [payload.app] 
      * @param {Function} [payload.callback] 
@@ -222,6 +224,10 @@ class FastifyServer {
 
     routes(web) {
         return [];
+    }
+
+    register(plugin, options) {
+        return this.web?.register instanceof Function && this.web.register(plugin, options);
     }
 }
 module.exports = FastifyServer;

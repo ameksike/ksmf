@@ -19,6 +19,11 @@ class Module {
     logger = null;
 
     /**
+     * @type {String|null}
+     */
+    type;
+
+    /**
      * @type {Object|null}
      */
     _ = null;

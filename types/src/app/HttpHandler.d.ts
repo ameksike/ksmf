@@ -14,7 +14,7 @@ declare class HttpHandler {
         403: (res: any) => void;
         407: (res: any) => void;
         500: (res: any) => void;
-        custom: (res: any, message: any) => void;
+        custom: (res: any, message: any, code?: number) => void;
     };
     /**
      * @description safely http response

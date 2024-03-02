@@ -35,19 +35,80 @@ declare class AppWEB {
     mod: any[];
     cfg: {};
     event: import("ksdp/types/src/behavioral/Observer");
+    config: Config;
+    /**
+     * @description register a plugin
+     * @param {Object|String|Function|Array} plugin
+     * @param {Object} [option]
+     * @returns {AppWEB} self
+     */
+    register(plugin: any | string | Function | any[], option?: any): AppWEB;
+    /**
+     * @description remove a plugin
+     * @param {Object|String|Function|Array} plugin
+     * @param {Object} option
+     * @returns {AppWEB} self
+     */
+    unregister(plugin?: any | string | Function | any[], option?: any): AppWEB;
+    /**
+     * @description add listener to event
+     * @param {Array|Object|Function} subscriber
+     * @param {String} [event]
+     * @param {Object} [option]
+     * @param {String} [option.event]
+     * @param {String} [option.scope]
+     * @param {Number} [option.index]
+     * @param {Array} [option.rows]
+     * @return {AppWEB} self
+     */
+    subscribe(subscriber: any[] | any | Function, event?: string, option?: {
+        event?: string;
+        scope?: string;
+        index?: number;
+        rows?: any[];
+    }, scope?: string): AppWEB;
+    /**
+     * @description remove listener from event
+     * @param {String} event
+     * @param {Object} [option]
+     * @param {Number} [option.index]
+     * @param {String} [option.event]
+     * @param {String} [option.scope]
+     * @param {Number} [option.count]
+     * @param {Array} [option.rows]
+     * @return {AppWEB} self-reference
+     */
+    unsubscribe(event: string, option?: {
+        index?: number;
+        event?: string;
+        scope?: string;
+        count?: number;
+        rows?: any[];
+    }, scope?: string): AppWEB;
+    /**
+     * @description safely trigger events
+     * @param {String} event
+     * @param {Array} params
+     * @param {String} scope
+     * @returns {AppWEB} self
+     */
+    emit(event: string, params?: any[], scope?: string): AppWEB;
     /**
      * @description Initialize the application (Implement template method pattern)
      * @param {Object} [options]
      * @param {Object} [options.web]
-     * @returns {AppWEB} self
+     * @param {Boolean} [options.cookie]
+     * @returns {Promise<AppWEB>} self
      */
     init(options?: {
         web?: any;
-    }): AppWEB;
+        cookie?: boolean;
+    }): Promise<AppWEB>;
     /**
      * @description start server
+     * @param {Object} [options]
      */
-    run(): any;
+    run(options?: any): Promise<void>;
     /**
      * @description alias for run method
      */
@@ -57,14 +118,6 @@ declare class AppWEB {
      */
     stop(): void;
     /**
-     * @description load file config
-     * @param {String} target
-     * @param {String} [dir]
-     * @param {String} [id]
-     * @returns {Object}
-     */
-    loadConfig(target: string, dir?: string, id?: string): any;
-    /**
      * @description preload configuration file, variables, environments, etc
      */
     initConfig(): this;
@@ -72,11 +125,15 @@ declare class AppWEB {
      * @description get the web server
      * @param {Object} [options]
      * @param {Object} [options.web]
-     * @returns {Object} server
+     * @param {Boolean} [options.cookie]
+     * @param {Boolean} [options.force]
+     * @returns {Promise<any>} server
      */
     getServer(options?: {
         web?: any;
-    }): any;
+        cookie?: boolean;
+        force?: boolean;
+    }): Promise<any>;
     /**
      * @description initialize event handler
      */
@@ -85,10 +142,12 @@ declare class AppWEB {
      * @description initialize middleware applications
      * @param {Object} [options]
      * @param {Object} [options.web]
+     * @param {Boolean} [options.cookie]
      */
     initApp(options?: {
         web?: any;
-    }): this;
+        cookie?: boolean;
+    }): Promise<this>;
     /**
      * @description throw application error
      * @param {Object} error
@@ -149,9 +208,5 @@ declare class AppWEB {
         method?: string;
         path?: string;
     }, pathname: string): any;
-    /**
-     * @description safely trigger events
-     * @returns {AppWEB} self
-     */
-    emit(...arg: any[]): AppWEB;
 }
+import Config = require("./Config");

@@ -3,7 +3,6 @@ export declare namespace app {
     let RTA: typeof import("./src/app/AppRTA");
     let Controller: typeof import("./src/app/Controller");
     let Module: typeof import("./src/app/Module");
-    let Server: typeof import("./src/app/ServerExpress");
     let Utl: typeof import("./src/app/Utl");
     let Url: typeof import("./src/app/Url");
     let Cors: typeof import("./src/app/Cors");
@@ -17,6 +16,12 @@ export declare namespace monitor {
     let LoggerWrapper: typeof import("./src/monitor/LoggerWrapper");
     let Fingerprint: typeof import("./src/monitor/Fingerprint");
     let Session: typeof import("./src/monitor/Session");
+}
+export declare namespace server {
+    let _default: typeof import("./src/server/ExpressServer");
+    export { _default as default };
+    export let Express: typeof import("./src/server/ExpressServer");
+    export let Fastify: typeof import("./src/server/FastifyServer");
 }
 export declare namespace proxy {
     let App: typeof import("./src/proxy/ProxyApp");
@@ -41,5 +46,5 @@ export declare namespace task {
 export declare namespace doc {
     let Swagger: typeof import("./src/doc/Swagger");
 }
-declare let _default: typeof import("./src/app/AppWEB");
-export { _default as default };
+declare let _default_1: typeof import("./src/app/AppWEB");
+export { _default_1 as default };

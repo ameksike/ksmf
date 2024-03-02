@@ -62,11 +62,77 @@ class AppWEB {
     }
 
     /**
+     * @description register a plugin
+     * @param {Object|String|Function|Array} plugin 
+     * @param {Object} [option] 
+     * @returns {AppWEB} self
+     */
+    register(plugin, option = 'default') {
+        this.helper?.set(plugin, option);
+        return this;
+    }
+
+    /**
+     * @description remove a plugin
+     * @param {Object|String|Function|Array} plugin 
+     * @param {Object} option 
+     * @returns {AppWEB} self
+     */
+    unregister(plugin = 'default', option = null) {
+        this.helper?.del(plugin, option);
+        return this;
+    }
+
+    /**
+     * @description add listener to event
+     * @param {Array|Object|Function} subscriber 
+     * @param {String} [event]
+     * @param {Object} [option] 
+     * @param {String} [option.event] 
+     * @param {String} [option.scope] 
+     * @param {Number} [option.index]
+     * @param {Array} [option.rows]
+     * @return {AppWEB} self
+     */
+    subscribe(subscriber, event, option = null, scope = 'ksmf') {
+        this.event?.subscribe(subscriber, event, scope, option);
+        return this;
+    }
+
+    /**
+     * @description remove listener from event
+     * @param {String} event 
+     * @param {Object} [option] 
+     * @param {Number} [option.index] 
+     * @param {String} [option.event] 
+     * @param {String} [option.scope] 
+     * @param {Number} [option.count] 
+     * @param {Array} [option.rows] 
+     * @return {AppWEB} self-reference
+     */
+    unsubscribe(event, option = null, scope = 'ksmf') {
+        this.event?.unsubscribe(event, scope, option);
+        return this;
+    }
+
+    /**
+     * @description safely trigger events
+     * @param {String} event 
+     * @param {Array} params 
+     * @param {String} scope 
+     * @returns {AppWEB} self
+     */
+    emit(event, params = [], scope = 'ksmf') {
+        this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+        return this;
+    }
+
+    /**
      * @description Initialize the application (Implement template method pattern)
      * @param {Object} [options]
      * @param {Object} [options.web] 
      * @param {Boolean} [options.cookie] 
-     * @returns {AppWEB} self
+     * @returns {Promise<AppWEB>} self
      */
     async init(options = null) {
         try {
@@ -74,7 +140,7 @@ class AppWEB {
             await this.initApp(options);
             await this.initModules();
             await this.initRoutes();
-            this.emit('onInitCompleted', "ksmf", [this]);
+            this.emit('onInitCompleted', [this]);
         } catch (error) {
             this.setError(error);
         }
@@ -95,7 +161,7 @@ class AppWEB {
             host: this.cfg?.srv?.host,
         });
 
-        this.emit('onStart', "ksmf", [{
+        this.emit('onStart', [{
             srv: this.cfg?.srv,
             message: 'SERVER_LISTENING',
             ...metadata
@@ -114,7 +180,7 @@ class AppWEB {
      */
     stop() {
         const server = this.getServer();
-        this.emit('onStop', "ksmf", [server]);
+        this.emit('onStop', [server]);
         server?.stop();
     }
 
@@ -156,7 +222,7 @@ class AppWEB {
         this.helper.set(this, 'app');
         // ... configure Events ...
         this.initEvents();
-        this.emit('onInitConfig', "ksmf", [this.cfg]);
+        this.emit('onInitConfig', [this.cfg]);
         return this;
     }
 
@@ -166,7 +232,7 @@ class AppWEB {
      * @param {Object} [options.web] 
      * @param {Boolean} [options.cookie] 
      * @param {Boolean} [options.force] 
-     * @returns {Object} server
+     * @returns {Promise<any>} server
      */
     async getServer(options = null) {
         if (this.server) {
@@ -206,19 +272,19 @@ class AppWEB {
      * @description initialize middleware applications
      * @param {Object} [options]
      * @param {Object} [options.web] 
-     * @param {Boolean} [payload.cookie] 
+     * @param {Boolean} [options.cookie] 
      */
     async initApp(options = null) {
         const server = await this.getServer(options);
 
-        this.emit('onInitApp', "ksmf", [server, this]);
+        this.emit('onInitApp', [server, this]);
 
         //... Allow static files
         server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
 
         //... Log requests 
         server.onRequest((req, res, next) => {
-            this.emit('onRequest', "ksmf", [req, res, next]);
+            this.emit('onRequest', [req, res, next]);
             next instanceof Function && next();
         });
 
@@ -235,7 +301,7 @@ class AppWEB {
      * @param {Object} next 
      */
     setError(error, req = null, res = null, next = null) {
-        this.emit('onError', "ksmf", [error, req, res, next]);
+        this.emit('onError', [error, req, res, next]);
         if (res && !res.finished && res.status instanceof Function) {
             return res.status(500).json({
                 error: typeof (error) === 'string' ? {
@@ -252,12 +318,12 @@ class AppWEB {
      * @description load modules 
      */
     initModules() {
-        this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load, this]);
+        this.emit('onInitModules', [this.cfg.srv.module.load, this]);
         const modules = [];
         if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
         }
-        this.emit('onLoadedModules', "ksmf", [modules, this]);
+        this.emit('onLoadedModules', [modules, this]);
         this.modules = modules;
         return this;
     }
@@ -327,7 +393,7 @@ class AppWEB {
         }
         if (obj) {
             modules?.push(obj);
-            this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
+            this.emit('onLoadModule', [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
         }
         return obj;
     }
@@ -337,7 +403,7 @@ class AppWEB {
      * @returns {AppWEB} self
      */
     initRoutes() {
-        this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route, this]);
+        this.emit('onInitRoutes', [this.cfg.srv.route, this]);
         if (this.cfg?.srv?.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
@@ -345,7 +411,7 @@ class AppWEB {
             }
         }
         this.server?.on404((req, res, next) => {
-            this.emit('on404', "ksmf", [req, res, next]);
+            this.emit('on404', [req, res, next]);
             next instanceof Function && next();
         });
         return this;
@@ -379,18 +445,9 @@ class AppWEB {
                     controller[route.action] instanceof Function && controller[route.action](req, res, next);
                 }
             });
-            this.emit('onLoadRoutes', "ksmf", [pathname, route, this.server, this]);
+            this.emit('onLoadRoutes', [pathname, route, this.server, this]);
         }
         return route;
-    }
-
-    /**
-     * @description safely trigger events
-     * @returns {AppWEB} self
-     */
-    emit(...arg) {
-        this.event?.emit instanceof Function && this.event.emit(...arg);
-        return this;
     }
 }
 

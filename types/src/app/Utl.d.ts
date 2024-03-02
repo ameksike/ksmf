@@ -4,7 +4,7 @@ export = Utl;
  * @module utils/Utl
  */
 declare class Utl {
-    static "__#4@#instance": any;
+    static "__#5@#instance": any;
     static self(): any;
     set config(options: {
         number: {
@@ -24,10 +24,10 @@ declare class Utl {
     };
     /**
      * @description escape all characters used as symbols in a regular expression
-     * @param {String} str
+     * @param {String|RegExp} str
      * @returns {String} result
      */
-    escapeRegExp(str: string): string;
+    escapeRegExp(str: string | RegExp): string;
     /**
      * @description For legacy code. Replace all instances of a substring in a string, using a regular expression or search string.
      * @param {String} str

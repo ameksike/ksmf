@@ -74,8 +74,9 @@ declare class DAOBase {
     }): string;
     /**
      * @description dispatch onLoad event
+     * @param {...args[]} args
      */
-    log(...args: any[]): void;
+    log(...args: any): void;
     /**
      * @description on error event
      * @param {Object} error

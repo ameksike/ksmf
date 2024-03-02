@@ -21,7 +21,7 @@ class Utl {
 
     /**
      * @description escape all characters used as symbols in a regular expression
-     * @param {String} str 
+     * @param {String|RegExp} str 
      * @returns {String} result
      */
     escapeRegExp(str) {

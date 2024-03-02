@@ -30,12 +30,6 @@ declare class Manager {
      */
     onError(error: any): void;
     /**
-     * @description get list of available routes
-     * @param {Object} web
-     * @returns {Array} list
-     */
-    getRoutes(web: any): any[];
-    /**
      * @description get platform information
      * @returns {Object} info
      */

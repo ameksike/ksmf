@@ -168,6 +168,8 @@ class ExpressServer {
      * @param {Number} [payload.port]
      * @param {String} [payload.key]
      * @param {String} [payload.cert] 
+     * @param {String} [payload.host] 
+     * @param {String} [payload.protocol] 
      * @param {Boolean} [payload.secure] 
      * @param {Object} [payload.app] 
      * @param {Function} [payload.callback] 
@@ -252,6 +254,10 @@ class ExpressServer {
         }
         web?._router?.stack?.forEach(print.bind(null, []));
         return list;
+    }
+
+    register(plugin, options) {
+        return this.web?.register instanceof Function && this.web.register(plugin, options);
     }
 }
 module.exports = ExpressServer;
