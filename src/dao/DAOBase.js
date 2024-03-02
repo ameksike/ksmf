@@ -99,11 +99,12 @@ class DAOBase {
 
     /**
      * @description dispatch onLoad event
-     * @param {...args[]} args
+     * @param {String|Number} type 
+     * @param {*} message 
      */
-    log(...args) {
+    log(type, message) {
         if (this.onLog instanceof Function) {
-            this.onLog(...args);
+            this.onLog(type, message);
         }
     }
 

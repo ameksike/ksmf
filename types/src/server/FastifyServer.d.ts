@@ -17,11 +17,13 @@ declare class FastifyServer {
      * @param {Object} [payload]
      * @param {Object} [payload.web]
      * @param {Boolean} [payload.cookie]
+     * @param {Object} [payload.logger]
      * @returns {Promise<FastifyServer>} self
      */
     configure(payload?: {
         web?: any;
         cookie?: boolean;
+        logger?: any;
     }): Promise<FastifyServer>;
     /**
      * @description publish static files

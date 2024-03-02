@@ -19,7 +19,7 @@ class DAOSequelize extends DAOBase {
      * @type {Object|null}
      */
     models = {};
-    
+
     /**
      * @type {Object|null}
      */
@@ -34,8 +34,8 @@ class DAOSequelize extends DAOBase {
      * @type {Console|null}
      */
     logger = null;
-	
-	
+
+
     /**
      * @description redefine constructor and set Sequelize ORM dependence
      */

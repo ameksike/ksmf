@@ -37,6 +37,7 @@ class FastifyServer {
      * @param {Object} [payload]
      * @param {Object} [payload.web] 
      * @param {Boolean} [payload.cookie] 
+     * @param {Object} [payload.logger] 
      * @returns {Promise<FastifyServer>} self
      */
     async configure(payload) {
