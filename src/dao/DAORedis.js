@@ -5,7 +5,7 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
- * @dependencies ioredis
+ * @requires    ioredis
  **/
 const DAOBase = require('./DAOBase');
 
@@ -47,7 +47,13 @@ class DAORedis extends DAOBase {
                 return delay;
             }
         };
-        const Redis = require("ioredis");
+        const Redis = this.helper?.get({
+            name: 'ioredis',
+            type: 'lib'
+        });
+        if (!Redis) {
+            return null;
+        }
         this.driver = new Redis(cfg);
         this.driver.on('connect', () => {
             this.onConnect(this.option);

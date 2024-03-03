@@ -16,6 +16,10 @@ declare class Swagger {
      * @param {Object} opt
      */
     constructor(opt: any);
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
     cfg: {};
     exclude: any;
     definition: {};

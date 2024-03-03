@@ -10,7 +10,10 @@
  * @deprecated
  **/
 class Swagger {
-
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
     /**
      * @description Initialize options on construct Swagger
      * @param {Object} opt 
@@ -65,8 +68,8 @@ class Swagger {
         if (!definition || !url) {
             return null;
         }
-        const swaggerUI = require('swagger-ui-express');
-        const swaggerJsDoc = require('swagger-jsdoc');
+        const swaggerUI = this.helper?.get({ name: 'swagger-ui-express', type: 'lib' });
+        const swaggerJsDoc = this.helper?.get({ name: 'swagger-jsdoc', type: 'lib' });
         app.web.use(
             url,
             swaggerUI.serve,

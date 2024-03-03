@@ -13,9 +13,26 @@ declare class DAOBase {
      * @param {Object} opt
      */
     constructor(opt?: any);
-    models: {};
-    driver: any;
-    manager: any;
+    /**
+     * @type {Console|null}
+     */
+    logger: Console | null;
+    /**
+     * @type {Object|null}
+     */
+    helper: any | null;
+    /**
+     * @type {Object|null}
+     */
+    manager: any | null;
+    /**
+     * @type {Object|null}
+     */
+    models: any | null;
+    /**
+     * @type {Object|null}
+     */
+    driver: any | null;
     option: {};
     /**
      * @description set all configuration options

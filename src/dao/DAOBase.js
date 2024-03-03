@@ -9,6 +9,30 @@
 class DAOBase {
 
     /**
+     * @type {Console|null}
+     */
+    logger = null;
+
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+    /**
+     * @type {Object|null}
+     */
+    manager = null;
+
+    /**
+     * @type {Object|null}
+     */
+    models = {};
+
+    /**
+     * @type {Object|null}
+     */
+    driver = null;
+
+    /**
      * @description initialize DAO Base model
      * @param {Object} opt 
      */

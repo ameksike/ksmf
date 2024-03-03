@@ -10,31 +10,6 @@
 const DAOBase = require('./DAOBase');
 
 class DAOSequelize extends DAOBase {
-    /**
-     * @type {Object|null}
-     */
-    manager = null;
-
-    /**
-     * @type {Object|null}
-     */
-    models = {};
-
-    /**
-     * @type {Object|null}
-     */
-    driver = null;
-
-    /**
-     * @type {Object|null}
-     */
-    helper = null;
-
-    /**
-     * @type {Console|null}
-     */
-    logger = null;
-
 
     /**
      * @description redefine constructor and set Sequelize ORM dependence
@@ -288,7 +263,7 @@ class DAOSequelize extends DAOBase {
         };
         const options = Object.assign({}, defaults, config || {});
         try {
-            const SequelizeAuto = require('sequelize-auto');
+            const SequelizeAuto = this.helper?.get({ name: 'sequelize-auto', type: 'lib' });
             const auto = new SequelizeAuto(
                 config.database,
                 config.username,

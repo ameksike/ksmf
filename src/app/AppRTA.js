@@ -64,7 +64,10 @@ class AppRTA {
         if (!this.app.web) {
             this.init();
         }
-        const SocketIO = require("socket.io");
+        const SocketIO = this.app?.helper?.get({
+            name: 'socket.io',
+            type: 'lib'
+        });
         const server = http.createServer(this.app.web);
         this.wss = new SocketIO.Server(server);
         this.initConnection();
