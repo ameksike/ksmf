@@ -68,7 +68,12 @@ class AppWEB {
      * @returns {AppWEB} self
      */
     register(plugin, option = 'default') {
-        this.helper?.set(plugin, option);
+        if (!plugin || !this.helper) {
+            return this;
+        }
+        this.helper.set(plugin, option);
+        plugin.helper = this.helper;
+        plugin.init instanceof Function && plugin.init();
         return this;
     }
 
@@ -79,7 +84,10 @@ class AppWEB {
      * @returns {AppWEB} self
      */
     unregister(plugin = 'default', option = null) {
-        this.helper?.del(plugin, option);
+        if (!plugin || !this.helper) {
+            return this;
+        }
+        this.helper.del(plugin, option);
         return this;
     }
 
