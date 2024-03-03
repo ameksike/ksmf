@@ -17,6 +17,10 @@ declare class ErrorHandler {
      * @type {Console|null}
      */
     logger: Console | null;
+    /**
+     * @type {Object|null}
+     */
+    app: any | null;
     configure(cfg: any): void;
     /**
      * @description Set options on Initialize Configuration Event

@@ -18,12 +18,18 @@ class ErrorHandler {
      */
     logger = null;
 
+    /**
+     * @type {Object|null}
+     */
+    app = null;
+
     constructor(cfg) {
         this.configure(cfg);
     }
 
     configure(cfg) {
         this.logger = cfg?.logger || this.logger;
+        this.app = cfg?.app || this.app;
     }
 
     /**
@@ -32,6 +38,7 @@ class ErrorHandler {
      */
     onInitConfig(cfg) {
         this.logger = this.helper?.get("logger") || this.logger;
+        this.app = this.helper?.get("app") || this.app;
         this.init();
     }
 
@@ -47,63 +54,51 @@ class ErrorHandler {
     }
 
     onUncaughtException(error, origin) {
-        this.logger?.error({
-            src: "KSMF:Monitor:onUncaughtException",
-            data: { error: { message: error?.message || error, stack: error?.stack }, origin }
-        });
+        const data = { error: { message: error?.message || error, stack: error?.stack }, origin };
+        this.logger?.error({ src: "KSMF:Monitor:onUncaughtException", data });
+        this.app?.emit('onUncaughtException', [data, this.app]);
     }
 
     onUncaughtExceptionMonitor(error, origin) {
-        this.logger?.error({
-            src: "KSMF:Monitor:onUncaughtExceptionMonitor",
-            data: { error: { message: error?.message || error, stack: error?.stack }, origin }
-        });
+        const data = { error: { message: error?.message || error, stack: error?.stack }, origin };
+        this.logger?.error({ src: "KSMF:Monitor:onUncaughtExceptionMonitor", data });
+        this.app?.emit('onUncaughtExceptionMonitor', [data, this.app]);
     }
 
     onUnhandledRejection(reason, promise) {
-        this.logger?.error({
-            src: "KSMF:Monitor:onUnhandledRejection",
-            data: { reason: { message: reason?.message || reason, stack: reason?.stack }, promise }
-        });
+        const data = { error: { message: reason?.message || reason, stack: reason?.stack }, promise }
+        this.logger?.error({ src: "KSMF:Monitor:onUnhandledRejection", data });
+        this.app?.emit('onUnhandledRejection', [data, this.app]);
     }
 
     onWarning(warning) {
-        this.logger?.warn({
-            src: "KSMF:Monitor:onWarning",
-            data: warning
-        });
+        this.logger?.warn({ src: "KSMF:Monitor:onWarning", data: warning });
+        this.app?.emit('onWarning', [warning, this.app]);
     }
 
     onSigInt() {
-        this.logger?.info({
-            src: "KSMF:Monitor:onSigInt",
-            message: 'Received SIGINT. Press Control-D to exit.'
-        });
+        const data = { message: 'Received SIGINT. Press Control-D to exit.' }
+        this.logger?.info({ src: "KSMF:Monitor:onSigInt", data });
+        this.app?.emit('onSigInt', [data, this.app]);
         process.exit(0);
     }
 
     onSigTerm(signal) {
-        this.logger?.info({
-            src: "KSMF:Monitor:onSigTerm",
-            message: 'Received signal.',
-            data: { signal }
-        });
+        const data = { message: 'Received signal.', signal };
+        this.logger?.info({ src: "KSMF:Monitor:onSigTerm", data });
+        this.app?.emit('onSigTerm', [data, this.app]);
     }
 
     onSigExit(code) {
-        this.logger?.error({
-            src: "KSMF:Monitor:onSigExit",
-            message: 'Received exit signal',
-            data: { code }
-        });
+        const data = { message: 'Received exit signal', code }
+        this.logger?.error({ src: "KSMF:Monitor:onSigExit", data });
+        this.app?.emit('onSigExit', [data, this.app]);
     }
 
     onSigBeforeExit(code) {
-        this.logger?.warn({
-            src: "KSMF:Monitor:onSigBeforeExit",
-            message: 'Received exit signal.',
-            data: { code }
-        });
+        const data = { message: 'Received exit signal.', code }
+        this.logger?.warn({ src: "KSMF:Monitor:onSigBeforeExit", data });
+        this.app?.emit('onSigBeforeExit', [data, this.app]);
     }
 }
 
