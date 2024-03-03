@@ -30,6 +30,9 @@ module.exports = {
     },
     server: {
         default: require('./src/server/ExpressServer'),
+        Base: require('./src/server/BaseServer'),
+        Request: require('./src/server/BaseRequest'),
+        Response: require('./src/server/BaseResponse'),
         Express: require('./src/server/ExpressServer'),
         Fastify: require('./src/server/FastifyServer'),
     },

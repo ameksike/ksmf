@@ -20,6 +20,9 @@ export declare namespace monitor {
 export declare namespace server {
     let _default: typeof import("./src/server/ExpressServer");
     export { _default as default };
+    export let Base: typeof import("./src/server/BaseServer");
+    export let Request: typeof import("./src/server/BaseRequest");
+    export let Response: typeof import("./src/server/BaseResponse");
     export let Express: typeof import("./src/server/ExpressServer");
     export let Fastify: typeof import("./src/server/FastifyServer");
 }
@@ -29,13 +32,14 @@ export declare namespace proxy {
     let Auth: typeof import("./src/proxy/ProxyAuth");
 }
 export declare namespace dao {
-    let Base: typeof import("./src/dao/DAOBase");
-    let Sequelize: typeof import("./src/dao/DAOSequelize");
-    let Redis: typeof import("./src/dao/DAORedis");
-    let Wrapper: typeof import("./src/dao/DAOWrapper");
-    let DataModule: typeof import("./src/dao/DataModule");
-    let DataService: typeof import("./src/dao/DataService");
-    let DataController: typeof import("./src/dao/DataController");
+    let Base_1: typeof import("./src/dao/DAOBase");
+    export { Base_1 as Base };
+    export let Sequelize: typeof import("./src/dao/DAOSequelize");
+    export let Redis: typeof import("./src/dao/DAORedis");
+    export let Wrapper: typeof import("./src/dao/DAOWrapper");
+    export let DataModule: typeof import("./src/dao/DataModule");
+    export let DataService: typeof import("./src/dao/DataService");
+    export let DataController: typeof import("./src/dao/DataController");
 }
 export declare namespace view {
     let Tpl: typeof import("./src/view/Tpl");

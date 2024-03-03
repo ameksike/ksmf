@@ -1,91 +1,24 @@
 export = FastifyServer;
-declare class FastifyServer {
-    /**
-     * @type {String}
-     */
-    name: string;
-    /**
-     * @type {Object|null}
-     */
-    web: any | null;
-    /**
-     * @type {Object|null}
-     */
-    drv: any | null;
+declare class FastifyServer extends BaseServer {
     /**
      * @description configure the web server
      * @param {Object} [payload]
      * @param {Object} [payload.web]
-     * @param {Boolean} [payload.cookie]
+     * @param {Object} [payload.drv]
      * @param {Object} [payload.logger]
+     * @param {Object} [payload.helper]
+     * @param {Object} [payload.option]
+     * @param {Boolean} [payload.cookie]
      * @returns {Promise<FastifyServer>} self
      */
     configure(payload?: {
         web?: any;
-        cookie?: boolean;
+        drv?: any;
         logger?: any;
+        helper?: any;
+        option?: any;
+        cookie?: boolean;
     }): Promise<FastifyServer>;
-    /**
-     * @description publish static files
-     * @param {String} url
-     * @param {String} path
-     */
-    publish(url: string, path: string): void;
-    /**
-     * @description delete routes
-     * @param {String|Array<String>} value
-     * @param {Function} check
-     * @returns {Boolean}
-     */
-    del(value: string | Array<string>, check?: Function): boolean;
-    /**
-     * @description set a route
-     *
-     * @callback Handler
-     * @param {Object} [req]
-     * @param {Object} [res]
-     * @param {Function} [next]
-     *
-     * @param {Object} payload
-     * @param {String} payload.route
-     * @param {String} payload.method
-     * @param {Handler} payload.handler
-     * @param {Array} payload.middlewares
-     * @returns {Object}
-     */
-    set(payload: any): any;
-    /**
-     * @description add routes
-     */
-    add(...arg: any[]): void;
-    /**
-     * @description alias to use action
-     */
-    use(...arg: any[]): Promise<void>;
-    /**
-     * @description HTTP get
-     */
-    get(...arg: any[]): void;
-    /**
-     * @description HTTP POST
-     */
-    post(...arg: any[]): void;
-    /**
-     * @description HTTP put
-     */
-    put(...arg: any[]): void;
-    /**
-     * @description HTTP delete
-     */
-    delete(...arg: any[]): void;
-    /**
-     * @description HTTP patch
-     */
-    patch(...arg: any[]): void;
-    /**
-     * @description HTTP options
-     */
-    options(...arg: any[]): void;
     /**
      * @description start the server
      * @param {Object} [payload]
@@ -108,14 +41,5 @@ declare class FastifyServer {
         app?: any;
         callback?: Function;
     }): Promise<any>;
-    /**
-     * @description stop server
-     */
-    stop(): void;
-    onError(callback: any): void;
-    onRequest(callback: any): void;
-    onResponse(callback: any): void;
-    on404(callback: any): void;
-    routes(web: any): any[];
-    register(plugin: any, options: any): any;
 }
+import BaseServer = require("./BaseServer");

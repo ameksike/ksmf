@@ -131,7 +131,9 @@ class AppWEB {
      * @description Initialize the application (Implement template method pattern)
      * @param {Object} [options]
      * @param {Object} [options.web] 
-     * @param {Boolean} [options.cookie] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      * @returns {Promise<AppWEB>} self
      */
     async init(options = null) {
@@ -150,6 +152,10 @@ class AppWEB {
     /**
      * @description start server 
      * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      */
     async run(options = null) {
         if (!this.server) {
@@ -169,10 +175,15 @@ class AppWEB {
     }
 
     /**
-     * @description alias for run method
+     * @description alias for start server 
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      */
-    start() {
-        this.run();
+    start(options = null) {
+        this.run(options);
     }
 
     /**
@@ -230,9 +241,11 @@ class AppWEB {
      * @description get the web server
      * @param {Object} [options]
      * @param {Object} [options.web] 
-     * @param {Boolean} [options.cookie] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      * @param {Boolean} [options.force] 
-     * @returns {Promise<any>} server
+     * @returns {Promise<import('../server/BaseServer')>} server
      */
     async getServer(options = null) {
         if (this.server) {
@@ -272,24 +285,29 @@ class AppWEB {
      * @description initialize middleware applications
      * @param {Object} [options]
      * @param {Object} [options.web] 
-     * @param {Boolean} [options.cookie] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      */
     async initApp(options = null) {
-        const server = await this.getServer(options);
+        this.server = options?.server || await this.getServer(options);
 
-        this.emit('onInitApp', [server, this]);
+        this.server.initSession(options.session);
+        this.server.initCookie(options.cookie);
+
+        this.emit('onInitApp', [this.server, this]);
 
         //... Allow static files
-        server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
+        this.server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
 
         //... Log requests 
-        server.onRequest((req, res, next) => {
+        this.server.onRequest((req, res, next) => {
             this.emit('onRequest', [req, res, next]);
             next instanceof Function && next();
         });
 
         //... init Error Handler
-        server.onError((err, req, res, next) => this.setError(err, req, res, next));
+        this.server.onError((err, req, res, next) => this.setError(err, req, res, next));
         return this;
     }
 

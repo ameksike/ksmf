@@ -8,61 +8,13 @@
  * @link        https://fastify.dev/docs/latest/Reference/Reply/
  * @link        https://expressjs.com/en/4x/api.html#res
  */
-class FastifyResponse {
 
-    get request() {
-        return this.drv?.request;
-    }
-    get sent() {
-        return this.drv?.sent;
-    }
+const BaseResponse = require('./BaseResponse');
+class FastifyResponse extends BaseResponse {
 
     constructor(driver) {
+        super(driver)
         this.name = 'fastify';
-        this.drv = driver
-    }
-
-    send(content) {
-        this.drv.send(content);
-        return this;
-    }
-
-    status(value = 200) {
-        this.drv.code(value);
-        return this;
-    }
-
-    code(value = 200) {
-        return this.status(value);
-    }
-
-    end() {
-        this.drv.send();
-        return this;
-    }
-
-    json(content) {
-        this.drv.send(content);
-        return this;
-    }
-
-    redirect(...attr) {
-        this.drv.redirect(...attr);
-        return this;
-    }
-
-    append(field, value) {
-        this.drv.header(field, value);
-        return this;
-    }
-
-    headers(value) {
-        this.drv.headers(value);
-        return this;
-    }
-
-    getHeader(key) {
-        return this.drv?.getHeader(key);
     }
 }
 module.exports = FastifyResponse;

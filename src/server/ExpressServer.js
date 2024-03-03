@@ -8,44 +8,37 @@
  */
 const express = require('express');
 const cookieParser = require('cookie-parser');
-
 const https = require('https');
+const BaseServer = require('./BaseServer');
 
-class ExpressServer {
+class ExpressServer extends BaseServer {
 
-    /**
-     * @type {String}
-     */
-    name = 'express';
-
-    /**
-     * @type {Object|null}
-     */
-    web = null;
-
-    /**
-     * @type {Object|null}
-     */
-    drv = null;
+    constructor() {
+        super();
+        this.name = 'express';
+    }
 
     /**
      * @description configure the web server
      * @param {Object} [payload]
      * @param {Object} [payload.web] 
      * @param {Boolean} [payload.cookie] 
-     * @returns {ExpressServer} self
+     * @returns {Promise<ExpressServer>} self
      */
     configure(payload) {
         this.web = payload?.web || express();
         this.drv = express;
-
-        //... Allow cookie Parser
-        payload?.cookie && this.use(cookieParser());
-
         //... Allow body Parser
         this.use(express.urlencoded({ extended: true }));
+        return Promise.resolve(this);
+    }
 
-        return this;
+    /**
+     * @description add cookie support
+     * @param {Object} cookie 
+     */
+    initCookie(cookie = null) {
+        cookie && this.use(cookieParser());
     }
 
     /**
@@ -104,62 +97,6 @@ class ExpressServer {
         catch (_) {
             return null;
         }
-    }
-
-    /**
-     * @description add routes
-     */
-    add(...arg) {
-        this.web?.use(...arg);
-    }
-
-    /**
-     * @description alias to use action
-     */
-    use(...arg) {
-        this.web?.use(...arg);
-    }
-
-    /**
-     * @description HTTP get
-     */
-    get(...arg) {
-        this.web?.get(...arg);
-    }
-
-    /**
-     * @description HTTP POST
-     */
-    post(...arg) {
-        this.web?.post(...arg);
-    }
-
-    /**
-     * @description HTTP put
-     */
-    put(...arg) {
-        this.web?.put(...arg);
-    }
-
-    /**
-     * @description HTTP delete
-     */
-    delete(...arg) {
-        this.web?.delete(...arg);
-    }
-
-    /**
-     * @description HTTP patch
-     */
-    patch(...arg) {
-        this.web?.patch(...arg);
-    }
-
-    /**
-     * @description HTTP options
-     */
-    options(...arg) {
-        this.web?.options(...arg);
     }
 
     /**
@@ -254,10 +191,6 @@ class ExpressServer {
         }
         web?._router?.stack?.forEach(print.bind(null, []));
         return list;
-    }
-
-    register(plugin, options) {
-        return this.web?.register instanceof Function && this.web.register(plugin, options);
     }
 }
 module.exports = ExpressServer;

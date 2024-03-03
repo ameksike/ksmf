@@ -11,46 +11,47 @@
  * @requires    @fastify/cookie 
  * @requires    @fastify/middie
  */
-
 const https = require('https');
 const Response = require('./FastifyResponse');
 const Request = require('./FastifyRequest');
-class FastifyServer {
+const BaseServer = require('./BaseServer');
+class FastifyServer extends BaseServer {
 
-    /**
-     * @type {String}
-     */
-    name = 'fastify';
-
-    /**
-     * @type {Object|null}
-     */
-    web = null;
-
-    /**
-     * @type {Object|null}
-     */
-    drv = null;
+    constructor() {
+        super();
+        this.name = 'fastify';
+    }
 
     /**
      * @description configure the web server
      * @param {Object} [payload]
-     * @param {Object} [payload.web] 
+     * @param {Object} [payload.web]
+     * @param {Object} [payload.drv]
+     * @param {Object} [payload.logger]
+     * @param {Object} [payload.helper]
+     * @param {Object} [payload.option]
      * @param {Boolean} [payload.cookie] 
-     * @param {Object} [payload.logger] 
      * @returns {Promise<FastifyServer>} self
      */
     async configure(payload) {
+        super.configure(payload);
         this.web = payload?.web || require('fastify')({ logger: !!payload?.logger });
-        this.drv = require('fastify');
+        this.drv = payload?.drv || require('fastify');
         this.drv.static = require('serve-static');
         await this.web.register(require('@fastify/middie'));
+        return this;
+    }
+
+    /**
+     * @description add cookie support
+     * @param {Object} cookie 
+     */
+    initCookie(cookie = null) {
         //... Allow cookie Parser
         this.web.register(require('@fastify/cookie'), {
-            secret: 'my-secret',
+            secret: cookie?.secret || 'my-secret',
             parseOptions: {}
         });
-        return this;
     }
 
     /**
@@ -114,62 +115,6 @@ class FastifyServer {
     }
 
     /**
-     * @description add routes
-     */
-    add(...arg) {
-        this.web?.use(...arg);
-    }
-
-    /**
-     * @description alias to use action
-     */
-    async use(...arg) {
-        this.web?.use(...arg);
-    }
-
-    /**
-     * @description HTTP get
-     */
-    get(...arg) {
-        this.web?.get(...arg);
-    }
-
-    /**
-     * @description HTTP POST
-     */
-    post(...arg) {
-        this.web?.post(...arg);
-    }
-
-    /**
-     * @description HTTP put
-     */
-    put(...arg) {
-        this.web?.put(...arg);
-    }
-
-    /**
-     * @description HTTP delete
-     */
-    delete(...arg) {
-        this.web?.delete(...arg);
-    }
-
-    /**
-     * @description HTTP patch
-     */
-    patch(...arg) {
-        this.web?.patch(...arg);
-    }
-
-    /**
-     * @description HTTP options
-     */
-    options(...arg) {
-        this.web?.options(...arg);
-    }
-
-    /**
      * @description start the server
      * @param {Object} [payload] 
      * @param {Number} [payload.port]
@@ -225,10 +170,6 @@ class FastifyServer {
 
     routes(web) {
         return [];
-    }
-
-    register(plugin, options) {
-        return this.web?.register instanceof Function && this.web.register(plugin, options);
     }
 }
 module.exports = FastifyServer;

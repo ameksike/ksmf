@@ -27,7 +27,7 @@ declare class AppRTA {
      * @description run app server
      */
     run(): http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
-    wss: import("socket.io").Server<import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, import("socket.io/dist/typed-events").DefaultEventsMap, any>;
+    wss: any;
     server: http.Server<typeof http.IncomingMessage, typeof http.ServerResponse>;
     initConnection(): void;
     /**
