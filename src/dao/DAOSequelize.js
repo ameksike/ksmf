@@ -253,7 +253,7 @@ class DAOSequelize extends DAOBase {
             caseFile: 'l',
             caseModel: 'p',
             caseProp: 'c',
-            lang: 'js',  // ts
+            lang: config?.lang || 'js',  // ts,js
             useDefine: false,
             singularize: true,
             spaces: true,
@@ -261,7 +261,7 @@ class DAOSequelize extends DAOBase {
         };
         const options = Object.assign({}, defaults, config || {});
         try {
-            const SequelizeAuto = this.helper?.get({ name: 'sequelize-auto', type: 'package' });
+            const SequelizeAuto = require('sequelize-auto');
             const auto = new SequelizeAuto(
                 config.database,
                 config.username,
