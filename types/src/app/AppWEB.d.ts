@@ -139,7 +139,7 @@ declare class AppWEB {
     /**
      * @description stop server
      */
-    stop(): void;
+    stop(): Promise<void>;
     /**
      * @description preload configuration file, variables, environments, etc
      */

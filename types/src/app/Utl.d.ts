@@ -25,9 +25,9 @@ declare class Utl {
     /**
      * @description escape all characters used as symbols in a regular expression
      * @param {String|RegExp} str
-     * @returns {String} result
+     * @returns {String|RegExp} result
      */
-    escapeRegExp(str: string | RegExp): string;
+    escapeRegExp(str: string | RegExp): string | RegExp;
     /**
      * @description For legacy code. Replace all instances of a substring in a string, using a regular expression or search string.
      * @param {String} str
@@ -131,13 +131,21 @@ declare class Utl {
      * @description Get a decimal round based on the decimal amount
      * @param {String|Number} value
      * @param {Object} [config]
-     * @param {String|Number} [config.decimals]
+     * @param {String} [config.separator]
+     * @param {String} [config.decimals]
+     * @param {String} [config.force]
+     * @param {String} [config.cleanValue]
+     * @param {String} [config.defaultValue]
      * @param {String|Number} [config.format]
      * @param {String|Number} [config.window]
      * @returns {String|Number}
      */
     round(value: string | number, config?: {
-        decimals?: string | number;
+        separator?: string;
+        decimals?: string;
+        force?: string;
+        cleanValue?: string;
+        defaultValue?: string;
         format?: string | number;
         window?: string | number;
     }): string | number;

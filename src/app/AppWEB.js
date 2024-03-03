@@ -189,8 +189,8 @@ class AppWEB {
     /**
      * @description stop server 
      */
-    stop() {
-        const server = this.getServer();
+    async stop() {
+        const server = await this.getServer();
         this.emit('onStop', [server]);
         server?.stop();
     }

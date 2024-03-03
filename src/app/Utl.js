@@ -22,10 +22,10 @@ class Utl {
     /**
      * @description escape all characters used as symbols in a regular expression
      * @param {String|RegExp} str 
-     * @returns {String} result
+     * @returns {String|RegExp} result
      */
     escapeRegExp(str) {
-        return (typeof (str) === "string" && str) ? str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : str;
+        return (typeof str === "string" && str) ? str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : str;
     }
 
     /**
@@ -65,7 +65,8 @@ class Utl {
         if (!value) {
             return "";
         }
-        return parseFloat(value) > 0 ? "+" : (all ? "-" : "");
+        value = typeof value === "string" ? parseFloat(value) : value;
+        return value > 0 ? "+" : (all ? "-" : "");
     }
 
     /**
@@ -74,12 +75,18 @@ class Utl {
      * @returns {Boolean}
      */
     asBoolean(value, strict = true) {
+        if (!value) {
+            return false;
+        }
         if (typeof (value) === "string") {
             value = value.trim();
             value = !(!value || value.toLowerCase() === "false");
         }
-        if (strict && value && typeof (value) === "object") {
-            value = Array.isArray(value) ? value.length : (Object.keys(value).length + Object.getOwnPropertySymbols(value).length);
+        if (strict && typeof (value) === "object") {
+            if (Array.isArray(value)) {
+                return value.length > 0;
+            }
+            value = (Object.keys(value).length + Object.getOwnPropertySymbols(value).length);
         }
         return !!value;
     }
@@ -157,7 +164,7 @@ class Utl {
     asNumber(value, config) {
         config = config ?? this.config.number;
         value = typeof value === "string" ? this.asNumberFormat(value, config) : value;
-        return this.isNumber(value) ? parseFloat(value) : null;
+        return this.isNumber(value) ? (typeof value === "string" ? parseFloat(value) : value) : null;
     }
 
     /**
@@ -216,7 +223,11 @@ class Utl {
      * @description Get a decimal round based on the decimal amount
      * @param {String|Number} value 
      * @param {Object} [config] 
-     * @param {String|Number} [config.decimals] 
+     * @param {String} [config.separator]
+     * @param {String} [config.decimals]
+     * @param {String} [config.force] 
+     * @param {String} [config.cleanValue] 
+     * @param {String} [config.defaultValue] 
      * @param {String|Number} [config.format] 
      * @param {String|Number} [config.window] 
      * @returns {String|Number}
