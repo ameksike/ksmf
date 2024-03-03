@@ -34,7 +34,6 @@ module.exports = {
         Request: require('./src/server/BaseRequest'),
         Response: require('./src/server/BaseResponse'),
         Express: require('./src/server/ExpressServer'),
-        Fastify: require('./src/server/FastifyServer'),
     },
     proxy: {
         App: require('./src/proxy/ProxyApp'),

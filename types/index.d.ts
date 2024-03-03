@@ -24,7 +24,6 @@ export declare namespace server {
     export let Request: typeof import("./src/server/BaseRequest");
     export let Response: typeof import("./src/server/BaseResponse");
     export let Express: typeof import("./src/server/ExpressServer");
-    export let Fastify: typeof import("./src/server/FastifyServer");
 }
 export declare namespace proxy {
     let App: typeof import("./src/proxy/ProxyApp");
