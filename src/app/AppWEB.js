@@ -300,8 +300,8 @@ class AppWEB {
     async initApp(options = null) {
         this.server = options?.server || await this.getServer(options);
 
-        this.server.initSession(options.session);
-        this.server.initCookie(options.cookie);
+        this.server.initSession(options?.session);
+        this.server.initCookie(options?.cookie);
 
         this.emit('onInitApp', [this.server, this]);
 

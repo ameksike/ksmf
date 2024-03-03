@@ -68,8 +68,8 @@ class Swagger {
         if (!definition || !url) {
             return null;
         }
-        const swaggerUI = this.helper?.get({ name: 'swagger-ui-express', type: 'lib' });
-        const swaggerJsDoc = this.helper?.get({ name: 'swagger-jsdoc', type: 'lib' });
+        const swaggerUI = this.helper?.get({ name: 'swagger-ui-express', type: 'package' });
+        const swaggerJsDoc = this.helper?.get({ name: 'swagger-jsdoc', type: 'package' });
         app.web.use(
             url,
             swaggerUI.serve,

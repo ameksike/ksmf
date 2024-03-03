@@ -49,7 +49,7 @@ class DAORedis extends DAOBase {
         };
         const Redis = this.helper?.get({
             name: 'ioredis',
-            type: 'lib'
+            type: 'package'
         });
         if (!Redis) {
             return null;

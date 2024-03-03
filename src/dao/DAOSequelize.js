@@ -20,7 +20,7 @@ class DAOSequelize extends DAOBase {
     initManager() {
         this.manager = this.manager || this.helper?.get({
             name: 'sequelize',
-            type: 'lib'
+            type: 'package'
         });
         if (!this.manager || this.driver) {
             return this;
@@ -261,7 +261,7 @@ class DAOSequelize extends DAOBase {
         };
         const options = Object.assign({}, defaults, config || {});
         try {
-            const SequelizeAuto = this.helper?.get({ name: 'sequelize-auto', type: 'lib' });
+            const SequelizeAuto = this.helper?.get({ name: 'sequelize-auto', type: 'package' });
             const auto = new SequelizeAuto(
                 config.database,
                 config.username,
