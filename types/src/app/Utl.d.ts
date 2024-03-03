@@ -4,7 +4,7 @@ export = Utl;
  * @module utils/Utl
  */
 declare class Utl {
-    static "__#4@#instance": any;
+    static "__#5@#instance": any;
     static self(): any;
     set config(options: {
         number: {
@@ -24,10 +24,10 @@ declare class Utl {
     };
     /**
      * @description escape all characters used as symbols in a regular expression
-     * @param {String} str
-     * @returns {String} result
+     * @param {String|RegExp} str
+     * @returns {String|RegExp} result
      */
-    escapeRegExp(str: string): string;
+    escapeRegExp(str: string | RegExp): string | RegExp;
     /**
      * @description For legacy code. Replace all instances of a substring in a string, using a regular expression or search string.
      * @param {String} str
@@ -53,16 +53,22 @@ declare class Utl {
     getSign(value: string | number, all?: boolean): string;
     /**
      * @description get a valid value for boolean format
-     * @param {String|Number|Boolean} value
+     * @param {String|Number|Boolean|Object|Array} value
      * @returns {Boolean}
      */
-    asBoolean(value: string | number | boolean, strict?: boolean): boolean;
+    asBoolean(value: string | number | boolean | any | any[], strict?: boolean): boolean;
     /**
      * @description check a valid value for number format
      * @param {String|Number} value
      * @returns {Boolean}
      */
     isNumber(value: string | number): boolean;
+    /**
+     * @description check id the value is not a number
+     * @param {String|Number} value
+     * @returns {Boolean}
+     */
+    isNaN(value: string | number): boolean;
     /**
      * @description check a valid value
      * @param {String|Number} value
@@ -131,13 +137,21 @@ declare class Utl {
      * @description Get a decimal round based on the decimal amount
      * @param {String|Number} value
      * @param {Object} [config]
-     * @param {String|Number} [config.decimals]
+     * @param {String} [config.separator]
+     * @param {String} [config.decimals]
+     * @param {String} [config.force]
+     * @param {String} [config.cleanValue]
+     * @param {String} [config.defaultValue]
      * @param {String|Number} [config.format]
      * @param {String|Number} [config.window]
      * @returns {String|Number}
      */
     round(value: string | number, config?: {
-        decimals?: string | number;
+        separator?: string;
+        decimals?: string;
+        force?: string;
+        cleanValue?: string;
+        defaultValue?: string;
         format?: string | number;
         window?: string | number;
     }): string | number;

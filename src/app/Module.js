@@ -19,6 +19,16 @@ class Module {
     logger = null;
 
     /**
+     * @type {String|null}
+     */
+    type;
+
+    /**
+     * @type {Object|null}
+     */
+    _ = null;
+
+    /**
      * @description initialize module
      * @param {Object} payload 
      * @param {Object} [payload.app] 
@@ -92,9 +102,9 @@ class Module {
             const route = this.routes[i];
             route.method = route.method || 'rest';
             if (this.rest && route.method === 'rest') {
-                this.initRoutesREST(route);
+                this.initRouterREST(route);
             }
-            this.initRoutesWeb(route);
+            this.initRouterWeb(route);
         }
     }
 
@@ -108,22 +118,24 @@ class Module {
      * @param {String} [opt.method]
      * @param {String} [opt.path]
      */
-    initRoutesWeb(opt) {
+    initRouterWeb(opt) {
         if (!opt?.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
         // ... load controller 
-        const _route = this.app[opt.method];
         const _locator = this.getLocator(opt);
         const _prefix = _locator?.route || opt?.route;
         const _controller = this.helper.get(_locator);
         // ... define routes  
-        _route.apply(this.app, [_prefix,
-            ...this.getMiddlewareList(_controller, opt),
-            (req, res, next) => {
+        this.app.set({
+            method: opt.method,
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt) || [],
+            handler: (req, res, next) => {
                 const _action = _controller[opt.action];
                 if (_action instanceof Function) {
                     _action.apply(_controller, [req, res, next]);
                 }
-            }]);
+            }
+        });
     }
     /**
      * @description allow customized REST routes initialization by module
@@ -133,7 +145,7 @@ class Module {
      * @param {String} [opt.controller]
      * @param {String} [opt.path]
      */
-    initRoutesREST(opt) {
+    initRouterREST(opt) {
         if (!this.app || !this.helper) {
             return null;
         }
@@ -143,77 +155,74 @@ class Module {
         const _controller = this.helper.get(_locator);
         if (!_controller) return null;
         // ... define route select
-        this.app.get.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'select'),
-            (req, res, next) => {
-                _controller.select(req, res, next);
-            }]);
-        // ... define route list 
-        this.app.get.apply(this.app, [_prefix,
-            ...this.getMiddlewareList(_controller, opt, 'list'),
-            (req, res, next) => {
-                _controller.list(req, res, next);
-            }])
-        // ... define route insert
-        this.app.post.apply(this.app, [_prefix,
-            ...this.getMiddlewareList(_controller, opt, 'insert'),
-            (req, res, next) => {
-                _controller.insert(req, res, next);
-            }]);
+        this.app.set({
+            method: 'get',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'select') || [],
+            handler: (req, res, next) => _controller.select(req, res, next)
+        });
+        // ... define route clone
+        this.app.set({
+            method: 'post',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'clone') || [],
+            handler: (req, res, next) => _controller.clone(req, res, next)
+        });
         // ... define route update
-        this.app.put.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'update'),
-            (req, res, next) => {
-                _controller.update(req, res, next);
-            }]);
-        this.app.patch.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'update'),
-            (req, res, next) => {
-                _controller.update(req, res, next);
-            }]);
+        this.app.set({
+            method: 'put',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'update') || [],
+            handler: (req, res, next) => _controller.update(req, res, next)
+        });
+        this.app.set({
+            method: 'patch',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'update') || [],
+            handler: (req, res, next) => _controller.update(req, res, next)
+        });
         // ... define route delete
-        this.app.delete.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'delete'),
-            (req, res, next) => {
-                _controller.delete(req, res, next);
-            }]);
-        // ... define route clean
-        this.app.delete.apply(this.app, [_prefix,
-            ...this.getMiddlewareList(_controller, opt, 'clean'),
-            (req, res, next) => {
-                _controller.clean(req, res, next);
-            }]);
-        // ... define route options
-        this.app.options.apply(this.app, [_prefix,
-            ...this.getMiddlewareList(_controller, opt, 'options'),
-            (req, res, next) => {
-                _controller.options(req, res, next);
-            }]);
+        this.app.set({
+            method: 'delete',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'delete') || [],
+            handler: (req, res, next) => _controller.delete(req, res, next)
+        });
         // ... define route option
-        this.app.options.apply(this.app, [(_prefix + '/:id').replace(/[\/\/]+/g, '/'),
-            ...this.getMiddlewareList(_controller, opt, 'option'),
-            (req, res, next) => {
-                _controller.option(req, res, next);
-            }]);
-    }
-
-    /**
-     * @description initialize module middleware list
-     * @param {Object} middleware 
-     * @returns {Object} middleware
-     */
-    initMiddlewareList(middleware) {
-        middleware = middleware || {};
-        middleware.global = middleware.global instanceof Array ? middleware.global : [];
-        middleware.list = middleware.list instanceof Array ? middleware.list : [];
-        middleware.select = middleware.select instanceof Array ? middleware.select : [];
-        middleware.insert = middleware.insert instanceof Array ? middleware.insert : [];
-        middleware.update = middleware.update instanceof Array ? middleware.update : [];
-        middleware.delete = middleware.delete instanceof Array ? middleware.delete : [];
-        middleware.clean = middleware.clean instanceof Array ? middleware.clean : [];
-        middleware.options = middleware.options instanceof Array ? middleware.options : [];
-        middleware.option = middleware.option instanceof Array ? middleware.option : [];
-        return middleware;
+        this.app.set({
+            method: 'options',
+            route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
+            middlewares: this.getMiddlewareList(_controller, opt, 'option') || [],
+            handler: (req, res, next) => _controller.option(req, res, next)
+        });
+        // ... define route list 
+        this.app.set({
+            method: 'get',
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt, 'list') || [],
+            handler: (req, res, next) => _controller.list(req, res, next)
+        });
+        // ... define route insert
+        this.app.set({
+            method: 'post',
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt, 'insert') || [],
+            handler: (req, res, next) => _controller.insert(req, res, next)
+        });
+        // ... define route options
+        this.app.set({
+            method: 'options',
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt, 'options') || [],
+            handler: (req, res, next) => _controller.options(req, res, next)
+        });
+        // ... define route clean
+        this.app.set({
+            method: 'delete',
+            route: _prefix,
+            middlewares: this.getMiddlewareList(_controller, opt, 'clean') || [],
+            handler: (req, res, next) => _controller.clean(req, res, next)
+        });
     }
 
     /**
@@ -230,7 +239,7 @@ class Module {
      * @returns {Object} locator
      */
     getLocator(opt) {
-        opt = typeof opt === "string" ? { name: opt } : opt;
+        opt = typeof opt === 'string' ? { name: opt } : opt;
         if (opt.strict) {
             return opt;
         }
@@ -272,7 +281,7 @@ class Module {
             const middlewareModule = this.initMiddlewareList(this.middleware);
             const middlewareController = this.initMiddlewareList(controller.middleware);
             const middlewareRoute = opt.middleware && opt.middleware instanceof Array ? opt.middleware : [];
-            this.drv && middlewareModule.global.push(this.drv.json());
+            this.drv?.json instanceof Function && middlewareModule.global.push(this.drv.json());
             return [
                 ...middlewareModule.global,
                 ...middlewareModule[action] instanceof Array ? middlewareModule[action] : [],
@@ -285,6 +294,20 @@ class Module {
             console.log('[ERROR]', error);
             return [];
         }
+    }
+
+    /**
+     * @description initialize module middleware list
+     * @param {Object} middleware 
+     * @returns {Object} middleware
+     */
+    initMiddlewareList(middleware, actions = null) {
+        actions = actions || ['global', 'list', 'select', 'insert', 'update', 'delete', 'clone', 'clean', 'option', 'options'];
+        middleware = middleware || {};
+        for (let action of actions) {
+            middleware[action] = middleware[action] instanceof Array ? middleware[action] : [];
+        }
+        return middleware;
     }
 }
 module.exports = Module;

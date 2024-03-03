@@ -64,7 +64,10 @@ class AppRTA {
         if (!this.app.web) {
             this.init();
         }
-        const SocketIO = require("socket.io");
+        const SocketIO = this.app?.helper?.get({
+            name: 'socket.io',
+            type: 'lib'
+        });
         const server = http.createServer(this.app.web);
         this.wss = new SocketIO.Server(server);
         this.initConnection();
@@ -73,7 +76,11 @@ class AppRTA {
                 return this.app.setError(err);
             }
             const info = listener.address();
-            this.app.setLog('INFO', { server: 'on', host: info.address, port: info.port });
+            this.app.emit('onStart', [{
+                message: 'SERVER_LISTENING',
+                host: typeof info === "object" ? info.address : info,
+                port: typeof info === "object" ? info.port : this.app.cfg.srv.port
+            }]);
         });
         server.on('error', async (req, res) => {
             //this.app.setError(err);
@@ -131,7 +138,7 @@ class AppRTA {
      */
     async initAuth(req, res) {
         const srvAuth = this.app.helper.get('auth');
-        if (!srvAuth || !srvAuth.verify instanceof Function) {
+        if (!(srvAuth?.verify instanceof Function)) {
             return true;
         }
         return await srvAuth.verify(req, res);

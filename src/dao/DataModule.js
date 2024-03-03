@@ -53,7 +53,7 @@ class DataModule extends Module {
                 }
             }
         };
-        super.initRoutesREST(controller);
+        super.initRouterREST(controller);
     }
 }
 

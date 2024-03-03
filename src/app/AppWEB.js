@@ -5,14 +5,13 @@
  * @copyright  	Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.3
- * @dependencies express, express-session, dotenv, ksdp, cookie-parser
+ * @dependencies express-session, dotenv, ksdp, cookie-parser
  **/
-const express = require("express");
-const session = require('express-session');
-const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const path = require('path');
 const KsDp = require('ksdp');
+const Server = require('../server/ExpressServer');
+const Config = require('./Config');
 
 class AppWEB {
 
@@ -22,15 +21,22 @@ class AppWEB {
     helper = null;
 
     /**
+     * @deprecated
      * @type {Object|null}
      */
-    dao = null;
+    web = null;
 
+    /**
+     * @deprecated
+     * @type {Object|null}
+     */
+    drv = null;
 
     /**
      * @type {Object|null}
      */
-    web = null;
+    server = null;
+
 
     /**
      * @type {Console|null}
@@ -52,20 +58,99 @@ class AppWEB {
         this.cfg = {};
         this.helper = new KsDp.integration.IoC();
         this.event = new KsDp.behavioral.Observer();
+        this.config = new Config();
     }
 
     /**
-     * @description initialize serve (Implement template method pattern)
+     * @description register a plugin
+     * @param {Object|String|Function|Array} plugin 
+     * @param {Object} [option] 
      * @returns {AppWEB} self
      */
-    init() {
+    register(plugin, option = 'default') {
+        if (!plugin || !this.helper) {
+            return this;
+        }
+        this.helper.set(plugin, option);
+        plugin.helper = this.helper;
+        plugin.init instanceof Function && plugin.init();
+        return this;
+    }
+
+    /**
+     * @description remove a plugin
+     * @param {Object|String|Function|Array} plugin 
+     * @param {Object} option 
+     * @returns {AppWEB} self
+     */
+    unregister(plugin = 'default', option = null) {
+        if (!plugin || !this.helper) {
+            return this;
+        }
+        this.helper.del(plugin, option);
+        return this;
+    }
+
+    /**
+     * @description add listener to event
+     * @param {Array|Object|Function} subscriber 
+     * @param {String} [event]
+     * @param {Object} [option] 
+     * @param {String} [option.event] 
+     * @param {String} [option.scope] 
+     * @param {Number} [option.index]
+     * @param {Array} [option.rows]
+     * @return {AppWEB} self
+     */
+    subscribe(subscriber, event, option = null, scope = 'ksmf') {
+        this.event?.subscribe(subscriber, event, scope, option);
+        return this;
+    }
+
+    /**
+     * @description remove listener from event
+     * @param {String} event 
+     * @param {Object} [option] 
+     * @param {Number} [option.index] 
+     * @param {String} [option.event] 
+     * @param {String} [option.scope] 
+     * @param {Number} [option.count] 
+     * @param {Array} [option.rows] 
+     * @return {AppWEB} self-reference
+     */
+    unsubscribe(event, option = null, scope = 'ksmf') {
+        this.event?.unsubscribe(event, scope, option);
+        return this;
+    }
+
+    /**
+     * @description safely trigger events
+     * @param {String} event 
+     * @param {Array} params 
+     * @param {String} scope 
+     * @returns {AppWEB} self
+     */
+    emit(event, params = [], scope = 'ksmf') {
+        this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+        return this;
+    }
+
+    /**
+     * @description Initialize the application (Implement template method pattern)
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
+     * @returns {Promise<AppWEB>} self
+     */
+    async init(options = null) {
         try {
-            this.initConfig();
-            this.initApp();
-            this.initModules();
-            this.initRoutes();
-            this.initErrorHandler();
-            this.emit('onInitCompleted', "ksmf", [this]);
+            await this.initConfig();
+            await this.initApp(options);
+            await this.initModules();
+            await this.initRoutes();
+            this.emit('onInitCompleted', [this]);
         } catch (error) {
             this.setError(error);
         }
@@ -74,72 +159,48 @@ class AppWEB {
 
     /**
      * @description start server 
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      */
-    run() {
-        if (!this.web) {
-            this.init();
+    async run(options = null) {
+        if (!this.server) {
+            await this.init(options);
         }
-        return this.web.listen(this.cfg.srv.port, () => {
-            this.emit('onStart', "ksmf", [{
-                srv: this.cfg.srv,
-                message: 'LISTENING SERVER',
-                url: `${this.cfg.srv.protocol}://${this.cfg.srv.host}:${this.cfg.srv.port}`
-            }]);
+
+        let metadata = await this.server?.start({
+            port: this.cfg?.srv?.port,
+            host: this.cfg?.srv?.host,
         });
+
+        this.emit('onStart', [{
+            srv: this.cfg?.srv,
+            message: 'SERVER_LISTENING',
+            ...metadata
+        }]);
     }
 
     /**
-     * @description alias for run method
+     * @description alias for start server 
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      */
-    start() {
-        this.run();
+    start(options = null) {
+        this.run(options);
     }
 
     /**
      * @description stop server 
      */
-    stop() {
-        this.emit('onStop', "ksmf", [this.web]);
-        if (this.dao && this.dao.disconnect instanceof Function) {
-            this.dao.disconnect();
-        }
-        if (this.web && this.web.close instanceof Function) {
-            this.web.close();
-        }
-    }
-
-    /**
-     * @description load file config
-     * @param {String} target 
-     * @returns {Object}
-     */
-    loadConfig(target, dir, id) {
-        try {
-            let file = dir ? path.join(dir, target) : target;
-            let tmp = require(file) || {};
-            tmp = tmp[id] || tmp["default"] || tmp || {};
-            if (tmp.import) {
-                for (let i in tmp.import) {
-                    if (tmp.import[i]) {
-                        if (!isNaN(i)) {
-                            Object.assign(tmp, this.loadConfig(tmp.import[i], dir, id));
-                        } else {
-                            tmp[i] = this.loadConfig(tmp.import[i], dir, id);
-                        }
-                    }
-                }
-            }
-            return tmp;
-        } catch (error) {
-            console.log(JSON.stringify({
-                flow: String(Date.now()) + "00",
-                level: 1,
-                src: "KsMf:App:loadConfig",
-                error: error?.message,
-                data: { target, dir, id }
-            }));
-            return {};
-        }
+    async stop() {
+        const server = await this.getServer();
+        this.emit('onStop', [server]);
+        server?.stop();
     }
 
     /**
@@ -149,8 +210,8 @@ class AppWEB {
         dotenv.config();
         const env = process.env || {};
         const eid = env["NODE_ENV"] || 'development';
-        const srv = this.loadConfig('cfg/core.json', this.path, eid);
-        const pac = this.loadConfig(path.join(this.path, 'package.json'));
+        const srv = this.config.load('cfg/core.json', { dir: this.path, id: eid });
+        const pac = this.config.load(path.join(this.path, 'package.json'));
 
         this.cfg.env = env;
         this.cfg.eid = eid;
@@ -180,10 +241,36 @@ class AppWEB {
         this.helper.set(this, 'app');
         // ... configure Events ...
         this.initEvents();
-        this.emit('onInitConfig', "ksmf", [this.cfg]);
-        this.web = express();
-        this.drv = express;
+        this.emit('onInitConfig', [this.cfg]);
         return this;
+    }
+
+    /**
+     * @description get the web server
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
+     * @param {Boolean} [options.force] 
+     * @returns {Promise<import('../server/BaseServer')>} server
+     */
+    async getServer(options = null) {
+        if (this.server) {
+            return this.server;
+        }
+        this.server = this.helper.get('server');
+        if (!this.server) {
+            this.server = new Server();
+            this.helper.set(this.server, 'server');
+        }
+        if (!this.server.web || options?.force) {
+            await this.server.configure(options);
+        }
+        // maintain backward compatibility
+        this.web = this.server.web;
+        this.drv = this.server.drv;
+        return this.server;
     }
 
     /**
@@ -203,41 +290,32 @@ class AppWEB {
     }
 
     /**
-     * @description set error handler middleware
-     */
-    initErrorHandler() {
-        this.web.use((err, req, res, next) => {
-            this.setError(err, req, res, next);
-        });
-    }
-
-    /**
      * @description initialize middleware applications
+     * @param {Object} [options]
+     * @param {Object} [options.web] 
+     * @param {Object} [options.server] 
+     * @param {Object} [options.cookie] 
+     * @param {Object} [options.session] 
      */
-    initApp() {
-        this.emit('onInitApp', "ksmf", [this.web, this]);
+    async initApp(options = null) {
+        this.server = options?.server || await this.getServer(options);
 
-        //... Allow cookie Parser
-        this.web.use(cookieParser());
+        this.server.initSession(options?.session);
+        this.server.initCookie(options?.cookie);
 
-        //... Allow body Parser
-        this.web.use(express.urlencoded({ extended: true }));
-
-        //... Allow session
-        this.web.use(session({
-            resave: true,
-            saveUninitialized: true,
-            secret: process?.env?.SESSION_KEY || 'ksksksks'
-        }));
+        this.emit('onInitApp', [this.server, this]);
 
         //... Allow static files
-        this.web.use(this.cfg.srv.static, express.static(path.join(this.cfg.path, this.cfg.srv.public)));
+        this.server.publish(this.cfg.srv.static, path.join(this.cfg.path, this.cfg.srv.public));
 
         //... Log requests 
-        this.web.use((req, res, next) => {
-            this.emit('onRequest', "ksmf", [req, res, next]);
-            return next();
+        this.server.onRequest((req, res, next) => {
+            this.emit('onRequest', [req, res, next]);
+            next instanceof Function && next();
         });
+
+        //... init Error Handler
+        this.server.onError((err, req, res, next) => this.setError(err, req, res, next));
         return this;
     }
 
@@ -249,7 +327,7 @@ class AppWEB {
      * @param {Object} next 
      */
     setError(error, req = null, res = null, next = null) {
-        this.emit('onError', "ksmf", [error, req, res, next]);
+        this.emit('onError', [error, req, res, next]);
         if (res && !res.finished && res.status instanceof Function) {
             return res.status(500).json({
                 error: typeof (error) === 'string' ? {
@@ -266,12 +344,12 @@ class AppWEB {
      * @description load modules 
      */
     initModules() {
-        this.emit('onInitModules', "ksmf", [this.cfg.srv.module.load, this]);
+        this.emit('onInitModules', [this.cfg.srv.module.load, this]);
         const modules = [];
         if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
         }
-        this.emit('onLoadedModules', "ksmf", [modules, this]);
+        this.emit('onLoadedModules', [modules, this]);
         this.modules = modules;
         return this;
     }
@@ -294,7 +372,7 @@ class AppWEB {
         const options = {
             // ... EXPRESS APP
             frm: this,
-            app: this.web,
+            app: this.server,
             web: this.web,
             drv: this.drv,
             // ... DATA ACCESS Object 
@@ -341,7 +419,7 @@ class AppWEB {
         }
         if (obj) {
             modules?.push(obj);
-            this.emit('onLoadModule', "ksmf", [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
+            this.emit('onLoadModule', [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
         }
         return obj;
     }
@@ -351,16 +429,16 @@ class AppWEB {
      * @returns {AppWEB} self
      */
     initRoutes() {
-        this.emit('onInitRoutes', "ksmf", [this.cfg.srv.route, this]);
+        this.emit('onInitRoutes', [this.cfg.srv.route, this]);
         if (this.cfg?.srv?.route) {
             for (const i in this.cfg.srv.route) {
                 const route = this.cfg.srv.route[i];
                 this.initRoute(route, i);
             }
         }
-        this.web.get('*', (req, res, next) => {
-            this.emit('on404', "ksmf", [req, res, next]);
-            next();
+        this.server?.on404((req, res, next) => {
+            this.emit('on404', [req, res, next]);
+            next instanceof Function && next();
         });
         return this;
     }
@@ -379,28 +457,23 @@ class AppWEB {
      * @returns {Object} route
      */
     initRoute(route, pathname) {
-        if (this.web[route.method]) {
-            this.web[route.method](pathname, (req, res, next) => {
-                route.path = route.path || 'controller';
-                route.name = route.name || route.controller;
-                const controller = this.helper.get(route);
-                if (!controller || !controller[route.action]) {
-                    this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+        if (route && pathname && this.server?.set instanceof Function) {
+            this.server.set({
+                route: pathname,
+                method: route.method,
+                handler: (req, res, next) => {
+                    route.path = route.path || 'controller';
+                    route.name = route.name || route.controller;
+                    const controller = this.helper.get(route);
+                    if (!controller || !controller[route.action]) {
+                        this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+                    }
+                    controller[route.action] instanceof Function && controller[route.action](req, res, next);
                 }
-                controller[route.action](req, res, next);
             });
-            this.emit('onLoadRoutes', "ksmf", [pathname, route, this.web, this]);
+            this.emit('onLoadRoutes', [pathname, route, this.server, this]);
         }
         return route;
-    }
-
-    /**
-     * @description safely trigger events
-     * @returns {AppWEB} self
-     */
-    emit() {
-        this.event?.emit instanceof Function && this.event.emit(...arguments);
-        return this;
     }
 }
 

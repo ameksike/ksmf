@@ -7,13 +7,14 @@
  * @version    	1.0
  * @description CLI application, for more information see: https://github.com/ameksike/ksmf/wiki  
  **/
+let app = null;
 try {
-    const KsMf = require('ksmf');
+    const KsMf = require('../');
     const path = require('path');
 
     let dir = path.resolve(process.cwd());
     let act = process.argv[2] || "web";
-    let app = new KsMf.app.WEB(dir);
+    app = new KsMf.app.WEB(dir);
 
     switch (act) {
         case "run":
@@ -39,7 +40,7 @@ try {
             break;
 
         default:
-            module.exports = app.run();
+            app.run({ cookie: true });
             break;
     }
 }
@@ -51,3 +52,5 @@ catch (error) {
         error
     });
 }
+
+module.exports = app;

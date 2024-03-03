@@ -49,22 +49,6 @@ declare class DAOSequelize extends DAOBase {
      */
     static process(config: any, logger: any): Promise<any>;
     /**
-     * @description redefine constructor and set Sequelize ORM dependence
-     */
-    constructor();
-    /**
-     * @type {Object|null}
-     */
-    models: any | null;
-    /**
-     * @type {Object|null}
-     */
-    helper: any | null;
-    /**
-     * @type {Console|null}
-     */
-    logger: Console | null;
-    /**
      * @description initialize Sequelize manager
      * @returns {DAOSequelize} self
      */

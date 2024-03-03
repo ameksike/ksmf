@@ -21,11 +21,11 @@ class Utl {
 
     /**
      * @description escape all characters used as symbols in a regular expression
-     * @param {String} str 
-     * @returns {String} result
+     * @param {String|RegExp} str 
+     * @returns {String|RegExp} result
      */
     escapeRegExp(str) {
-        return (typeof (str) === "string" && str) ? str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : str;
+        return (typeof str === "string" && str) ? str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') : str;
     }
 
     /**
@@ -65,21 +65,28 @@ class Utl {
         if (!value) {
             return "";
         }
-        return parseFloat(value) > 0 ? "+" : (all ? "-" : "");
+        value = typeof value === "string" ? parseFloat(value) : value;
+        return value > 0 ? "+" : (all ? "-" : "");
     }
 
     /**
      * @description get a valid value for boolean format 
-     * @param {String|Number|Boolean} value 
+     * @param {String|Number|Boolean|Object|Array} value 
      * @returns {Boolean}
      */
     asBoolean(value, strict = true) {
+        if (!value) {
+            return false;
+        }
         if (typeof (value) === "string") {
             value = value.trim();
             value = !(!value || value.toLowerCase() === "false");
         }
-        if (strict && value && typeof (value) === "object") {
-            value = Array.isArray(value) ? value.length : (Object.keys(value).length + Object.getOwnPropertySymbols(value).length);
+        if (strict && typeof (value) === "object") {
+            if (Array.isArray(value)) {
+                return value.length > 0;
+            }
+            value = (Object.keys(value).length + Object.getOwnPropertySymbols(value).length);
         }
         return !!value;
     }
@@ -90,7 +97,17 @@ class Utl {
      * @returns {Boolean}
      */
     isNumber(value) {
-        return !isNaN(value) && value !== null && value !== undefined && value !== "";
+        return !this.isNaN(value) && value !== null && value !== undefined && value !== "";
+    }
+
+    /**
+     * @description check id the value is not a number
+     * @param {String|Number} value 
+     * @returns {Boolean}
+     */
+    isNaN(value) {
+        let tmp = typeof value === "string" ? parseFloat(value) : value;
+        return tmp != value;
     }
 
     /**
@@ -156,8 +173,8 @@ class Utl {
      */
     asNumber(value, config) {
         config = config ?? this.config.number;
-        value = this.asNumberFormat(value, config);
-        return this.isNumber(value) ? parseFloat(value) : null;
+        value = typeof value === "string" ? this.asNumberFormat(value, config) : value;
+        return this.isNumber(value) ? (typeof value === "string" ? parseFloat(value) : value) : null;
     }
 
     /**
@@ -216,7 +233,11 @@ class Utl {
      * @description Get a decimal round based on the decimal amount
      * @param {String|Number} value 
      * @param {Object} [config] 
-     * @param {String|Number} [config.decimals] 
+     * @param {String} [config.separator]
+     * @param {String} [config.decimals]
+     * @param {String} [config.force] 
+     * @param {String} [config.cleanValue] 
+     * @param {String} [config.defaultValue] 
      * @param {String|Number} [config.format] 
      * @param {String|Number} [config.window] 
      * @returns {String|Number}
@@ -224,7 +245,7 @@ class Utl {
     round(value, config) {
         config = this.clone(this.config.number, typeof (config) === "number" ? { window: config } : (config || {}));
         let { window, format = Number } = config;
-        value = this.asNumberFormat(value, config);
+        value = typeof value === "string" ? this.asNumberFormat(value, config) : value;
         if (!this.isNumber(value)) {
             return null;
         }
@@ -234,6 +255,8 @@ class Utl {
         if (!(format instanceof Function)) {
             format = Number;
         }
+        window = typeof window === "string" ? parseInt(window) : window;
+        value = typeof value === "string" ? parseFloat(value) : value;
         return format((Math.round(value * Math.pow(10, window)) / Math.pow(10, window)).toFixed(window));
     };
 

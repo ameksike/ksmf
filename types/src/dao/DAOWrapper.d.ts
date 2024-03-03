@@ -43,4 +43,5 @@ declare class DAOWrapper {
      * @description create all models associations
      */
     loadModules(): void;
+    onStop(): void;
 }

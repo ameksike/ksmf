@@ -1,0 +1,36 @@
+{
+  "default": {
+    "envkey": "",
+    "port": 3005,
+    "host": "localhost",
+    "protocol": "http",
+    "prefix": "/api/v1",
+    "import": {
+      "db": "cfg/db.js",
+      "log": "cfg/log.json",
+      "helper": "cfg/ioc.json",
+      "module": "cfg/module.json",
+      "constant": "cfg/constant.json"
+    },
+    "doc": {
+      "url": "/api/v1/doc",
+      "src": "cfg/doc.json"
+    },
+    "cors": [],
+    "event": {
+      "onInitConfig": [
+        "logger.wrapper",
+        "error.wrapper",
+        "dao.wrapper",
+        "doc.wrapper"
+      ],
+      "onInitModules": ["dao.wrapper"],
+      "onLoadModule": ["dao.wrapper"],
+      "onLoadedModules": ["dao.wrapper"],
+      "onInitApp": ["logger.wrapper"],
+      "onInitCompleted": ["doc.wrapper"],
+      "onStart": ["monitor.wrapper"],
+      "onError": ["monitor.wrapper"]
+    }
+  }
+}

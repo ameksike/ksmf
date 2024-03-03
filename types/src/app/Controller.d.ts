@@ -63,6 +63,13 @@ declare class Controller {
      */
     insert(req: any, res: any, next?: any): void;
     /**
+     * @description REST controller clone method
+     * @param {Object} req
+     * @param {Object} res
+     * @param {Object} [next]
+     */
+    clone(req: any, res: any, next?: any): void;
+    /**
      * @description REST controller options method
      * @param {Object} req
      * @param {Object} res

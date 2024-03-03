@@ -29,6 +29,14 @@ declare class Module {
      */
     logger: Console | null;
     /**
+     * @type {String|null}
+     */
+    type: string | null;
+    /**
+     * @type {Object|null}
+     */
+    _: any | null;
+    /**
      * @description initialize module
      * @param {Object} payload
      * @param {Object} [payload.app]
@@ -86,7 +94,7 @@ declare class Module {
      * @param {String} [opt.method]
      * @param {String} [opt.path]
      */
-    initRoutesWeb(opt: {
+    initRouterWeb(opt: {
         route?: string;
         action?: string;
         name?: string;
@@ -102,18 +110,12 @@ declare class Module {
      * @param {String} [opt.controller]
      * @param {String} [opt.path]
      */
-    initRoutesREST(opt: {
+    initRouterREST(opt: {
         route?: string;
         name?: string;
         controller?: string;
         path?: string;
     }): any;
-    /**
-     * @description initialize module middleware list
-     * @param {Object} middleware
-     * @returns {Object} middleware
-     */
-    initMiddlewareList(middleware: any): any;
     /**
      * @description get IoC locator options
      * @param {Object} opt
@@ -145,4 +147,10 @@ declare class Module {
      * @returns {Array} middlewares
      */
     getMiddlewareList(controller: any, opt: any, action?: string): any[];
+    /**
+     * @description initialize module middleware list
+     * @param {Object} middleware
+     * @returns {Object} middleware
+     */
+    initMiddlewareList(middleware: any, actions?: any): any;
 }

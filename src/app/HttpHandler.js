@@ -40,8 +40,8 @@ class HttpHandler {
                 res.end(`HTTP/1.1 500 External Server End\r\n`);
                 res.end('\r\n\r\n');
             },
-            custom: (res, message) => {
-                res.end(`HTTP/1.1 500 ${message}\r\n`);
+            custom: (res, message, code = 500) => {
+                res.end(`HTTP/1.1 ${code} ${message}\r\n`);
                 res.end('\r\n\r\n');
             }
         }

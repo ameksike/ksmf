@@ -10,7 +10,10 @@
  * @deprecated
  **/
 class Swagger {
-
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
     /**
      * @description Initialize options on construct Swagger
      * @param {Object} opt 
@@ -55,7 +58,7 @@ class Swagger {
         const path = require("path");
         const dir = path.resolve(app.path);
         const url = app.cfg.srv.doc.url;
-        const definition = app.cfg.srv.doc.src ? app.loadConfig(path.join(app.path, app.cfg.srv.doc.src)) : null;
+        const definition = app.cfg.srv.doc.src ? app?.config?.load(path.join(app.path, app.cfg.srv.doc.src)) : null;
         definition.info = definition.info || {};
         definition.info.title = definition.info.title || app.cfg?.pack?.name;
         definition.info.version = definition.info.version || app.cfg?.pack?.version;
@@ -65,8 +68,8 @@ class Swagger {
         if (!definition || !url) {
             return null;
         }
-        const swaggerUI = require('swagger-ui-express');
-        const swaggerJsDoc = require('swagger-jsdoc');
+        const swaggerUI = this.helper?.get({ name: 'swagger-ui-express', type: 'package' });
+        const swaggerJsDoc = this.helper?.get({ name: 'swagger-jsdoc', type: 'package' });
         app.web.use(
             url,
             swaggerUI.serve,

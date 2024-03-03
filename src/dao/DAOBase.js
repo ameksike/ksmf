@@ -9,6 +9,30 @@
 class DAOBase {
 
     /**
+     * @type {Console|null}
+     */
+    logger = null;
+
+    /**
+     * @type {Object|null}
+     */
+    helper = null;
+    /**
+     * @type {Object|null}
+     */
+    manager = null;
+
+    /**
+     * @type {Object|null}
+     */
+    models = {};
+
+    /**
+     * @type {Object|null}
+     */
+    driver = null;
+
+    /**
      * @description initialize DAO Base model
      * @param {Object} opt 
      */
@@ -99,10 +123,12 @@ class DAOBase {
 
     /**
      * @description dispatch onLoad event
+     * @param {String|Number} type 
+     * @param {*} message 
      */
-    log() {
+    log(type, message) {
         if (this.onLog instanceof Function) {
-            this.onLog(...arguments);
+            this.onLog(type, message);
         }
     }
 

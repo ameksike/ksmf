@@ -28,6 +28,13 @@ module.exports = {
         Fingerprint: require('./src/monitor/Fingerprint'),
         Session: require('./src/monitor/Session'),
     },
+    server: {
+        default: require('./src/server/ExpressServer'),
+        Base: require('./src/server/BaseServer'),
+        Request: require('./src/server/BaseRequest'),
+        Response: require('./src/server/BaseResponse'),
+        Express: require('./src/server/ExpressServer'),
+    },
     proxy: {
         App: require('./src/proxy/ProxyApp'),
         Rule: require('./src/proxy/ProxyRule'),

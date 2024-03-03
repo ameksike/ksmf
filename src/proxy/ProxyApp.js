@@ -71,15 +71,15 @@ class ProxyApp {
                 return this.app.setError(err);
             }
             const info = /** @type {{ address: string; family: string; port: number; }} */ listener.address();
-            this.app?.emit('onStart', "ksmf", [{ server: 'on', host: typeof info === "object" && info.address, port: typeof info === "object" && info.port }, this]);
+            this.app?.emit('onStart', [{ server: 'on', host: typeof info === "object" && info.address, port: typeof info === "object" && info.port }, this]);
         });
         server.on('connect', async (req, res, head) => {
             //... Only for HTTP/1.1 CONNECT method
             this.inf = this.initInfo(req, res, head);
-            this.app.emit('onConnectStart', 'ksmf', [req, res, this.inf]);
+            this.app.emit('onConnectStart', [req, res, this.inf]);
             this.inf.status = this.inf.status && await this.initAuth(req, res);
             this.inf.status = this.inf.status && await this.initRules(req, res);
-            this.app?.emit('onConnectEnd', "ksmf", [req, res, { state: this.inf.status ? 'ALLOW' : 'DENY', url: this.inf.destination.url, ...this.inf.origin }, this]);
+            this.app?.emit('onConnectEnd', [req, res, { state: this.inf.status ? 'ALLOW' : 'DENY', url: this.inf.destination.url, ...this.inf.origin }, this]);
             if (this.inf.status) {
                 this.pipe(req, res, this);
             }

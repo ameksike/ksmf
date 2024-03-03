@@ -6,49 +6,22 @@
  * @license    	GPL
  * @version    	1.0
  * @dependencies sequelize, fs, path
+ * @requires    sequelize
+ * @requires    sequelize-auto
  **/
 const DAOBase = require('./DAOBase');
 
 class DAOSequelize extends DAOBase {
-    /**
-     * @type {Object|null}
-     */
-    manager = null;
-
-    /**
-     * @type {Object|null}
-     */
-    models = {};
-    
-    /**
-     * @type {Object|null}
-     */
-    driver = null;
-
-    /**
-     * @type {Object|null}
-     */
-    helper = null;
-
-    /**
-     * @type {Console|null}
-     */
-    logger = null;
-	
-	
-    /**
-     * @description redefine constructor and set Sequelize ORM dependence
-     */
-    constructor() {
-        super();
-        this.manager = require('sequelize');
-    }
 
     /**
      * @description initialize Sequelize manager
      * @returns {DAOSequelize} self
      */
     initManager() {
+        this.manager = this.manager || this.helper?.get({
+            name: 'sequelize',
+            type: 'package'
+        });
         if (!this.manager || this.driver) {
             return this;
         }
@@ -280,7 +253,7 @@ class DAOSequelize extends DAOBase {
             caseFile: 'l',
             caseModel: 'p',
             caseProp: 'c',
-            lang: 'js',  // ts
+            lang: config?.lang || 'js',  // ts,js
             useDefine: false,
             singularize: true,
             spaces: true,

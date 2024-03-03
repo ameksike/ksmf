@@ -10,13 +10,19 @@ declare class AppWEB {
      */
     helper: any | null;
     /**
-     * @type {Object|null}
-     */
-    dao: any | null;
-    /**
+     * @deprecated
      * @type {Object|null}
      */
     web: any | null;
+    /**
+     * @deprecated
+     * @type {Object|null}
+     */
+    drv: any | null;
+    /**
+     * @type {Object|null}
+     */
+    server: any | null;
     /**
      * @type {Console|null}
      */
@@ -29,46 +35,150 @@ declare class AppWEB {
     mod: any[];
     cfg: {};
     event: import("ksdp/types/src/behavioral/Observer");
+    config: Config;
     /**
-     * @description initialize serve (Implement template method pattern)
+     * @description register a plugin
+     * @param {Object|String|Function|Array} plugin
+     * @param {Object} [option]
      * @returns {AppWEB} self
      */
-    init(): AppWEB;
+    register(plugin: any | string | Function | any[], option?: any): AppWEB;
+    /**
+     * @description remove a plugin
+     * @param {Object|String|Function|Array} plugin
+     * @param {Object} option
+     * @returns {AppWEB} self
+     */
+    unregister(plugin?: any | string | Function | any[], option?: any): AppWEB;
+    /**
+     * @description add listener to event
+     * @param {Array|Object|Function} subscriber
+     * @param {String} [event]
+     * @param {Object} [option]
+     * @param {String} [option.event]
+     * @param {String} [option.scope]
+     * @param {Number} [option.index]
+     * @param {Array} [option.rows]
+     * @return {AppWEB} self
+     */
+    subscribe(subscriber: any[] | any | Function, event?: string, option?: {
+        event?: string;
+        scope?: string;
+        index?: number;
+        rows?: any[];
+    }, scope?: string): AppWEB;
+    /**
+     * @description remove listener from event
+     * @param {String} event
+     * @param {Object} [option]
+     * @param {Number} [option.index]
+     * @param {String} [option.event]
+     * @param {String} [option.scope]
+     * @param {Number} [option.count]
+     * @param {Array} [option.rows]
+     * @return {AppWEB} self-reference
+     */
+    unsubscribe(event: string, option?: {
+        index?: number;
+        event?: string;
+        scope?: string;
+        count?: number;
+        rows?: any[];
+    }, scope?: string): AppWEB;
+    /**
+     * @description safely trigger events
+     * @param {String} event
+     * @param {Array} params
+     * @param {String} scope
+     * @returns {AppWEB} self
+     */
+    emit(event: string, params?: any[], scope?: string): AppWEB;
+    /**
+     * @description Initialize the application (Implement template method pattern)
+     * @param {Object} [options]
+     * @param {Object} [options.web]
+     * @param {Object} [options.server]
+     * @param {Object} [options.cookie]
+     * @param {Object} [options.session]
+     * @returns {Promise<AppWEB>} self
+     */
+    init(options?: {
+        web?: any;
+        server?: any;
+        cookie?: any;
+        session?: any;
+    }): Promise<AppWEB>;
     /**
      * @description start server
+     * @param {Object} [options]
+     * @param {Object} [options.web]
+     * @param {Object} [options.server]
+     * @param {Object} [options.cookie]
+     * @param {Object} [options.session]
      */
-    run(): any;
+    run(options?: {
+        web?: any;
+        server?: any;
+        cookie?: any;
+        session?: any;
+    }): Promise<void>;
     /**
-     * @description alias for run method
+     * @description alias for start server
+     * @param {Object} [options]
+     * @param {Object} [options.web]
+     * @param {Object} [options.server]
+     * @param {Object} [options.cookie]
+     * @param {Object} [options.session]
      */
-    start(): void;
+    start(options?: {
+        web?: any;
+        server?: any;
+        cookie?: any;
+        session?: any;
+    }): void;
     /**
      * @description stop server
      */
-    stop(): void;
-    /**
-     * @description load file config
-     * @param {String} target
-     * @returns {Object}
-     */
-    loadConfig(target: string, dir: any, id: any): any;
+    stop(): Promise<void>;
     /**
      * @description preload configuration file, variables, environments, etc
      */
     initConfig(): this;
-    drv: any;
+    /**
+     * @description get the web server
+     * @param {Object} [options]
+     * @param {Object} [options.web]
+     * @param {Object} [options.server]
+     * @param {Object} [options.cookie]
+     * @param {Object} [options.session]
+     * @param {Boolean} [options.force]
+     * @returns {Promise<import('../server/BaseServer')>} server
+     */
+    getServer(options?: {
+        web?: any;
+        server?: any;
+        cookie?: any;
+        session?: any;
+        force?: boolean;
+    }): Promise<import('../server/BaseServer')>;
     /**
      * @description initialize event handler
      */
     initEvents(): this;
     /**
-     * @description set error handler middleware
-     */
-    initErrorHandler(): void;
-    /**
      * @description initialize middleware applications
+     * @param {Object} [options]
+     * @param {Object} [options.web]
+     * @param {Object} [options.server]
+     * @param {Object} [options.cookie]
+     * @param {Object} [options.session]
      */
-    initApp(): this;
+    initApp(options?: {
+        web?: any;
+        server?: any;
+        cookie?: any;
+        session?: any;
+    }): Promise<this>;
     /**
      * @description throw application error
      * @param {Object} error
@@ -129,9 +239,5 @@ declare class AppWEB {
         method?: string;
         path?: string;
     }, pathname: string): any;
-    /**
-     * @description safely trigger events
-     * @returns {AppWEB} self
-     */
-    emit(...args: any[]): AppWEB;
 }
+import Config = require("./Config");
