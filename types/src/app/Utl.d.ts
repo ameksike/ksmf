@@ -53,10 +53,10 @@ declare class Utl {
     getSign(value: string | number, all?: boolean): string;
     /**
      * @description get a valid value for boolean format
-     * @param {String|Number|Boolean} value
+     * @param {String|Number|Boolean|Object|Array} value
      * @returns {Boolean}
      */
-    asBoolean(value: string | number | boolean, strict?: boolean): boolean;
+    asBoolean(value: string | number | boolean | any | any[], strict?: boolean): boolean;
     /**
      * @description check a valid value for number format
      * @param {String|Number} value

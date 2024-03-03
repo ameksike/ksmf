@@ -71,7 +71,7 @@ class Utl {
 
     /**
      * @description get a valid value for boolean format 
-     * @param {String|Number|Boolean} value 
+     * @param {String|Number|Boolean|Object|Array} value 
      * @returns {Boolean}
      */
     asBoolean(value, strict = true) {
