@@ -97,7 +97,17 @@ class Utl {
      * @returns {Boolean}
      */
     isNumber(value) {
-        return !isNaN(value) && value !== null && value !== undefined && value !== "";
+        return !this.isNaN(value) && value !== null && value !== undefined && value !== "";
+    }
+
+    /**
+     * @description check id the value is not a number
+     * @param {String|Number} value 
+     * @returns {Boolean}
+     */
+    isNaN(value) {
+        let tmp = typeof value === "string" ? parseFloat(value) : value;
+        return tmp != value;
     }
 
     /**

@@ -64,6 +64,12 @@ declare class Utl {
      */
     isNumber(value: string | number): boolean;
     /**
+     * @description check id the value is not a number
+     * @param {String|Number} value
+     * @returns {Boolean}
+     */
+    isNaN(value: string | number): boolean;
+    /**
      * @description check a valid value
      * @param {String|Number} value
      * @param {String|Number} defaultValue
