@@ -1,5 +1,6 @@
 export = BaseServer;
-declare class BaseServer {
+declare const BaseServer_base: typeof import("ksdp/types/src/integration/Dip");
+declare class BaseServer extends BaseServer_base {
     /**
      * @type {Object|null}
      */
@@ -55,14 +56,28 @@ declare class BaseServer {
     }): Promise<BaseServer>;
     /**
      * @description add session support
-     * @param {Object} session
+     * @param {Object|null} [session]
+     * @param {Object|null} [web]
      */
-    initSession(session?: any): void;
+    initSession(session?: any | null, web?: any | null): void;
     /**
      * @description add cookie support
-     * @param {Object} cookie
+     * @param {Object|null} [cookie]
+     * @param {Object|null} [web]
      */
-    initCookie(cookie?: any): void;
+    initCookie(cookie?: any | null, web?: any | null): void;
+    /**
+     * @description add Fingerprint support
+     * @param {Object|null} [config]
+     * @param {Object|null} [web]
+     */
+    initFingerprint(config?: any | null, web?: any | null): void;
+    /**
+     * @description add cors support
+     * @param {Object|null} [config]
+     * @param {Object|null} [web]
+     */
+    initCors(config?: any | null, web?: any | null): void;
     /**
      * @description publish static files
      * @param {String} url

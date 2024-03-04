@@ -6,6 +6,7 @@ declare class DAORedis extends DAOBase {
     constructor();
     cache: {};
     sets: {};
+    option: {};
     /**
      * @description redefine connect method
      * @returns {DAORedis} self

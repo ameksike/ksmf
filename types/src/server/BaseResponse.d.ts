@@ -1,15 +1,6 @@
 export = BaseResponse;
-/**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		28/02/2024
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
- * @link        https://fastify.dev/docs/latest/Reference/Reply/
- * @link        https://expressjs.com/en/4x/api.html#res
- */
-declare class BaseResponse {
+declare const BaseResponse_base: typeof import("ksdp/types/src/integration/Dip");
+declare class BaseResponse extends BaseResponse_base {
     constructor(driver: any);
     get request(): any;
     get sent(): any;

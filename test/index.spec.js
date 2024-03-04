@@ -9,12 +9,9 @@ describe('LOAD', () => {
         expect(KsMf.app.Module).toBeInstanceOf(Object);
         expect(KsMf.app.Controller).toBeInstanceOf(Object);
         expect(KsMf.app.Utl).toBeInstanceOf(Object);
-        expect(KsMf.app.Cors).toBeInstanceOf(Object);
 
         expect(KsMf.dao.Base).toBeInstanceOf(Function);
-        expect(KsMf.dao.Sequelize).toBeInstanceOf(Function);
         expect(KsMf.dao.Redis).toBeInstanceOf(Function);
-        expect(KsMf.dao.Wrapper).toBeInstanceOf(Function);
         expect(KsMf.dao.DataService).toBeInstanceOf(Function);
 
         expect(KsMf.task.Cron).toBeInstanceOf(Function);
@@ -32,6 +29,10 @@ describe('LOAD', () => {
         expect(KsMf.monitor.LoggerManager).toBeInstanceOf(Function);
         expect(KsMf.monitor.LoggerSimple).toBeInstanceOf(Function);
         expect(KsMf.monitor.LoggerWrapper).toBeInstanceOf(Function);
-        expect(KsMf.monitor.Session).toBeInstanceOf(Function);
+
+        expect(KsMf.server.Base).toBeInstanceOf(Function);
+        expect(KsMf.server.Request).toBeInstanceOf(Function);
+        expect(KsMf.server.Response).toBeInstanceOf(Function);
+        expect(KsMf.server.Session).toBeInstanceOf(Function);
     });
 });

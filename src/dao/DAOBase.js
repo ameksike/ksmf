@@ -6,7 +6,12 @@
  * @license    	GPL
  * @version    	1.0
  **/
-class DAOBase {
+const ksdp = require("ksdp");
+
+/**
+ * @typedef {import('../types').TList} TList 
+ */
+class DAOBase extends ksdp.integration.Dip {
 
     /**
      * @type {Console|null}
@@ -17,6 +22,7 @@ class DAOBase {
      * @type {Object|null}
      */
     helper = null;
+
     /**
      * @type {Object|null}
      */
@@ -33,14 +39,20 @@ class DAOBase {
     driver = null;
 
     /**
+     * @type {TList|null}
+     */
+    option = null;
+
+    /**
      * @description initialize DAO Base model
      * @param {Object} opt 
      */
     constructor(opt = null) {
+        super();
         this.models = {};
         this.driver = null;
         this.manager = null;
-        this.option = {};
+        this.option = null;
         this.configure(opt);
     }
 

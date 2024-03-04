@@ -8,7 +8,8 @@
  * @link        https://fastify.dev/docs/latest/Reference/Reply/
  * @link        https://expressjs.com/en/4x/api.html#res
  */
-class BaseResponse {
+const ksdp = require("ksdp");
+class BaseResponse extends ksdp.integration.Dip {
 
     get request() {
         return this.drv?.request;
@@ -18,6 +19,7 @@ class BaseResponse {
     }
 
     constructor(driver) {
+        super();
         this.name = 'base';
         this.drv = driver
     }
