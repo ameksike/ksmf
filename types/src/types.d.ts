@@ -10,4 +10,10 @@ export type TAppConfig = {
     fingerprint?: any;
     cors?: any;
     force?: boolean;
+    port?: number;
+    host?: string;
+    protocol?: string;
+    key?: string;
+    cert?: string;
+    app?: string;
 };
