@@ -1,13 +1,9 @@
 export = DAOBase;
+declare const DAOBase_base: typeof import("ksdp/types/src/integration/Dip");
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		22/04/2021
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
- **/
-declare class DAOBase {
+ * @typedef {import('../types').TList} TList
+ */
+declare class DAOBase extends DAOBase_base {
     /**
      * @description initialize DAO Base model
      * @param {Object} opt
@@ -33,7 +29,10 @@ declare class DAOBase {
      * @type {Object|null}
      */
     driver: any | null;
-    option: {};
+    /**
+     * @type {TList|null}
+     */
+    option: TList | null;
     /**
      * @description set all configuration options
      * @returns {DAOBase} self
@@ -111,3 +110,7 @@ declare class DAOBase {
      */
     onDisconnect(option: any): void;
 }
+declare namespace DAOBase {
+    export { TList };
+}
+type TList = import('../types').TList;

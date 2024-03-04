@@ -95,47 +95,20 @@ declare class AppWEB {
     emit(event: string, params?: any[], scope?: string): AppWEB;
     /**
      * @description Initialize the application (Implement template method pattern)
-     * @param {Object} [options]
-     * @param {Object} [options.web]
-     * @param {Object} [options.server]
-     * @param {Object} [options.cookie]
-     * @param {Object} [options.session]
+     * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<AppWEB>} self
      */
-    init(options?: {
-        web?: any;
-        server?: any;
-        cookie?: any;
-        session?: any;
-    }): Promise<AppWEB>;
+    init(options?: import('../types').TAppConfig): Promise<AppWEB>;
     /**
      * @description start server
-     * @param {Object} [options]
-     * @param {Object} [options.web]
-     * @param {Object} [options.server]
-     * @param {Object} [options.cookie]
-     * @param {Object} [options.session]
+     * @param {import('../types').TAppConfig} [options]
      */
-    run(options?: {
-        web?: any;
-        server?: any;
-        cookie?: any;
-        session?: any;
-    }): Promise<void>;
+    run(options?: import('../types').TAppConfig): Promise<void>;
     /**
      * @description alias for start server
-     * @param {Object} [options]
-     * @param {Object} [options.web]
-     * @param {Object} [options.server]
-     * @param {Object} [options.cookie]
-     * @param {Object} [options.session]
+     * @param {import('../types').TAppConfig} [options]
      */
-    start(options?: {
-        web?: any;
-        server?: any;
-        cookie?: any;
-        session?: any;
-    }): void;
+    start(options?: import('../types').TAppConfig): void;
     /**
      * @description stop server
      */
@@ -146,39 +119,19 @@ declare class AppWEB {
     initConfig(): this;
     /**
      * @description get the web server
-     * @param {Object} [options]
-     * @param {Object} [options.web]
-     * @param {Object} [options.server]
-     * @param {Object} [options.cookie]
-     * @param {Object} [options.session]
-     * @param {Boolean} [options.force]
+     * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<import('../server/BaseServer')>} server
      */
-    getServer(options?: {
-        web?: any;
-        server?: any;
-        cookie?: any;
-        session?: any;
-        force?: boolean;
-    }): Promise<import('../server/BaseServer')>;
+    getServer(options?: import('../types').TAppConfig): Promise<import('../server/BaseServer')>;
     /**
      * @description initialize event handler
      */
     initEvents(): this;
     /**
      * @description initialize middleware applications
-     * @param {Object} [options]
-     * @param {Object} [options.web]
-     * @param {Object} [options.server]
-     * @param {Object} [options.cookie]
-     * @param {Object} [options.session]
+     * @param {import('../types').TAppConfig} [options]
      */
-    initApp(options?: {
-        web?: any;
-        server?: any;
-        cookie?: any;
-        session?: any;
-    }): Promise<this>;
+    initApp(options?: import('../types').TAppConfig): Promise<this>;
     /**
      * @description throw application error
      * @param {Object} error

@@ -1,13 +1,6 @@
 export = BaseRequest;
-/**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		28/02/2024
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
- */
-declare class BaseRequest {
+declare const BaseRequest_base: typeof import("ksdp/types/src/integration/Dip");
+declare class BaseRequest extends BaseRequest_base {
     constructor(driver: any);
     get query(): any;
     get body(): any;

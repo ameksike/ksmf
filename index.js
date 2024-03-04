@@ -15,8 +15,7 @@ module.exports = {
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
         Utl: require('./src/app/Utl'),
-        Url: require('./src/app/Url'),
-        Cors: require('./src/app/Cors')
+        Url: require('./src/app/Url')
     },
     monitor: {
         Manager: require('./src/monitor/Manager'),
@@ -24,16 +23,13 @@ module.exports = {
         Logger: require('./src/monitor/Logger'),
         LoggerManager: require('./src/monitor/LoggerManager'),
         LoggerSimple: require('./src/monitor/LoggerSimple'),
-        LoggerWrapper: require('./src/monitor/LoggerWrapper'),
-        Fingerprint: require('./src/monitor/Fingerprint'),
-        Session: require('./src/monitor/Session'),
+        LoggerWrapper: require('./src/monitor/LoggerWrapper')
     },
     server: {
-        default: require('./src/server/ExpressServer'),
         Base: require('./src/server/BaseServer'),
         Request: require('./src/server/BaseRequest'),
         Response: require('./src/server/BaseResponse'),
-        Express: require('./src/server/ExpressServer'),
+        Session: require('./src/server/Session')
     },
     proxy: {
         App: require('./src/proxy/ProxyApp'),
@@ -42,12 +38,13 @@ module.exports = {
     },
     dao: {
         Base: require('./src/dao/DAOBase'),
-        Sequelize: require('./src/dao/DAOSequelize'),
-        Redis: require('./src/dao/DAORedis'),
-        Wrapper: require('./src/dao/DAOWrapper'),
         DataModule: require('./src/dao/DataModule'),
         DataService: require('./src/dao/DataService'),
-        DataController: require('./src/dao/DataController')
+        DataController: require('./src/dao/DataController'),
+        /**
+         * @deprecated
+         */
+        Redis: require('./src/dao/DAORedis')
     },
     view: {
         Tpl: require('./src/view/Tpl')
@@ -56,6 +53,9 @@ module.exports = {
         Cron: require('./src/task/cron')
     },
     doc: {
+        /**
+         * @deprecated
+         */
         Swagger: require('./src/doc/Swagger')
     },
     default: require('./src/app/AppWEB')

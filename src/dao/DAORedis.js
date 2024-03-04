@@ -18,6 +18,7 @@ class DAORedis extends DAOBase {
         super();
         this.cache = {};
         this.sets = {};
+        this.option = {};
         this.option.port = this.option.port || 6379;
         this.option.protocol = this.option.protocol || "rediss";
         this.option.password = this.option.password || "auth";

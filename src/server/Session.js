@@ -1,6 +1,4 @@
-const sessionMw = require('express-session');
 const ksdp = require('ksdp');
-
 class SessionService extends ksdp.integration.Dip {
     /**
      * @type {Object|null}
@@ -24,24 +22,31 @@ class SessionService extends ksdp.integration.Dip {
      * @returns {SessionService} self
      */
     init(app, option = null) {
-        if (app?.use instanceof Function) {
-            let config = {
-                resave: option?.resave ?? false,
-                saveUninitialized: option?.saveUninitialized ?? true,
-                secret: option?.secret || '3v23v23v23v23v23v2',
-                cookie: {
-                    maxAge: option?.maxAge || 24 * 60 * 60 * 1000,
-                    sameSite: option?.sameSite ?? (option?.https ? 'None' : 'Lax'),
-                    secure: option?.secure ?? (option?.https ? true : false),
-                    httpOnly: option?.httpOnly ?? true
-                },
-                name: option?.resave ?? 'api.sec',
-                ...option?.overwrite
-            };
-            app?.set instanceof Function && app.set("trust proxy", 1);
-            app?.use(sessionMw(config));
+        if (app?.initSession instanceof Function) {
+            app?.initSession(option)
         }
         return this;
+    }
+
+    /**
+     * @description get session config
+     * @param {Object} option 
+     * @returns {Object} config
+     */
+    getConfig(option) {
+        return {
+            resave: option?.resave ?? false,
+            saveUninitialized: option?.saveUninitialized ?? true,
+            secret: option?.secret || '3v23v23v23v23v23v2',
+            cookie: {
+                maxAge: option?.maxAge || 24 * 60 * 60 * 1000,
+                sameSite: option?.sameSite ?? (option?.https ? 'None' : 'Lax'),
+                secure: option?.secure ?? (option?.https ? true : false),
+                httpOnly: option?.httpOnly ?? true
+            },
+            name: option?.resave ?? 'api.sec',
+            ...option?.overwrite
+        }
     }
 
     /**

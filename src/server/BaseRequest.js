@@ -6,8 +6,8 @@
  * @license    	GPL
  * @version    	1.0
  */
-
-class BaseRequest {
+const ksdp = require("ksdp");
+class BaseRequest extends ksdp.integration.Dip {
 
     get query() {
         return this.drv?.query;
@@ -41,6 +41,7 @@ class BaseRequest {
     }
 
     constructor(driver) {
+        super();
         this.name = 'base';
         this.drv = driver
     }
