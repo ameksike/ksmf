@@ -143,6 +143,7 @@ class AppWEB {
      */
     async init(options = null) {
         try {
+            options = options || {};
             await this.initConfig(options);
             await this.initApp(options);
             await this.initModules();
@@ -218,6 +219,15 @@ class AppWEB {
         this.cfg.srv.public = this.cfg.srv.public || 'www/';
         this.cfg.srv.static = this.cfg.srv.static || '/www';
         this.cfg.srv.doc = this.cfg.srv.doc || {};
+
+        // ... configure component options ...
+        options = options || {};
+        options.cors = options.cors || srv.cors || null;
+        options.fingerprint = options.fingerprint || srv.fingerprint || null;
+        options.cookie = options.cookie || srv.cookie || null;
+        options.session = options.session || srv.session || null;
+        options.force = options.force || srv.force || false;
+        options.server = options.server || srv.server || false;
 
         // ... configure Helper ...
         this.helper.configure({

@@ -76,12 +76,37 @@ declare class SessionService extends SessionService_base {
      */
     select(req: any, key?: string): any;
     /**
-     * @description select method alias, get a session user account
+     * @description create a new user session
+     * @param {Object} req
+     * @param {String} [key]
+     * @param {Object} [payload]
+     * @returns {Object} session account
+     */
+    create(req: any, key?: string, payload?: any): any;
+    /**
+     * @description update a new user session
+     * @param {Object} req
+     * @param {String} [key]
+     * @param {Object} [payload]
+     * @returns {Object} session account
+     */
+    update(req: any, key?: string, payload?: any): any;
+    /**
+     * @description save update/create a new user session
+     * @param {Object} req
+     * @param {String} [key]
+     * @param {Object} [payload]
+     * @returns {Object} session account
+     */
+    save(req: any, key?: string, payload?: any): any;
+    /**
+     * @description remove the user session account
      * @param {Object} req
      * @param {String} key
-     * @returns {Object} session
+     * @param {Boolean} full
+     * @returns {Object} account
      */
-    account(req: any, key?: string): any;
+    remove(req: any, key?: string, full?: boolean): any;
     /**
      * @description check the user session
      * @param {Object} option
@@ -91,19 +116,10 @@ declare class SessionService extends SessionService_base {
      */
     check(option: any, context?: any, authService?: any): Promise<boolean>;
     /**
-     * @description create a new user session
-     * @param {Object} req
-     * @param {String} [key]
-     * @param {Object} [payload]
-     * @returns {Object} session account
-     */
-    create(req: any, key?: string, payload?: any): any;
-    /**
-     * @description remove the user session account
+     * @description select method alias, get a session user account
      * @param {Object} req
      * @param {String} key
-     * @param {Boolean} full
-     * @returns {Object} account
+     * @returns {Object} session
      */
-    remove(req: any, key?: string, full?: boolean): any;
+    account(req: any, key?: string): any;
 }
