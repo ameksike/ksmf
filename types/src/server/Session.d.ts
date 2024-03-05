@@ -2,6 +2,17 @@ export = SessionService;
 declare const SessionService_base: typeof import("ksdp/types/src/integration/Dip");
 declare class SessionService extends SessionService_base {
     /**
+     * @param {Object} [option]
+     * @param {Object} [option.logger]
+     * @param {String} [option.sessionKey]
+     * @param {Object} [option.authService]
+     */
+    constructor(option?: {
+        logger?: any;
+        sessionKey?: string;
+        authService?: any;
+    });
+    /**
      * @type {Object|null}
      */
     authService: any | null;

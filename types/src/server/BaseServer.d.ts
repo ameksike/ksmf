@@ -14,9 +14,9 @@ declare class BaseServer extends BaseServer_base {
      */
     cookie: any | null;
     /**
-     * @type {Object|null}
+     * @type {Session|null}
      */
-    session: any | null;
+    session: Session | null;
     /**
      * @type {Console|null}
      */
@@ -56,10 +56,10 @@ declare class BaseServer extends BaseServer_base {
     }): Promise<BaseServer>;
     /**
      * @description add session support
-     * @param {Object|null} [session]
+     * @param {Object|null} [option]
      * @param {Object|null} [web]
      */
-    initSession(session?: any | null, web?: any | null): void;
+    initSession(option?: any | null, web?: any | null): void;
     /**
      * @description add cookie support
      * @param {Object|null} [cookie]
@@ -178,3 +178,4 @@ declare class BaseServer extends BaseServer_base {
      */
     stop(): void;
 }
+import Session = require("./Session");

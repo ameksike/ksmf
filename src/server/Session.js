@@ -16,6 +16,19 @@ class SessionService extends ksdp.integration.Dip {
     sessionKey = "user";
 
     /**
+     * @param {Object} [option]
+     * @param {Object} [option.logger] 
+     * @param {String} [option.sessionKey] 
+     * @param {Object} [option.authService] 
+     */
+    constructor(option = null) {
+        super();
+        this.logger = option?.logger || null;
+        this.sessionKey = option?.sessionKey || this.sessionKey;
+        this.sessionKey = option?.authService || this.authService;
+    }
+
+    /**
      * @description initialize the session manager
      * @param {Object} app 
      * @param {Object} option 
