@@ -14,6 +14,7 @@
  * @property {Object} [fingerprint]  
  * @property {Object} [cors]  
  * @property {Boolean} [force]  
+ * @property {Object} [config]  
  */
 
 module.exports = {};

@@ -115,8 +115,9 @@ declare class AppWEB {
     stop(): Promise<void>;
     /**
      * @description preload configuration file, variables, environments, etc
+     * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(): this;
+    initConfig(options?: import('../types').TAppConfig): this;
     /**
      * @description get the web server
      * @param {import('../types').TAppConfig} [options]
