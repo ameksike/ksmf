@@ -1,4 +1,5 @@
-const ksdp = require("ksdp");
+const ksdp = require('ksdp');
+const Session = require('./Session');
 class BaseServer extends ksdp.integration.Dip {
 
     /**
@@ -17,7 +18,7 @@ class BaseServer extends ksdp.integration.Dip {
     cookie = null;
 
     /**
-     * @type {Object|null}
+     * @type {Session|null}
      */
     session = null;
 
@@ -66,11 +67,11 @@ class BaseServer extends ksdp.integration.Dip {
 
     /**
      * @description add session support
-     * @param {Object|null} [session] 
+     * @param {Object|null} [option] 
      * @param {Object|null} [web] 
      */
-    initSession(session = null, web = null) {
-        this.session = session || this.session;
+    initSession(option = null, web = null) {
+        this.session = new Session(option);
     }
 
     /**
@@ -90,7 +91,7 @@ class BaseServer extends ksdp.integration.Dip {
     initFingerprint(config = null, web = null) {
         // ... 
     }
-    
+
     /**
      * @description add cors support
      * @param {Object|null} [config] 

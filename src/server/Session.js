@@ -1,3 +1,12 @@
+/**
+ * @author		Antonio Membrides Espinosa
+ * @email		tonykssa@gmail.com
+ * @date		22/04/2021
+ * @copyright  	Copyright (c) 2020-2030
+ * @license    	GPL
+ * @version    	1.0
+ * @requires    ksmf
+ */
 const ksdp = require('ksdp');
 class SessionService extends ksdp.integration.Dip {
     /**
@@ -14,6 +23,19 @@ class SessionService extends ksdp.integration.Dip {
      * @type {String}
      */
     sessionKey = "user";
+
+    /**
+     * @param {Object} [option]
+     * @param {Object} [option.logger] 
+     * @param {String} [option.sessionKey] 
+     * @param {Object} [option.authService] 
+     */
+    constructor(option = null) {
+        super();
+        this.logger = option?.logger || null;
+        this.sessionKey = option?.sessionKey || this.sessionKey;
+        this.sessionKey = option?.authService || this.authService;
+    }
 
     /**
      * @description initialize the session manager
@@ -44,7 +66,7 @@ class SessionService extends ksdp.integration.Dip {
                 secure: option?.secure ?? (option?.https ? true : false),
                 httpOnly: option?.httpOnly ?? true
             },
-            name: option?.resave ?? 'api.sec',
+            name: option?.name ?? '_ksmf_',
             ...option?.overwrite
         }
     }
@@ -93,21 +115,83 @@ class SessionService extends ksdp.integration.Dip {
             src: "Ksmf:Session:account",
             data: { key, account: acc, session: req.session }
         });
-        if (!acc?.access_token) {
-            acc = {} || acc;
-            acc.access_token = this.getToken(req);
-        }
         return acc;
     }
 
     /**
-     * @description select method alias, get a session user account 
+     * @description create a new user session 
+     * @param {Object} req 
+     * @param {String} [key] 
+     * @param {Object} [payload] 
+     * @returns {Object} session account
+     */
+    create(req, key = 'user', payload = null) {
+        if (req.session && payload) {
+            req.session[key] = { ...req.session[key], ...payload };
+            this.logger?.info({
+                flow: req.flow,
+                src: "Ksmf:Session:create",
+                data: req.session[key]
+            });
+            return req.session[key];
+        } else {
+            this.logger?.error({
+                flow: req.flow,
+                src: "Ksmf:Session:create",
+                data: { key, payload, session: req.session }
+            });
+            return null;
+        }
+    }
+
+    /**
+     * @description update a new user session 
+     * @param {Object} req 
+     * @param {String} [key] 
+     * @param {Object} [payload] 
+     * @returns {Object} session account
+     */
+    update(req, key = 'user', payload = null) {
+        return this.create(req, key, payload)
+    }
+
+    /**
+     * @description save update/create a new user session 
+     * @param {Object} req 
+     * @param {String} [key] 
+     * @param {Object} [payload] 
+     * @returns {Object} session account
+     */
+    save(req, key = 'user', payload = null) {
+        return this.create(req, key, payload)
+    }
+
+    /**
+     * @description remove the user session account 
      * @param {Object} req 
      * @param {String} key 
-     * @returns {Object} session
+     * @param {Boolean} full 
+     * @returns {Object} account
      */
-    account(req, key = 'user') {
-        return this.select(req, key);
+    remove(req, key = 'user', full = true) {
+        if (req?.session) {
+            const account = req.session[key];
+            delete req.session[key];
+            full && req.session?.destroy instanceof Function && req.session.destroy();
+            this.logger?.info({
+                flow: req.flow,
+                src: "Ksmf:Session:remove",
+                data: { key, full, account, session: req.session }
+            });
+            return account;
+        } else {
+            this.logger?.error({
+                flow: req.flow,
+                src: "Ksmf:Session:remove",
+                data: { key, full, session: req.session }
+            });
+        }
+        return null;
     }
 
     /**
@@ -121,7 +205,9 @@ class SessionService extends ksdp.integration.Dip {
         const { key = this.sessionKey, mode } = option || {};
         const { req } = context || {};
         // get session 
-        const sess = this.account(req, key);
+        const sess = this.select(req, key) || {};
+        sess.access_token = this.getToken(req);
+
         if (sess) {
             // register user
             if (!sess?.user && sess?.access_token) {
@@ -165,57 +251,13 @@ class SessionService extends ksdp.integration.Dip {
     }
 
     /**
-     * @description create a new user session 
-     * @param {Object} req 
-     * @param {String} [key] 
-     * @param {Object} [payload] 
-     * @returns {Object} session account
-     */
-    create(req, key = 'user', payload = null) {
-        if (req.session && payload) {
-            req.session[key] = { lang: req?.query?.idiom || "en", ...req.session[key] || {}, ...payload };
-            this.logger?.info({
-                flow: req.flow,
-                src: "Ksmf:Session:create",
-                data: req.session[key]
-            });
-            return req.session[key];
-        } else {
-            this.logger?.error({
-                flow: req.flow,
-                src: "Ksmf:Session:create",
-                data: { key, payload, session: req.session }
-            });
-            return null;
-        }
-    }
-
-    /**
-     * @description remove the user session account 
+     * @description select method alias, get a session user account 
      * @param {Object} req 
      * @param {String} key 
-     * @param {Boolean} full 
-     * @returns {Object} account
+     * @returns {Object} session
      */
-    remove(req, key = 'user', full = true) {
-        if (req?.session) {
-            const account = req.session[key];
-            delete req.session[key];
-            full && req.session?.destroy instanceof Function && req.session.destroy();
-            this.logger?.info({
-                flow: req.flow,
-                src: "Ksmf:Session:remove",
-                data: { key, full, account, session: req.session }
-            });
-            return account;
-        } else {
-            this.logger?.error({
-                flow: req.flow,
-                src: "Ksmf:Session:remove",
-                data: { key, full, session: req.session }
-            });
-        }
-        return null;
+    account(req, key = 'user') {
+        return this.select(req, key);
     }
 }
 

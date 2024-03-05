@@ -16,7 +16,18 @@
       "url": "/api/v1/doc",
       "src": "cfg/doc.json"
     },
-    "cors": [],
+    "cors": {
+      "allowed": ["https://app.forestadmin.com"]
+    },
+    "cookie": {
+      "active": true
+    },
+    "session": {
+      "name": "tata"
+    },
+    "fingerprint": {
+      "active": true
+    },
     "event": {
       "onInitConfig": [
         "logger.wrapper",
@@ -25,8 +36,8 @@
         "doc.wrapper"
       ],
       "onInitModules": ["dao.wrapper"],
-      "onLoadModule": ["dao.wrapper"],
-      "onLoadedModules": ["dao.wrapper"],
+      "onLoadModule": ["dao.wrapper", "doc.wrapper"],
+      "onLoadedModules": ["dao.wrapper", "ksmf.forestadmin.wrapper"],
       "onInitApp": ["logger.wrapper"],
       "onInitCompleted": ["doc.wrapper"],
       "onStart": ["monitor.wrapper"],

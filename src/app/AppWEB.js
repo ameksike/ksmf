@@ -143,7 +143,8 @@ class AppWEB {
      */
     async init(options = null) {
         try {
-            await this.initConfig();
+            options = options || {};
+            await this.initConfig(options);
             await this.initApp(options);
             await this.initModules();
             await this.initRoutes();
@@ -159,7 +160,7 @@ class AppWEB {
      * @param {import('../types').TAppConfig} [options] 
      */
     async run(options = null) {
-        if (!this.server) {
+        if (!this.server || options?.force) {
             await this.init(options);
         }
 
@@ -172,7 +173,7 @@ class AppWEB {
             srv: this.cfg?.srv,
             message: 'SERVER_LISTENING',
             ...metadata
-        }]);
+        }, this]);
     }
 
     /**
@@ -188,18 +189,19 @@ class AppWEB {
      */
     async stop() {
         const server = await this.getServer();
-        this.emit('onStop', [server]);
+        this.emit('onStop', [server, this]);
         server?.stop();
     }
 
     /**
      * @description preload configuration file, variables, environments, etc
+     * @param {import('../types').TAppConfig} [options]
      */
-    initConfig() {
+    initConfig(options) {
         dotenv.config();
         const env = process.env || {};
         const eid = env["NODE_ENV"] || 'development';
-        const srv = this.config.load('cfg/core.json', { dir: this.path, id: eid });
+        const srv = options?.config || this.config.load('cfg/core.json', { dir: this.path, id: eid });
         const pac = this.config.load(path.join(this.path, 'package.json'));
 
         this.cfg.env = env;
@@ -211,12 +213,21 @@ class AppWEB {
         this.cfg.srv.module = this.cfg.srv.module || {};
         this.cfg.srv.module.path = path.join(this.path, 'src/');
         this.cfg.srv.log = this.cfg.env.LOG_LEVEL ? this.cfg.env.LOG_LEVEL : this.cfg.srv.log;
-        this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port;
+        this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port || 4444;
         this.cfg.srv.event = this.cfg.srv.event || {};
         this.cfg.srv.cors = this.cfg.srv.cors || [];
         this.cfg.srv.public = this.cfg.srv.public || 'www/';
         this.cfg.srv.static = this.cfg.srv.static || '/www';
         this.cfg.srv.doc = this.cfg.srv.doc || {};
+
+        // ... configure component options ...
+        options = options || {};
+        options.cors = options.cors || srv.cors || null;
+        options.fingerprint = options.fingerprint || srv.fingerprint || null;
+        options.cookie = options.cookie || srv.cookie || null;
+        options.session = options.session || srv.session || null;
+        options.force = options.force || srv.force || false;
+        options.server = options.server || srv.server || false;
 
         // ... configure Helper ...
         this.helper.configure({
@@ -230,7 +241,7 @@ class AppWEB {
         this.helper.set(this, 'app');
         // ... configure Events ...
         this.initEvents();
-        this.emit('onInitConfig', [this.cfg]);
+        this.emit('onInitConfig', [this.cfg, this]);
         return this;
     }
 
@@ -292,7 +303,7 @@ class AppWEB {
 
         //... Log requests 
         this.server?.onRequest((req, res, next) => {
-            this.emit('onRequest', [req, res, next]);
+            this.emit('onRequest', [req, res, next, this]);
             next instanceof Function && next();
         });
 
@@ -309,7 +320,7 @@ class AppWEB {
      * @param {Object} next 
      */
     setError(error, req = null, res = null, next = null) {
-        this.emit('onError', [error, req, res, next]);
+        this.emit('onError', [error, req, res, next, this]);
         if (res && !res.finished && res.status instanceof Function) {
             return res.status(500).json({
                 error: typeof (error) === 'string' ? {
@@ -419,7 +430,7 @@ class AppWEB {
             }
         }
         this.server?.on404((req, res, next) => {
-            this.emit('on404', [req, res, next]);
+            this.emit('on404', [req, res, next, this]);
             next instanceof Function && next();
         });
         return this;

@@ -1,33 +1,39 @@
 {
-  "server": {
-    "name": "ksmf",
-    "type": "lib",
-    "namespace": "server.Express",
-    "dependency": {
-      "helper": "helper"
-    }
-  },
   "utl": {
     "name": "ksmf",
     "type": "lib",
     "namespace": "app.Utl"
   },
+  "server": {
+    "name": "ksmf-express",
+    "type": "package",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
   "dao": {
-    "name": "ksmf",
-    "type": "lib",
-    "namespace": "dao.Sequelize",
+    "name": "ksmf-sequelize",
+    "type": "package",
     "dependency": {
       "helper": "helper"
     }
   },
   "dao.wrapper": {
-    "name": "ksmf",
+    "name": "ksmf-sequelize",
     "type": "lib",
     "params": {
-      "exclude": ["forest"],
-      "service": "rest"
+        "exclude": ["forest"],
+        "service": "rest"
     },
-    "namespace": "dao.Wrapper",
+    "namespace": "cls.Wrapper",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "doc.wrapper": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "doc.Swagger",
     "dependency": {
       "helper": "helper"
     }

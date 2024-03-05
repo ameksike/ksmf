@@ -40,7 +40,7 @@ try {
             break;
 
         default:
-            app.run({ cookie: true });
+            app.run();
             break;
     }
 }

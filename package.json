@@ -1,6 +1,6 @@
 {
   "name": "ksmf",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Modular Microframework for create minimalistic web application or REST API",
   "main": "index.js",
   "types": "types/index.d.ts",
@@ -20,6 +20,7 @@
     "Microframework",
     "Ksike",
     "Express",
+    "Fastify",
     "KSMF",
     "KSDP",
     "KSCRYP",
@@ -36,7 +37,7 @@
   "dependencies": {
     "dotenv": "^16.4.1",
     "kscryp": "^1.0.18",
-    "ksdp": "^1.2.19",
+    "ksdp": "^1.2.20",
     "kstpl": "^1.0.2"
   },
   "devDependencies": {

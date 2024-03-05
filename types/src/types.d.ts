@@ -10,4 +10,5 @@ export type TAppConfig = {
     fingerprint?: any;
     cors?: any;
     force?: boolean;
+    config?: any;
 };
