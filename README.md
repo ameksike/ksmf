@@ -1,5 +1,4 @@
-**KsMf** is a modular microframework for create minimalistic Web/CLI application or REST API based on [KsDp](https://github.com/ameksike/ksdp/wiki) with support for several web servers or frameworks like [Express Js](https://expressjs.com) and [Fastify](https://fastify.dev), for more information see our [wiki](https://github.com/ameksike/ksmf/wiki).
-
+**KsMf** stands as a modular microframework tailored for crafting minimalist web, CLI applications, or REST APIs. Leveraging the robust capabilities of  [KsDp](https://github.com/ameksike/ksdp/wiki), it extends support across a spectrum of web servers or frameworks like [Express Js](https://expressjs.com), [Fastify](https://fastify.dev), etc. For further information see our [wiki](https://github.com/ameksike/ksmf/wiki).
 
 This library belong to the **Ksike** ecosystem:
 - [KsMf](https://www.npmjs.com/package/ksmf) - Microframework (WEB, REST API, CLI, Proxy, etc)
@@ -11,6 +10,9 @@ This library belong to the **Ksike** ecosystem:
 - [KsTpl](https://www.npmjs.com/package/kstpl) - Template Engine
 - [KsDocs](https://www.npmjs.com/package/ksdocs) - Document Engine
 
+KsMf introduces the groundbreaking concept of "techless", fundamentally reshaping how developers, regardless of their experience level, engage with technology stacks. With KsMf, less experienced developers are relieved of the burden of selecting a specific tech stack. Instead, they can seamlessly tap into a range of options with minimal configuration. For seasoned software engineers, KsMf offers unparalleled flexibility. They can develop plugins to extend support for additional technologies or refine and personalize existing ones. Its modular architecture paves the way for such flexibility, ensuring compatibility with both TypeScript and JavaScript environments.
+
+In essence, KsMf emerges as a versatile framework that empowers developers to build applications without being constrained by technology choices. It embodies adaptability, simplicity, and extensibility, making it an indispensable tool in the arsenal of modern web developers.
 
 ### Get started
 1. [Install](./doc/intro.install.md)
