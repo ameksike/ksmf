@@ -14,12 +14,6 @@
  * @property {Object} [fingerprint]  
  * @property {Object} [cors]  
  * @property {Boolean} [force]  
- * @property {Number} [port]  
- * @property {String} [host]  
- * @property {String} [protocol]  
- * @property {String} [key]  
- * @property {String} [cert]  
- * @property {String} [app]  
  */
 
 module.exports = {};
