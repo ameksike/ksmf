@@ -66,7 +66,7 @@ Example of configuring the DAO lib using Sequelize as a base
               "dependency": {
                 "helper": "helper"
               }
-            },
+            }
         }
     }
 }
