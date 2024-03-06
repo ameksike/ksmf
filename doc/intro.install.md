@@ -93,4 +93,10 @@ Package config example **[PROJECT_PATH]/package.json**
 npm start
 ```
 
+
+### Related topics
+
+- [Hello World](./intro.hello_world.md)
+- [VS Code Debbug](./advanced.ide.md)
+
 Ok you already have the framework installed, now you need to see the next topic [Hello World](./intro.hello_world.md) tutorial.

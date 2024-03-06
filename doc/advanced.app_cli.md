@@ -65,5 +65,6 @@ By following these steps and utilizing the KsMf framework, you can easily create
 - [Modules](./common.modules.md)
 - [Settings](./advanced.setting.md)
 - [Events](./advanced.events.md)
+- [VS Code Debbug](./advanced.ide.md)
 
 The next recomended topic: [Settings](./advanced.setting.md).
