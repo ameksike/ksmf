@@ -19,11 +19,21 @@ try {
     switch (act) {
         case 'run':
             let target = process.argv[3];
+            if (!target) {
+                break;
+            }
+            let opts = target?.split(':');
+            let module = opts[0];
+            let action = opts[1] || 'run';
             if (target) {
                 app.initConfig();
-                let obj = app.helper?.get(target);
-                if (obj?.run instanceof Function) {
-                    obj.run(...process.argv.slice(4), app);
+                let obj = app.helper?.get(module);
+                obj = obj || app.initModule(module, []);
+                if (!obj) {
+                    break;
+                }
+                if (obj[action] instanceof Function) {
+                    obj[action](...process.argv.slice(4), app);
                 }
             }
             break;

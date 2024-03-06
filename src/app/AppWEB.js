@@ -8,19 +8,11 @@
  * @requires    dotenv
  * @requires    ksdp
  **/
-const dotenv = require('dotenv');
 const path = require('path');
-const KsDp = require('ksdp');
 const Server = require('../server/BaseServer');
-const Config = require('./Config');
+const App = require('./App');
 
-class AppWEB {
-
-    /**
-     * @type {Object|null}
-     */
-    helper = null;
-
+class AppWEB extends App {
     /**
      * @deprecated
      * @type {Object|null}
@@ -38,121 +30,18 @@ class AppWEB {
      */
     server = null;
 
-
     /**
-     * @type {Console|null}
+     * @type {Object|null}
      */
-    logger = null;
+    option = null;
 
-    /**
-     * @description initialize library
-     * @param {String} path 
-     **/
-    constructor(path) {
+    constructor(path = null) {
+        super(path);
+        this.web = null;
         this.option = {
             app: {},
             srv: {}
         };
-        this.path = path;
-        this.web = null;
-        this.mod = [];
-        this.cfg = {};
-        this.helper = new KsDp.integration.IoC();
-        this.event = new KsDp.behavioral.Observer();
-        this.config = new Config();
-    }
-
-    /**
-     * @description register a plugin
-     * @param {Object|String|Function|Array} plugin 
-     * @param {Object} [option] 
-     * @returns {AppWEB} self
-     */
-    register(plugin, option = 'default') {
-        if (!plugin || !this.helper) {
-            return this;
-        }
-        this.helper.set(plugin, option);
-        plugin.helper = this.helper;
-        plugin.init instanceof Function && plugin.init();
-        return this;
-    }
-
-    /**
-     * @description remove a plugin
-     * @param {Object|String|Function|Array} plugin 
-     * @param {Object} option 
-     * @returns {AppWEB} self
-     */
-    unregister(plugin = 'default', option = null) {
-        if (!plugin || !this.helper) {
-            return this;
-        }
-        this.helper.del(plugin, option);
-        return this;
-    }
-
-    /**
-     * @description add listener to event
-     * @param {Array|Object|Function} subscriber 
-     * @param {String} [event]
-     * @param {Object} [option] 
-     * @param {String} [option.event] 
-     * @param {String} [option.scope] 
-     * @param {Number} [option.index]
-     * @param {Array} [option.rows]
-     * @return {AppWEB} self
-     */
-    subscribe(subscriber, event, option = null, scope = 'ksmf') {
-        this.event?.subscribe(subscriber, event, scope, option);
-        return this;
-    }
-
-    /**
-     * @description remove listener from event
-     * @param {String} event 
-     * @param {Object} [option] 
-     * @param {Number} [option.index] 
-     * @param {String} [option.event] 
-     * @param {String} [option.scope] 
-     * @param {Number} [option.count] 
-     * @param {Array} [option.rows] 
-     * @return {AppWEB} self-reference
-     */
-    unsubscribe(event, option = null, scope = 'ksmf') {
-        this.event?.unsubscribe(event, scope, option);
-        return this;
-    }
-
-    /**
-     * @description safely trigger events
-     * @param {String} event 
-     * @param {Array} params 
-     * @param {String} scope 
-     * @returns {AppWEB} self
-     */
-    emit(event, params = [], scope = 'ksmf') {
-        this.event?.emit instanceof Function && this.event.emit(event, scope, params);
-        return this;
-    }
-
-    /**
-     * @description Initialize the application (Implement template method pattern)
-     * @param {import('../types').TAppConfig} [options]
-     * @returns {Promise<AppWEB>} self
-     */
-    async init(options = null) {
-        try {
-            options = options || {};
-            await this.initConfig(options);
-            await this.initApp(options);
-            await this.initModules();
-            await this.initRoutes();
-            this.emit('onInitCompleted', [this]);
-        } catch (error) {
-            this.setError(error);
-        }
-        return this;
     }
 
     /**
@@ -194,58 +83,6 @@ class AppWEB {
     }
 
     /**
-     * @description preload configuration file, variables, environments, etc
-     * @param {import('../types').TAppConfig} [options]
-     */
-    initConfig(options) {
-        dotenv.config();
-        const env = process.env || {};
-        const eid = env["NODE_ENV"] || 'development';
-        const srv = options?.config || this.config.load('cfg/core.json', { dir: this.path, id: eid });
-        const pac = this.config.load(path.join(this.path, 'package.json'));
-
-        this.cfg.env = env;
-        this.cfg.eid = eid;
-        this.cfg.srv = srv;
-        this.cfg.path = this.path;
-        this.cfg.pack = pac;
-
-        this.cfg.srv.module = this.cfg.srv.module || {};
-        this.cfg.srv.module.path = path.join(this.path, 'src/');
-        this.cfg.srv.log = this.cfg.env.LOG_LEVEL ? this.cfg.env.LOG_LEVEL : this.cfg.srv.log;
-        this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port || 4444;
-        this.cfg.srv.event = this.cfg.srv.event || {};
-        this.cfg.srv.cors = this.cfg.srv.cors || [];
-        this.cfg.srv.public = this.cfg.srv.public || 'www/';
-        this.cfg.srv.static = this.cfg.srv.static || '/www';
-        this.cfg.srv.doc = this.cfg.srv.doc || {};
-
-        // ... configure component options ...
-        options = options || {};
-        options.cors = options.cors || srv.cors || null;
-        options.fingerprint = options.fingerprint || srv.fingerprint || null;
-        options.cookie = options.cookie || srv.cookie || null;
-        options.session = options.session || srv.session || null;
-        options.force = options.force || srv.force || false;
-        options.server = options.server || srv.server || false;
-
-        // ... configure Helper ...
-        this.helper.configure({
-            path: this.cfg.srv.module.path,
-            src: this.cfg.srv.helper,
-            name: 'helper',
-            error: {
-                on: (error) => this.setError(error)
-            }
-        });
-        this.helper.set(this, 'app');
-        // ... configure Events ...
-        this.initEvents();
-        this.emit('onInitConfig', [this.cfg, this]);
-        return this;
-    }
-
-    /**
      * @description get the web server
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<import('../server/BaseServer')>} server
@@ -269,18 +106,66 @@ class AppWEB {
     }
 
     /**
-     * @description initialize event handler 
+     * @description throw application error
+     * @param {Object} error 
+     * @param {Object} req 
+     * @param {Object} res 
+     * @param {Object} next 
      */
-    initEvents() {
-        for (let event in this.cfg.srv.event) {
-            const eventList = this.cfg.srv.event[event];
-            for (let elm in eventList) {
-                const subscriber = eventList[elm];
-                if (this.event && this.event.add instanceof Function) {
-                    this.event.add(this.helper.get(subscriber), event, "ksmf");
+    setError(error, req = null, res = null, next = null) {
+        this.emit('onError', [error, req, res, next, this]);
+        if (res && !res.finished && res.status instanceof Function) {
+            return res.status(500).json({
+                error: typeof (error) === 'string' ? {
+                    message: error
+                } : {
+                    code: error.code,
+                    message: error.message
                 }
-            }
+            });
         }
+    }
+
+    /**
+     * @description Initialize the application (Implement template method pattern)
+     * @param {import('../types').TAppConfig} [options]
+     * @returns {Promise<AppWEB>} self
+     */
+    async init(options = null) {
+        try {
+            options = options || {};
+            await this.initConfig(options);
+            await this.initApp(options);
+            await this.initModules();
+            await this.initRoutes();
+            this.emit('onInitCompleted', [this]);
+        } catch (error) {
+            this.setError(error);
+        }
+        return this;
+    }
+
+    /**
+     * @description preload configuration file, variables, environments, etc
+     * @param {import('../types').TAppConfig} [options]
+     */
+    initConfig(options) {
+        super.initConfig(options);
+
+        // ... set default values ...
+        this.cfg.srv.cors = this.cfg.srv.cors || {};
+        this.cfg.srv.public = this.cfg.srv.public || 'www/';
+        this.cfg.srv.static = this.cfg.srv.static || '/www';
+        this.cfg.srv.port = this.cfg.env.PORT || this.cfg.srv.port || 4444;
+
+        // ... configure component options ...
+        options = options || {};
+        options.cors = options.cors || this.cfg.srv.cors || null;
+        options.fingerprint = options.fingerprint || this.cfg.srv.fingerprint || null;
+        options.cookie = options.cookie || this.cfg.srv.cookie || null;
+        options.session = options.session || this.cfg.srv.session || null;
+        options.force = options.force || this.cfg.srv.force || false;
+        options.server = options.server || this.cfg.srv.server || false;
         return this;
     }
 
@@ -310,111 +195,6 @@ class AppWEB {
         //... init Error Handler
         this.server?.onError((err, req, res, next) => this.setError(err, req, res, next));
         return this;
-    }
-
-    /**
-     * @description throw application error
-     * @param {Object} error 
-     * @param {Object} req 
-     * @param {Object} res 
-     * @param {Object} next 
-     */
-    setError(error, req = null, res = null, next = null) {
-        this.emit('onError', [error, req, res, next, this]);
-        if (res && !res.finished && res.status instanceof Function) {
-            return res.status(500).json({
-                error: typeof (error) === 'string' ? {
-                    message: error
-                } : {
-                    code: error.code,
-                    message: error.message
-                }
-            });
-        }
-    }
-
-    /**
-     * @description load modules 
-     */
-    initModules() {
-        this.emit('onInitModules', [this.cfg.srv.module.load, this]);
-        const modules = [];
-        if (this.cfg?.srv?.module?.load) {
-            this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
-        }
-        this.emit('onLoadedModules', [modules, this]);
-        this.modules = modules;
-        return this;
-    }
-
-    /**
-     * @typedef {Object} TOption
-     * @property {String} [item.name] 
-     * @property {String} [item.type] 
-     * @property {Object} [item.options] 
-     * @property {Object} [item.params] 
-     * @property {Object} [item.dependency] 
-     * 
-     * @description initialize a module
-     * @param {TOption|String} item 
-     * @param {Array} modules 
-     * @returns {Object} module
-     */
-    initModule(item, modules) {
-        const name = (typeof (item) === 'string') ? item : item.name;
-        const options = {
-            // ... EXPRESS APP
-            frm: this,
-            app: this.server,
-            web: this.web,
-            drv: this.drv,
-            // ... DATA ACCESS Object 
-            opt: {
-                // ... CONFIGURE 
-                'cfg': this.cfg.srv,
-                // ... ENV
-                'env': this.cfg.env,
-                'eid': this.cfg.eid,
-                // ... PATH
-                'path': {
-                    'prj': path.resolve(this.path),
-                    'mod': path.join(this.cfg.srv.module.path, name),
-                    'app': path.join(this.cfg.srv.module.path, "app")
-                },
-                // ... NAME
-                'name': name,
-                'prefix': this.cfg.srv?.prefix || ""
-            }
-        };
-        const dependency = { 'helper': 'helper' };
-        if (typeof (item) === 'string') {
-            item = {
-                options,
-                dependency,
-                name,
-                type: 'module'
-            };
-        } else {
-            item.options = {
-                ...item.options,
-                ...item.params,
-                ...options
-            };
-            item.dependency = {
-                ...item.dependency,
-                ...dependency
-            };
-        }
-        let obj = this.helper.get(item);
-        if (!obj) {
-            item.type = 'lib';
-            obj = this.helper.get(item);
-        }
-        if (obj) {
-            modules?.push(obj);
-            this.emit('onLoadModule', [obj, name, path.join(this.cfg.srv.module.path, name, "model"), this]);
-        }
-        return obj;
     }
 
     /**

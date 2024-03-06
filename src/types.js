@@ -17,4 +17,13 @@
  * @property {Object} [config]  
  */
 
+/**
+ * @typedef {Object} TOption
+ * @property {String} [item.name] 
+ * @property {String} [item.type] 
+ * @property {Object} [item.options] 
+ * @property {Object} [item.params] 
+ * @property {Object} [item.dependency] 
+ */
+
 module.exports = {};
