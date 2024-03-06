@@ -61,6 +61,13 @@ declare class DataController extends Controller {
      */
     update(req: any, res: any): Promise<any>;
     /**
+     * @description update user by id
+     * @param {Object} req
+     * @param {Object} res
+     * @returns {Promise<any>} DTO
+     */
+    clone(req: any, res: any): Promise<any>;
+    /**
      * @description delete user by id
      * @param {Object} req
      * @param {Object} res
