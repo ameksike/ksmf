@@ -13,29 +13,40 @@ try {
     const path = require('path');
 
     let dir = path.resolve(process.cwd());
-    let act = process.argv[2] || "web";
+    let act = process.argv[2] || 'web';
     app = new KsMf.app.WEB(dir);
 
     switch (act) {
-        case "run":
+        case 'run':
             let target = process.argv[3];
+            if (!target) {
+                break;
+            }
+            let opts = target?.split(':');
+            let module = opts[0];
+            let action = opts[1] || 'run';
             if (target) {
                 app.initConfig();
-                let obj = app.helper?.get(target);
-                if (obj?.run instanceof Function) {
-                    obj.run(...process.argv.slice(4), app);
+                let obj = app.helper?.get(module);
+                obj = obj || app.initModule(module, []);
+                if (!obj) {
+                    break;
+                }
+                if (obj[action] instanceof Function) {
+                    obj[action](...process.argv.slice(4), app);
                 }
             }
             break;
 
-        case "db":
+        case 'db':
             app.initConfig();
             let opt = app.cfg.srv.db;
-            opt.directory = path.join(dir, opt?.models || "db/models");
-            KsMf.dao.Sequelize.process(opt, app.helper?.get("logger"));
+            opt.directory = path.join(dir, opt?.models || 'db/models');
+            const tool = app.helper?.get({ name: 'bd.tool' });
+            tool.process instanceof Function && tool.process(opt, app.helper?.get('logger'));
             break;
 
-        case "proxy":
+        case 'proxy':
             (new KsMf.proxy.App(dir)).run();
             break;
 
@@ -46,9 +57,9 @@ try {
 }
 catch (error) {
     console.log({
-        flow: String(Date.now()) + "00",
+        flow: String(Date.now()) + '00',
         level: 1,
-        src: "KSMF:bin:CLI",
+        src: 'KSMF:bin:CLI',
         error
     });
 }

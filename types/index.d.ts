@@ -1,6 +1,8 @@
 export declare namespace app {
+    let Base: typeof import("./src/app/App");
     let WEB: typeof import("./src/app/AppWEB");
     let RTA: typeof import("./src/app/AppRTA");
+    let CLI: typeof import("./src/app/AppCLI");
     let Controller: typeof import("./src/app/Controller");
     let Module: typeof import("./src/app/Module");
     let Utl: typeof import("./src/app/Utl");
@@ -15,10 +17,11 @@ export declare namespace monitor {
     let LoggerWrapper: typeof import("./src/monitor/LoggerWrapper");
 }
 export declare namespace server {
-    let Base: typeof import("./src/server/BaseServer");
-    let Request: typeof import("./src/server/BaseRequest");
-    let Response: typeof import("./src/server/BaseResponse");
-    let Session: typeof import("./src/server/Session");
+    let Base_1: typeof import("./src/server/BaseServer");
+    export { Base_1 as Base };
+    export let Request: typeof import("./src/server/BaseRequest");
+    export let Response: typeof import("./src/server/BaseResponse");
+    export let Session: typeof import("./src/server/Session");
 }
 export declare namespace proxy {
     let App: typeof import("./src/proxy/ProxyApp");
@@ -26,8 +29,8 @@ export declare namespace proxy {
     let Auth: typeof import("./src/proxy/ProxyAuth");
 }
 export declare namespace dao {
-    let Base_1: typeof import("./src/dao/DAOBase");
-    export { Base_1 as Base };
+    let Base_2: typeof import("./src/dao/DAOBase");
+    export { Base_2 as Base };
     export let DataModule: typeof import("./src/dao/DataModule");
     export let DataService: typeof import("./src/dao/DataService");
     export let DataController: typeof import("./src/dao/DataController");

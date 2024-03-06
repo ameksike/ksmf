@@ -12,3 +12,10 @@ export type TAppConfig = {
     force?: boolean;
     config?: any;
 };
+export type TOption = {
+    name?: string;
+    type?: string;
+    options?: any;
+    params?: any;
+    dependency?: any;
+};

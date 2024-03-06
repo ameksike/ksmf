@@ -5,10 +5,13 @@ describe('LOAD', () => {
     it("should a valid lib", () => {
         expect(KsMf).toBeInstanceOf(Object);
 
-        expect(KsMf.app.WEB).toBeInstanceOf(Object);
-        expect(KsMf.app.Module).toBeInstanceOf(Object);
-        expect(KsMf.app.Controller).toBeInstanceOf(Object);
-        expect(KsMf.app.Utl).toBeInstanceOf(Object);
+        expect(KsMf.app.WEB).toBeInstanceOf(Function);
+        expect(KsMf.app.CLI).toBeInstanceOf(Function);
+        expect(KsMf.app.RTA).toBeInstanceOf(Function);
+        expect(KsMf.app.Base).toBeInstanceOf(Function);
+        expect(KsMf.app.Module).toBeInstanceOf(Function);
+        expect(KsMf.app.Controller).toBeInstanceOf(Function);
+        expect(KsMf.app.Utl).toBeInstanceOf(Function);
 
         expect(KsMf.dao.Base).toBeInstanceOf(Function);
         expect(KsMf.dao.Redis).toBeInstanceOf(Function);
