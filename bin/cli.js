@@ -32,7 +32,8 @@ try {
             app.initConfig();
             let opt = app.cfg.srv.db;
             opt.directory = path.join(dir, opt?.models || "db/models");
-            KsMf.dao.Sequelize.process(opt, app.helper?.get("logger"));
+            const tool = app.helper?.get({ name: "bd.tool" });
+            tool.process instanceof Function && tool.process(opt, app.helper?.get("logger"));
             break;
 
         case "proxy":
