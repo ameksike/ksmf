@@ -1,10 +1,11 @@
 {
   "name": "ksmf",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Modular Microframework for create minimalistic web application or REST API",
   "main": "index.js",
   "types": "types/index.d.ts",
   "scripts": {
+    "start": "node ./bin/cli.js",
     "test": "jest ",
     "type": "npx -p typescript tsc ./index.js --target ES2022 --module commonjs --declaration --allowJs --checkJs --emitDeclarationOnly --esModuleInterop --allowSyntheticDefaultImports --resolveJsonModule --outDir types"
   },
