@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		20/03/2022
- * @copyright  	Copyright (c) 2020-2035
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        20/03/2022
+ * @copyright   Copyright (c) 2020-2035
+ * @license     GPL
+ * @version     1.0
  * @description CLI application 
  * @link        https://github.com/ameksike/ksmf/wiki
  **/
