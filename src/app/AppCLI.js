@@ -32,7 +32,7 @@ class AppCLI extends App {
                 return null;
             }
             if (mod[action] instanceof Function) {
-                return mod[action](...process.argv.slice(4), this);
+                return mod[action](this, ...process.argv.slice(4));
             }
         }
         catch (error) {
