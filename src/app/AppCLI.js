@@ -8,13 +8,13 @@
  * @requires    dotenv
  * @requires    ksdp
  **/
-const App = require('ksmf/src/app/App');
+const App = require('./App');
 
 class AppCLI extends App {
 
     /**
      * @description start server 
-     * @param {import('ksmf/src/types').TAppConfig} [options] 
+     * @param {import('../types').TAppConfig} [options] 
      */
     async run(options = null) {
         try {

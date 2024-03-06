@@ -14,14 +14,14 @@ const _path = require('path');
 class App {
 
     /**
-     * @type {KsDp.integration.IoC|null}
+     * @type {import('ksdp').integration.IoC}
      */
-    helper = null;
+    helper;
 
     /**
-     * @type {KsDp.behavioral.Observer|null}
+     * @type {import('ksdp').behavioral.Observer}
      */
-    event = null;
+    event;
 
     /**
      * @type {Config|null}
@@ -60,7 +60,7 @@ class App {
      * @description register a plugin
      * @param {Object|String|Function|Array} plugin 
      * @param {Object} [option] 
-     * @returns {AppWEB} self
+     * @returns {App} self
      */
     register(plugin, option = 'default') {
         if (!plugin || !this.helper) {
@@ -76,7 +76,7 @@ class App {
      * @description remove a plugin
      * @param {Object|String|Function|Array} plugin 
      * @param {Object} option 
-     * @returns {AppWEB} self
+     * @returns {App} self
      */
     unregister(plugin = 'default', option = null) {
         if (!plugin || !this.helper) {
@@ -95,7 +95,7 @@ class App {
      * @param {String} [option.scope] 
      * @param {Number} [option.index]
      * @param {Array} [option.rows]
-     * @return {AppWEB} self
+     * @return {App} self
      */
     subscribe(subscriber, event, option = null, scope = 'ksmf') {
         this.event?.subscribe(subscriber, event, scope, option);
@@ -111,7 +111,7 @@ class App {
      * @param {String} [option.scope] 
      * @param {Number} [option.count] 
      * @param {Array} [option.rows] 
-     * @return {AppWEB} self-reference
+     * @return {App} self
      */
     unsubscribe(event, option = null, scope = 'ksmf') {
         this.event?.unsubscribe(event, scope, option);
@@ -123,7 +123,7 @@ class App {
      * @param {String} event 
      * @param {Array} params 
      * @param {String} scope 
-     * @returns {AppWEB} self
+     * @returns {App} self
      */
     emit(event, params = [], scope = 'ksmf') {
         this.event?.emit instanceof Function && this.event.emit(event, scope, params);
@@ -133,6 +133,7 @@ class App {
     /**
      * @description preload configuration file, variables, environments, etc
      * @param {import('../types').TAppConfig} [options]
+     * @returns {Promise<App>} self
      */
     init(options) {
         try {
@@ -140,7 +141,7 @@ class App {
         } catch (error) {
             this.emit('onError', [error, this]);
         }
-        return this;
+        return Promise.resolve(this);
     }
 
     /**
@@ -172,7 +173,7 @@ class App {
             src: this.cfg.srv.helper,
             name: 'helper',
             error: {
-                on: (error) => this.setError(error)
+                on: (error) => this.emit('onError', [error, this])
             }
         });
         this.helper.set(this, 'app');
@@ -223,9 +224,8 @@ class App {
         const options = {
             // ... EXPRESS APP
             frm: this,
-            app: this.server,
-            web: this.web,
-            drv: this.drv,
+            // ... extraoptions
+            ...this.initModuleOpts(),
             // ... DATA ACCESS Object 
             opt: {
                 // ... CONFIGURE 
@@ -273,6 +273,14 @@ class App {
             this.emit('onLoadModule', [obj, name, _path.join(this.cfg.srv.module.path, name, "model"), this]);
         }
         return obj;
+    }
+
+    /**
+     * @description initialize the module options 
+     * @returns {Object}
+     */
+    initModuleOpts() {
+        return {};
     }
 
     /**

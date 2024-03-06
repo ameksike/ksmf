@@ -170,6 +170,18 @@ class AppWEB extends App {
     }
 
     /**
+     * @description initialize the module options 
+     * @returns {Object}
+     */
+    initModuleOpts() {
+        return {
+            app: this.server,
+            web: this.web,
+            drv: this.drv
+        }
+    }
+
+    /**
      * @description initialize middleware applications
      * @param {import('../types').TAppConfig} [options]
      */
