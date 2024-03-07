@@ -61,19 +61,22 @@ class AppCLI extends App {
      * @returns {Object} result
      */
     getParams(option) {
-        let list = option?.list || process.argv;
         let out = {};
+        let list = option?.list || process.argv;
+        let order = option?.order;
         let index = option?.index || 2;
-        if (Array.isArray(option?.order)) {
-            for (let i in option.order) {
-                out[option.order[i]] = list[i];
-                index = i;
+        if (order) {
+            for (let i in order) {
+                out[order[i]] = list[i];
+                delete list[i];
             }
         }
         for (let i = index; i < list.length; i++) {
             let argument = list[i];
-            let search = /-{0,2}([\w|\-|\.|\:]*)=*(.*)/.exec(argument);
-            search?.length > 2 && (out[search[1]] = search[2] === '' ? true : search[2]);
+            if (argument) {
+                let search = /-{0,2}([\w|\-|\.|\:]*)=*(.*)/.exec(argument);
+                search?.length > 2 && (out[search[1]] = search[2] === '' ? true : search[2]);
+            }
         }
         option?.directory && (out.directory = _path?.resolve(option?.path || process?.cwd() || '../../../../'));
         return out;

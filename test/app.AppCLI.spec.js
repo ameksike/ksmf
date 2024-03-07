@@ -28,11 +28,11 @@ describe('App CLI', () => {
         expect(app.event).toBeInstanceOf(Object);
         expect(app.mod).toBeInstanceOf(Array);
     });
+
     it('Valid argument be processed by default', () => {
         const res = app.getParams();
         expect(res).toBeInstanceOf(Object);
         expect(res.directory).toBe(undefined);
-        console.log(res)
     });
 
     it('Valid argument be processed', () => {
@@ -94,6 +94,55 @@ describe('App CLI', () => {
         expect(res.run).toBe(undefined);
         expect(res.verbose).toBe(true);
         expect(res.result).toBe(true);
+        expect(res['no-cache']).toBe(true);
+        expect(res['no_cache']).toBe(true);
+        expect(res['no.cache']).toBe(true);
+        expect(res['no:cache']).toBe(true);
+    });
+
+    it('Valid argument be processed using order', () => {
+        const res = app.getParams({
+            index: 3,
+            directory: true,
+            order: {
+                0: 'app',
+                1: 'frm',
+                2: 'method',
+                3: 'mode',
+                9: 'plugin',
+            },
+            list: [
+                'npx',
+                'ksmf',
+                'run',
+                'result',
+                '-v',
+                '--no-cache',
+                '--no_cache',
+                '--no.cache',
+                '--no:cache',
+                'model:action',
+                '--verbose',
+                '--json={"name":"demo"}',
+                '--testPattern="test=new.test-1"',
+                'module=plugin:action'
+            ]
+        });
+        expect(res).toBeInstanceOf(Object);
+        expect(Object.keys(res).length).toBe(15);
+        expect(res.directory.length > 1).toBe(true);
+        expect(res.testPattern).toBe('"test=new.test-1"');
+        expect(res.json).toBe('{"name":"demo"}');
+        expect(res.module).toBe("plugin:action");
+        expect(res.plugin).toBe("model:action");
+        expect(res.mode).toBe("result");
+        expect(res.app).toBe("npx");
+        expect(res.frm).toBe("ksmf");
+        expect(res.method).toBe("run");
+        expect(res.v).toBe(true);
+        expect(res.run).toBe(undefined);
+        expect(res.verbose).toBe(true);
+        expect(res.result).toBe(undefined);
         expect(res['no-cache']).toBe(true);
         expect(res['no_cache']).toBe(true);
         expect(res['no.cache']).toBe(true);
