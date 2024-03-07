@@ -29,12 +29,6 @@ describe('App CLI', () => {
         expect(app.mod).toBeInstanceOf(Array);
     });
 
-    it('Valid argument be processed by default', () => {
-        const res = app.getParams();
-        expect(res).toBeInstanceOf(Object);
-        expect(res.directory).toBe(undefined);
-    });
-
     it('Valid argument be processed', () => {
         const res = app.getParams({
             list: [
@@ -62,6 +56,12 @@ describe('App CLI', () => {
         expect(res.result).toBe(true);
         expect(res['no-cache']).toBe(true);
         expect(res['no_cache']).toBe(true);
+    });
+
+    it('Valid argument be processed by default', () => {
+        const res = app.getParams();
+        expect(res).toBeInstanceOf(Object);
+        expect(res.directory).toBe(undefined);
     });
 
     it('Valid argument be processed using the index and directory', () => {
