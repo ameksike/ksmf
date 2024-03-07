@@ -58,6 +58,12 @@ class AppCLI extends App {
     /**
      * @description process CLI arguments 
      * @param {Object} [option] 
+     * @param {Array} [option.list] 
+     * @param {Number} [option.index=2] 
+     * @param {Object} [option.order] 
+     * @param {Object} [option.format]
+     * @param {String} [option.path]
+     * @param {Boolean} [option.directory]  
      * @returns {Object} result
      */
     getParams(option) {
@@ -79,8 +85,10 @@ class AppCLI extends App {
                 search?.length > 2 && (out[search[1]] = search[2] === '' ? true : search[2]);
             }
         }
-        for (let i in format) {
-            format[i] instanceof Function && (out[i] = format[i](out[i]) ?? out[i]);
+        if (format) {
+            for (let i in format) {
+                format[i] instanceof Function && (out[i] = format[i](out[i]) ?? out[i]);
+            }
         }
         option?.directory && (out.directory = _path?.resolve(option?.path || process?.cwd() || '../../../../'));
         return out;
