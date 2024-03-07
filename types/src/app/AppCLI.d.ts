@@ -37,10 +37,12 @@ declare class AppCLI extends App {
      * @description write content in the stdout
      * @param {String} message
      * @param {Object} [driver]
+     * @param {String} [driver.end]
      * @param {import('../types').TWritableStream} [driver.stdout]
      * @param {import('../types').TReadableStream} [driver.stdin]
      */
     write(message: string, driver?: {
+        end?: string;
         stdout?: import('../types').TWritableStream;
         stdin?: import('../types').TReadableStream;
     }): void;
@@ -48,13 +50,19 @@ declare class AppCLI extends App {
      * @description read content from stdin
      * @param {String} [label]
      * @param {Object} [driver]
+     * @param {String} [driver.end]
      * @param {import('../types').TWritableStream} [driver.stdout]
      * @param {import('../types').TReadableStream} [driver.stdin]
      * @returns {Promise<String>} content
      */
     read(label?: string, driver?: {
+        end?: string;
         stdout?: import('../types').TWritableStream;
         stdin?: import('../types').TReadableStream;
     }): Promise<string>;
+    /**
+     * @description stop application
+     */
+    stop(): void;
 }
 import App = require("./App");

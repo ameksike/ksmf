@@ -87,7 +87,15 @@ class AppCLI extends App {
         }
         if (format) {
             for (let i in format) {
-                format[i] instanceof Function && (out[i] = format[i](out[i]) ?? out[i]);
+                function run(action, param) {
+                    try {
+                        return (action instanceof Function && action(param)) ?? param;
+                    }
+                    catch (_) {
+                        return param;
+                    }
+                }
+                out[i] = run(format[i], out[i]);
             }
         }
         option?.directory && (out.directory = _path?.resolve(option?.path || process?.cwd() || '../../../../'));
@@ -98,19 +106,21 @@ class AppCLI extends App {
      * @description write content in the stdout
      * @param {String} message 
      * @param {Object} [driver]
+     * @param {String} [driver.end] 
      * @param {import('../types').TWritableStream} [driver.stdout] 
      * @param {import('../types').TReadableStream} [driver.stdin] 
      */
     write(message, driver = null) {
         driver = driver || {};
         driver.stdout = driver?.stdout || process.stdout;
-        message && driver.stdout.write(message);
+        message && driver.stdout.write(message + (driver.end ?? ' \n'));
     }
 
     /**
      * @description read content from stdin
      * @param {String} [label] 
      * @param {Object} [driver]
+     * @param {String} [driver.end] 
      * @param {import('../types').TWritableStream} [driver.stdout] 
      * @param {import('../types').TReadableStream} [driver.stdin] 
      * @returns {Promise<String>} content
@@ -119,11 +129,19 @@ class AppCLI extends App {
         driver = driver || {};
         driver.stdout = driver?.stdout || process.stdout;
         driver.stdin = driver?.stdin || process.stdin;
+        driver.end = driver.end ?? ' ';
         return new Promise((resolve, reject) => {
             this.write(label, driver);
             driver.stdin.once('data', (data) => resolve(data?.toString().trim()));
             driver.stdin.once('error', (err) => reject(err));
         });
+    }
+
+    /**
+     * @description stop application 
+     */
+    stop() {
+        process.exit(0);
     }
 }
 
