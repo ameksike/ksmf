@@ -35,8 +35,8 @@ class AppWEB extends App {
      */
     option = null;
 
-    constructor(path = null) {
-        super(path);
+    constructor(option = null) {
+        super(option);
         this.web = null;
         this.option = {
             app: {},

@@ -19,3 +19,10 @@ export type TOption = {
     params?: any;
     dependency?: any;
 };
+export type TCLIArgReq = {
+    name?: string;
+    type?: string;
+    options?: any;
+    params?: any;
+    dependency?: any;
+};

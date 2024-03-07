@@ -1,7 +1,7 @@
 /// <reference types="node" />
 export = AppRTA;
 declare class AppRTA {
-    constructor(path: any);
+    constructor(option: any);
     app: AppWEB;
     sockets: {};
     /**

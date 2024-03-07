@@ -1,6 +1,6 @@
 export = AppWEB;
 declare class AppWEB extends App {
-    constructor(path?: any);
+    constructor(option?: any);
     /**
      * @deprecated
      * @type {Object|null}

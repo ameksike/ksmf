@@ -48,7 +48,7 @@ class App {
      * @param {Object} [option] 
      * @param {String} [option.path] 
      * @param {Object} [option.cfg] 
-     * @param {Arra<any>} [option.mod] 
+     * @param {Array<any>} [option.mod] 
      **/
     constructor(option = null) {
         this.mod = option?.mod || [];
