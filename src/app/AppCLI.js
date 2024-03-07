@@ -64,6 +64,7 @@ class AppCLI extends App {
         let out = {};
         let list = option?.list || process.argv;
         let order = option?.order;
+        let format = option?.format;
         let index = option?.index || 2;
         if (order) {
             for (let i in order) {
@@ -77,6 +78,9 @@ class AppCLI extends App {
                 let search = /-{0,2}([\w|\-|\.|\:]*)=*(.*)/.exec(argument);
                 search?.length > 2 && (out[search[1]] = search[2] === '' ? true : search[2]);
             }
+        }
+        for (let i in format) {
+            format[i] instanceof Function && (out[i] = format[i](out[i]) ?? out[i]);
         }
         option?.directory && (out.directory = _path?.resolve(option?.path || process?.cwd() || '../../../../'));
         return out;

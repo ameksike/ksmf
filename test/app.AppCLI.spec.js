@@ -148,4 +148,36 @@ describe('App CLI', () => {
         expect(res['no.cache']).toBe(true);
         expect(res['no:cache']).toBe(true);
     });
+
+    it('Valid argument be processed by format', () => {
+        const res = app.getParams({
+            order: {
+                0: 'app',
+                1: 'frm',
+                2: 'method'
+            },
+            format: {
+                age: (value) => parseFloat(value),
+                options: (value) => JSON.parse(value),
+            },
+            list: [
+                'npx',
+                'ksmf',
+                'run',
+                '--options={"name":"demo"}',
+                'age=45.6',
+                '-tes=45.6',
+            ]
+        });
+        expect(res).toBeInstanceOf(Object);
+        expect(res.options.name).toBe("demo");
+        expect(res.app).toBe("npx");
+        expect(res.frm).toBe("ksmf");
+        expect(res.method).toBe("run");
+        expect(res.tes).toBe("45.6");
+        expect(res.age).toBe(45.6);
+        expect(typeof res.tes).toBe("string");
+        expect(typeof res.age).toBe("number");
+        expect(res.directory).toBe(undefined);
+    });
 });
