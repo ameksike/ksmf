@@ -66,7 +66,7 @@ class AppCLI extends App {
      * @param {Boolean} [option.directory]  
      * @returns {Object} result
      */
-    getParams(option) {
+    params(option) {
         let out = {};
         let list = option?.list || process.argv;
         let order = option?.order;
@@ -92,6 +92,38 @@ class AppCLI extends App {
         }
         option?.directory && (out.directory = _path?.resolve(option?.path || process?.cwd() || '../../../../'));
         return out;
+    }
+
+    /**
+     * @description write content in the stdout
+     * @param {String} message 
+     * @param {Object} [driver]
+     * @param {import('../types').TWritableStream} [driver.stdout] 
+     * @param {import('../types').TReadableStream} [driver.stdin] 
+     */
+    write(message, driver = null) {
+        driver = driver || {};
+        driver.stdout = driver?.stdout || process.stdout;
+        message && driver.stdout.write(message);
+    }
+
+    /**
+     * @description read content from stdin
+     * @param {String} [label] 
+     * @param {Object} [driver]
+     * @param {import('../types').TWritableStream} [driver.stdout] 
+     * @param {import('../types').TReadableStream} [driver.stdin] 
+     * @returns {Promise<String>} content
+     */
+    read(label, driver = null) {
+        driver = driver || {};
+        driver.stdout = driver?.stdout || process.stdout;
+        driver.stdin = driver?.stdin || process.stdin;
+        return new Promise((resolve, reject) => {
+            this.write(label, driver);
+            driver.stdin.once('data', (data) => resolve(data?.toString().trim()));
+            driver.stdin.once('error', (err) => reject(err));
+        });
     }
 }
 

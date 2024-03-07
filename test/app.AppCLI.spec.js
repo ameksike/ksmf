@@ -30,7 +30,7 @@ describe('App CLI', () => {
     });
 
     it('Valid argument be processed', () => {
-        const res = app.getParams({
+        const res = app.params({
             list: [
                 'npx',
                 'ksmf',
@@ -59,13 +59,13 @@ describe('App CLI', () => {
     });
 
     it('Valid argument be processed by default', () => {
-        const res = app.getParams();
+        const res = app.params();
         expect(res).toBeInstanceOf(Object);
         expect(res.directory).toBe(undefined);
     });
 
     it('Valid argument be processed using the index and directory', () => {
-        const res = app.getParams({
+        const res = app.params({
             index: 3,
             directory: true,
             list: [
@@ -101,7 +101,7 @@ describe('App CLI', () => {
     });
 
     it('Valid argument be processed using order', () => {
-        const res = app.getParams({
+        const res = app.params({
             index: 3,
             directory: true,
             order: {
@@ -150,7 +150,7 @@ describe('App CLI', () => {
     });
 
     it('Valid argument be processed by format', () => {
-        const res = app.getParams({
+        const res = app.params({
             order: {
                 0: 'app',
                 1: 'frm',
