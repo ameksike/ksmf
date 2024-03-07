@@ -24,21 +24,6 @@ try {
             app = new KsMf.app.WEB(dir);
             break;
 
-        case 'db':
-            app = new KsMf.app.App(dir);
-            app.initConfig();
-            let opt = app.cfg.srv.db;
-            opt.directory = path.join(dir, opt?.models || 'db/models');
-            const tool = app.helper?.get({
-                name: 'bd.tool',
-                'dependency': {
-                    'helper': 'helper',
-                    'logger': 'logger',
-                }
-            });
-            tool?.process instanceof Function && tool.process(opt);
-            break;
-
         case 'proxy':
             app = new KsMf.proxy.App(dir);
             break;
