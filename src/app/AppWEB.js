@@ -134,6 +134,7 @@ class AppWEB extends App {
     async init(options = null) {
         try {
             options = options || {};
+            await this.initLoad(options);
             await this.initConfig(options);
             await this.initApp(options);
             await this.initModules();
@@ -150,8 +151,6 @@ class AppWEB extends App {
      * @param {import('../types').TAppConfig} [options]
      */
     initConfig(options) {
-        super.initConfig(options);
-
         // ... set default values ...
         this.cfg.srv.cors = this.cfg.srv.cors || {};
         this.cfg.srv.public = this.cfg.srv.public || 'www/';
@@ -166,7 +165,7 @@ class AppWEB extends App {
         options.session = options.session || this.cfg.srv.session || null;
         options.force = options.force || this.cfg.srv.force || false;
         options.server = options.server || this.cfg.srv.server || false;
-        return this;
+        return super.initConfig(options);;
     }
 
     /**

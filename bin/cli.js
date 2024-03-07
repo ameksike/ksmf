@@ -21,15 +21,15 @@ try {
 
     switch (act) {
         case 'web':
-            app = new KsMf.app.WEB(dir);
+            app = new KsMf.app.WEB({ path: dir });
             break;
 
         case 'proxy':
-            app = new KsMf.proxy.App(dir);
+            app = new KsMf.proxy.App({ path: dir });
             break;
 
         default:
-            app = new KsMf.app.CLI(dir);
+            app = new KsMf.app.CLI({ path: dir });
             break;
     }
 
