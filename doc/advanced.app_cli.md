@@ -134,7 +134,7 @@ There are several common formats used to define parameters for CLI applications:
 Positional parameters are specified by their position in the command line arguments. They do not have a specific flag or identifier, but their order determines their meaning. For example:
 
 ```
-mycli parameter1 parameter2 parameter3
+npx run mycli parameter1 parameter2 parameter3
 ```
 
 By default the parameters are received in the same order as specified through the CLI. Note that the first parameter will always be the application instance.
@@ -179,7 +179,7 @@ class Demo {
 Named parameters are specified using flags or options preceded by a hyphen or double hyphen. They are typically followed by a value or are boolean flags that indicate the presence of a feature. For example:
 
 ```
-mycli --verbose --output=output.txt --mode=debug
+npx run mycli --verbose --output=output.txt --mode=debug
 ```
 
 The key of the argument allows access to the defined value, it is important to avoid spaces, in case a key does not have a defined value, a true value is adopted.
@@ -202,8 +202,9 @@ class Demo {
 Short options are single-letter flags preceded by a single hyphen. They are often used for concise commands where a single letter represents a specific action or option. For example:
 
 ```
-mycli -v -o=output.txt -m=debug
+npx run mycli -v -o=output.txt -m=debug
 ```
+
 In a similar way to the previous method, the arguments are obtained:
 
 ```js
@@ -233,15 +234,17 @@ class Demo {
   }
 }
 ```
+
 ### Mixed Parameters:
 
 CLI applications often support a combination of named parameters and positional parameters. This allows users to provide both specific options and positional arguments in the command line. For example:
 
 ```
-mycli --verbose input.txt -m=debug output.txt
+npx run mycli --verbose input.txt -m=debug output.txt
 ```
 
-All the previous approaches can be combined: 
+All the previous approaches can be combined:
+
 ```js
 class Demo {
   async run(app) {
@@ -262,6 +265,79 @@ class Demo {
 ```
 
 These parameter formats provide flexibility and versatility for users to interact with CLI applications, allowing them to provide input, configure behavior, and customize output according to their needs.
+
+### Reuse argument handling method
+
+The argument handling method for CLI applications can be used outside the module in case this functionality needs to be reused in other projects or natively in other applications
+
+```js
+// importing the KsMf library
+const KsMf = require("ksmf");
+// instantiating a default CLI application
+const app = new KsMf.app.CLI();
+// argument processing
+const param = app.params({
+  order: {
+    1: "input",
+    4: "output",
+  },
+});
+// run the command: npx run mycli --verbose input.txt -m=debug output.txt
+console.log(
+  param.verbose === true,
+  param.m === "debug",
+  param.input === "input.txt",
+  param.output === "output.txt"
+);
+```
+
+It is also possible to specify the list of arguments to be processed manually through the properties list; if not specified, **process.argv** is used. Note that the property list can be a string or a list of strings.
+
+```js
+// importing the KsMf library
+const KsMf = require("ksmf");
+// instantiating a default CLI application
+const app = new KsMf.app.CLI();
+// argument processing
+const param = app.params({
+  list: "npx run mycli --optional input.txt -mode=debug output.txt",
+  order: {
+    1: "input",
+    4: "output",
+  },
+});
+// check the arguments
+console.log(
+  param.optional === true,
+  param.mode === "debug",
+  param.input === "input.txt",
+  param.output === "output.txt"
+);
+```
+
+You can also specify the index which defines the position from which the arguments begin to be analyzed. By default it takes a value of 2, discarding the first three parameters that generally refer to the node npx and ksmf executables.
+
+```js
+const param = app.params({
+  index: 0,
+  // including the executable path in the argument list
+  directory: true,
+  list: "mycli --optional input.txt -mode=debug output.txt",
+  order: {
+    1: "input",
+    4: "output",
+  }
+});
+// check the arguments
+console.log(
+  param.optional === true,
+  param.mode === "debug",
+  param.input === "input.txt",
+  param.output === "output.txt",
+  // additional argument
+  param.directory === "/home/ksmf/mycli"
+);
+```
 
 ### Related topics
 
