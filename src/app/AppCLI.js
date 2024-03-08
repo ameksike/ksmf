@@ -58,7 +58,7 @@ class AppCLI extends App {
     /**
      * @description process CLI arguments 
      * @param {Object} [option] 
-     * @param {Array} [option.list] 
+     * @param {Array<String>|String} [option.list] 
      * @param {Number} [option.index=2] 
      * @param {Object} [option.order] 
      * @param {Object} [option.format]
@@ -68,10 +68,11 @@ class AppCLI extends App {
      */
     params(option) {
         let out = {};
-        let list = option?.list || process.argv;
+        let argv = option?.list || process.argv;
         let order = option?.order;
         let format = option?.format;
         let index = option?.index || 2;
+        let list = typeof argv === 'string' ? argv.split(' ') : argv;
         if (order) {
             for (let i in order) {
                 out[order[i]] = list[i];

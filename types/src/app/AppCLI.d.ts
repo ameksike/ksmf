@@ -17,7 +17,7 @@ declare class AppCLI extends App {
     /**
      * @description process CLI arguments
      * @param {Object} [option]
-     * @param {Array} [option.list]
+     * @param {Array<String>|String} [option.list]
      * @param {Number} [option.index=2]
      * @param {Object} [option.order]
      * @param {Object} [option.format]
@@ -26,7 +26,7 @@ declare class AppCLI extends App {
      * @returns {Object} result
      */
     params(option?: {
-        list?: any[];
+        list?: Array<string> | string;
         index?: number;
         order?: any;
         format?: any;
