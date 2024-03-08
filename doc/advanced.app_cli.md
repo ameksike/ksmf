@@ -75,6 +75,21 @@ class Demo {
 }
 ```
 
+It is possible to specify the native driver for both the standard input and output.
+
+File: `./src/demo/index.js`
+
+```js
+class Demo {
+  async run(app) {
+    app.write("Hello world!", {
+      stdout: process.stdout,
+      stdin: process.stdin,
+    });
+  }
+}
+```
+
 ### Standard Input (stdin):
 
 Standard input refers to the stream of data that a program receives from the outside world, typically from the user via the keyboard or from another program. In CLI applications, stdin is where the user can input data or commands to be processed by the program. The program reads input from stdin and processes it accordingly. In Node.js, stdin can be accessed using the process.stdin stream.
@@ -96,7 +111,11 @@ File: `./src/demo/index.js`
 ```js
 class Demo {
   async run(app) {
-    let data = await app.read("Type your Name:", { default: "Guess" });
+    let data = await app.read("Type your Name:", {
+      default: "Guess",
+      stdout: process.stdout,
+      stdin: process.stdin,
+    });
     console.log(data);
   }
 }
