@@ -27,7 +27,6 @@ npm install ksmf
 
 ```js
 class Demo {
-
   process(app, param1, param2, param3) {
     console.log(arguments);
   }
@@ -57,6 +56,39 @@ npm ksmf run demo      555       222       "same"
 6. In either case, the module will receive as parameters an instance of **KsMf.app.CLI** followed by the specified parameters from the command line.
 
 By following these steps and utilizing the KsMf framework, you can easily create powerful and efficient CLI applications with JavaScript. The modular structure of KsMf allows for flexible and scalable development, while the CLI functionality enables seamless interaction with users through the command line interface.
+
+## Standard input and output
+
+The standard input (stdin) and standard output (stdout) are fundamental concepts used in console or CLI (Command Line Interface) applications.
+
+### Standard Input (stdin):
+
+Standard input refers to the stream of data that a program receives from the outside world, typically from the user via the keyboard or from another program. In CLI applications, stdin is where the user can input data or commands to be processed by the program. The program reads input from stdin and processes it accordingly. In Node.js, stdin can be accessed using the process.stdin stream.
+
+File: ``` ./src/demo/index.js ```
+```js
+class Demo {
+  async run(app) {
+    let data = await app.read("Type your Name:");
+    console.log(data);
+  }
+}
+```
+
+### Standard Output (stdout):
+
+Standard output refers to the stream of data that a program sends to the outside world, typically to the user's screen or to another program. In CLI applications, stdout is where the program prints output or results for the user to see. The program writes output to stdout, which is then displayed in the terminal or console. In Node.js, stdout can be accessed using the process.stdout stream.
+
+File: ``` ./src/demo/index.js ```
+```js
+class Demo {
+  async run(app) {
+    app.write("Hello world!");
+  }
+}
+```
+
+These standard streams provide a standardized way for CLI applications to interact with the user and the external environment. They allow programs to receive input, process it, and produce output, enabling users to interact with the application effectively through the command line interface.
 
 ### Related topics
 
