@@ -123,6 +123,43 @@ class Demo {
 
 These standard streams provide a standardized way for CLI applications to interact with the user and the external environment. They allow programs to receive input, process it, and produce output, enabling users to interact with the application effectively through the command line interface.
 
+## Reading and transformation of CLI parameters
+Parameters for a CLI (Command Line Interface) application are values passed to the program when it is executed, providing additional information or instructions for the program to act upon. These parameters allow users to customize the behavior of the application without modifying its source code.
+
+There are several common formats used to define parameters for CLI applications:
+
+
+### Positional Parameters:
+Positional parameters are specified by their position in the command line arguments. They do not have a specific flag or identifier, but their order determines their meaning. For example:
+
+```
+mycli parameter1 parameter2 parameter3
+```
+
+### Named Parameters (Flags or Options):
+Named parameters are specified using flags or options preceded by a hyphen or double hyphen. They are typically followed by a value or are boolean flags that indicate the presence of a feature. For example:
+
+```
+mycli --verbose --output=output.txt --mode=debug
+```
+
+### Short Options:
+Short options are single-letter flags preceded by a single hyphen. They are often used for concise commands where a single letter represents a specific action or option. For example:
+
+```
+mycli -v -o output.txt -m debug
+```
+
+### Mixed Parameters:
+CLI applications often support a combination of named parameters and positional parameters. This allows users to provide both specific options and positional arguments in the command line. For example:
+
+```
+mycli --verbose input.txt output.txt
+```
+
+These parameter formats provide flexibility and versatility for users to interact with CLI applications, allowing them to provide input, configure behavior, and customize output according to their needs.
+
+
 ### Related topics
 
 - [Skeleton](./common.project_skeleton.md)
