@@ -15,7 +15,7 @@ declare class App {
     /**
      * @type {import('ksdp').integration.IoC}
      */
-    helper: import("ksdp/types/src/integration/IoC/IoC");
+    helper: import("ksdp/types/src/integration/IoC");
     /**
      * @type {import('ksdp').behavioral.Observer}
      */

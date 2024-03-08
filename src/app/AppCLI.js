@@ -58,7 +58,7 @@ class AppCLI extends App {
     /**
      * @description process CLI arguments 
      * @param {Object} [option] 
-     * @param {Array} [option.list] 
+     * @param {Array<String>|String} [option.list] 
      * @param {Number} [option.index=2] 
      * @param {Object} [option.order] 
      * @param {Object} [option.format]
@@ -68,10 +68,11 @@ class AppCLI extends App {
      */
     params(option) {
         let out = {};
-        let list = option?.list || process.argv;
+        let argv = option?.list || process.argv;
         let order = option?.order;
         let format = option?.format;
         let index = option?.index || 2;
+        let list = typeof argv === 'string' ? argv.split(' ') : argv;
         if (order) {
             for (let i in order) {
                 out[order[i]] = list[i];
@@ -104,26 +105,27 @@ class AppCLI extends App {
 
     /**
      * @description write content in the stdout
-     * @param {String} message 
+     * @param {String|Number|Boolean} message 
      * @param {Object} [driver]
-     * @param {String} [driver.end] 
+     * @param {String|Number|Boolean} [driver.end] 
      * @param {import('../types').TWritableStream} [driver.stdout] 
      * @param {import('../types').TReadableStream} [driver.stdin] 
      */
     write(message, driver = null) {
         driver = driver || {};
         driver.stdout = driver?.stdout || process.stdout;
-        message && driver.stdout.write(message + (driver.end ?? ' \n'));
+        message && driver.stdout.write(message + String(driver.end ?? ' \n'));
     }
 
     /**
      * @description read content from stdin
-     * @param {String} [label] 
+     * @param {String|Number|Boolean} [label] 
      * @param {Object} [driver]
      * @param {String} [driver.end] 
+     * @param {String|Number|Boolean} [driver.default] 
      * @param {import('../types').TWritableStream} [driver.stdout] 
      * @param {import('../types').TReadableStream} [driver.stdin] 
-     * @returns {Promise<String>} content
+     * @returns {Promise<String|Number|Boolean>} content
      */
     read(label, driver = null) {
         driver = driver || {};
@@ -132,7 +134,7 @@ class AppCLI extends App {
         driver.end = driver.end ?? ' ';
         return new Promise((resolve, reject) => {
             this.write(label, driver);
-            driver.stdin.once('data', (data) => resolve(data?.toString().trim()));
+            driver.stdin.once('data', (data) => resolve(data?.toString().trim() || driver?.default));
             driver.stdin.once('error', (err) => reject(err));
         });
     }

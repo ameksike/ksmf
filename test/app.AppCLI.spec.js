@@ -29,7 +29,7 @@ describe('App CLI', () => {
         expect(app.mod).toBeInstanceOf(Array);
     });
 
-    it('Valid argument be processed', () => {
+    it('Valid argument be processed list as list', () => {
         const res = app.params({
             list: [
                 'npx',
@@ -44,6 +44,23 @@ describe('App CLI', () => {
                 '--testPattern="test=new.test-1"',
                 'module=plugin:action'
             ]
+        });
+        expect(res).toBeInstanceOf(Object);
+        expect(res.directory).toBe(undefined);
+        expect(res.testPattern).toBe('"test=new.test-1"');
+        expect(res.json).toBe('{"name":"demo"}');
+        expect(res.module).toBe("plugin:action");
+        expect(res.v).toBe(true);
+        expect(res.run).toBe(true);
+        expect(res.verbose).toBe(true);
+        expect(res.result).toBe(true);
+        expect(res['no-cache']).toBe(true);
+        expect(res['no_cache']).toBe(true);
+    });
+
+    it('Valid argument be processed list as string', () => {
+        const res = app.params({
+            list: 'npx ksmf run result -v --no-cache --no_cache --verbose --json={"name":"demo"} --testPattern="test=new.test-1" module=plugin:action'
         });
         expect(res).toBeInstanceOf(Object);
         expect(res.directory).toBe(undefined);
