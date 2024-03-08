@@ -12,8 +12,8 @@ const AppWEB = require('./AppWEB');
 
 class AppRTA {
 
-    constructor(path) {
-        this.app = new AppWEB(path);
+    constructor(option) {
+        this.app = new AppWEB(option);
         this.sockets = {};
     }
 

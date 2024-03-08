@@ -19,3 +19,12 @@ export type TOption = {
     params?: any;
     dependency?: any;
 };
+export type TCLIArgReq = {
+    name?: string;
+    type?: string;
+    options?: any;
+    params?: any;
+    dependency?: any;
+};
+export type TReadableStream = import('stream').Readable;
+export type TWritableStream = import('stream').Writable;

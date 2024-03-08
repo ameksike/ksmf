@@ -45,12 +45,15 @@ class App {
 
     /**
      * @description initialize library
-     * @param {String} [path] 
+     * @param {Object} [option] 
+     * @param {String} [option.path] 
+     * @param {Object} [option.cfg] 
+     * @param {Array<any>} [option.mod] 
      **/
-    constructor(path = null) {
-        this.mod = [];
-        this.cfg = {};
-        this.path = path || _path.resolve('../../../../');
+    constructor(option = null) {
+        this.mod = option?.mod || [];
+        this.cfg = option?.cfg || {};
+        this.path = _path.resolve(option?.path || '../../../../');
         this.helper = new KsDp.integration.IoC();
         this.event = new KsDp.behavioral.Observer();
         this.config = new Config();
@@ -131,12 +134,13 @@ class App {
     }
 
     /**
-     * @description preload configuration file, variables, environments, etc
+     * @description initialize the application
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<App>} self
      */
     init(options) {
         try {
+            this.initLoad(options);
             this.initConfig(options);
         } catch (error) {
             this.emit('onError', [error, this]);
@@ -148,19 +152,24 @@ class App {
      * @description preload configuration file, variables, environments, etc
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options) {
+    initLoad(options) {
         dotenv.config();
         const env = process.env || {};
         const eid = env["NODE_ENV"] || 'development';
-        const srv = options?.config || this.config.load('cfg/core.json', { dir: this.path, id: eid });
+        const srv = options?.config || this.cfg?.srv || this.config.load('cfg/core.json', { dir: this.path, id: eid });
         const pac = this.config.load(_path.join(this.path, 'package.json'));
-
         this.cfg.env = env;
         this.cfg.eid = eid;
         this.cfg.srv = srv;
         this.cfg.path = this.path;
         this.cfg.pack = pac;
+    }
 
+    /**
+     * @description initialize configurations 
+     * @param {import('../types').TAppConfig} [options]
+     */
+    initConfig(options) {
         this.cfg.srv.module = this.cfg.srv.module || {};
         this.cfg.srv.module.path = _path.join(this.path, 'src/');
         this.cfg.srv.log = this.cfg.env.LOG_LEVEL ? this.cfg.env.LOG_LEVEL : this.cfg.srv.log;

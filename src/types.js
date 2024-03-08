@@ -26,4 +26,18 @@
  * @property {Object} [item.dependency] 
  */
 
+/**
+ * @typedef {Object} TCLIArgReq
+ * @property {String} [item.name] 
+ * @property {String} [item.type] 
+ * @property {Object} [item.options] 
+ * @property {Object} [item.params] 
+ * @property {Object} [item.dependency] 
+ */
+
+/**
+ * @typedef {import('stream').Readable} TReadableStream
+ * @typedef {import('stream').Writable} TWritableStream
+ */
+
 module.exports = {};

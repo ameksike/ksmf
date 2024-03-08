@@ -1,16 +1,18 @@
 In computer software, a data access object (DAO) is a pattern that provides an abstract interface to some type of database or other persistence mechanism. By mapping application calls to the persistence layer, the DAO provides some specific data operations without exposing details of the database.
 
 Currently, there is support for:
-+ [Redis](https://github.com/ameksike/ksmf/blob/main/src/dao/DAORedis.js)
-+ [Sequelize](https://github.com/ameksike/ksmf/blob/main/src/dao/DAOSequelize.js)
 
-## Sequelize
+- [Sequelize](https://www.npmjs.com/package/ksmf-sequelize)
+- [Redis](https://github.com/ameksike/ksmf/blob/main/src/dao/DAORedis.js)
+
+## KsMf Sequelize Plugin
+
 [Sequelize](https://sequelize.org/master/index.html) is a promise-based Node.js ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server. It features solid transaction support, relations, eager and lazy loading, read replication and more.
 
-The DAO section of the KsMf framework is an additional resource, so the dependencies are not included and must be installed manually. 
+The DAO section of the KsMf framework is an additional resource, so the dependencies are not included and must be installed manually.
 
 ```
-npm install --save sequelize
+npm install --save ksmf-sequelize
 ```
 
 You'll also have to manually install the driver for your database of choice:
@@ -29,7 +31,8 @@ Example of configuring the DAO lib using Sequelize as a base
 ```
 [PROJECT_PATH]/cfg/core.json
 ```
-```json
+
+````json
 {
     "development": {
         "port": 3030,
@@ -46,28 +49,56 @@ Example of configuring the DAO lib using Sequelize as a base
         },
         "helper": {
             "dao": {
-                "name": "ksmf",
-                "type": "lib",
-                "namespace": "dao.Sequelize",
-                "dependency": {
-                    "helper": "helper"
-                }
+              "name": "ksmf-sequelize",
+              "type": "package",
+              "dependency": {
+                "helper": "helper"
+              }
             },
             "dao.wrapper": {
-                "name": "ksmf",
-                "type": "lib",
-                "params": { "exclude": ["forest"] },
-                "namespace": "dao.Wrapper",
-                "dependency": {
-                    "helper": "helper"
-                }
-            },
+              "name": "ksmf-sequelize",
+              "type": "lib",
+              "params": {
+                  "exclude": ["forest"],
+                  "service": "rest"
+              },
+              "namespace": "cls.Wrapper",
+              "dependency": {
+                "helper": "helper"
+              }
+            }
         }
     }
 }
-``` 
+```
 
-Example of a typical module with several models 
+For versions lower than 1.3 the helper would look like this:
+```json
+{
+    "helper": {
+        "dao": {
+            "name": "ksmf",
+            "type": "lib",
+            "namespace": "dao.Sequelize",
+            "dependency": {
+                "helper": "helper"
+            }
+        },
+        "dao.wrapper": {
+            "name": "ksmf",
+            "type": "lib",
+            "params": { "exclude": ["forest"] },
+            "namespace": "dao.Wrapper",
+            "dependency": {
+                "helper": "helper"
+            }
+        },
+    }
+}
+````
+
+Example of a typical module with several models
+
 ```
 + app/
 |    + config/
@@ -84,85 +115,93 @@ Example of a typical module with several models
 ```
 
 Through the helper resource you can access the lib with DAO aliases
+
 ```js
-const dao = this.helper('dao');
-const model = dao.models['Person'];
+const dao = this.helper("dao");
+const model = dao.models["Person"];
 
 const data = await model.create({
-   'name': 'Smith',
-   'age': 35,
-   'sex': 'M'
+  name: "Smith",
+  age: 35,
+  sex: "M",
 });
 ```
 
-Example of deleting a record by ID 
+Example of deleting a record by ID
+
 ```js
-const dao = this.helper('dao');
-const model = dao.models['Country'];
+const dao = this.helper("dao");
+const model = dao.models["Country"];
 const Sequelize = dao.manager;
 
 const result = await model.destroy({
-	where: {
-		"id": {
-			[Sequelize.Op.eq]: id
-		}
-	}
+  where: {
+    id: {
+      [Sequelize.Op.eq]: id,
+    },
+  },
 });
 ```
 
 ### DAO Sequelize Instance
-+ **dao.models** contains a list with all the loaded models associated with a nominal identifier. 
-+ **dao.manager** contains the *require('sequelize')*
-+ **dao.driver** contains an instance of Sequelize.
+
+- **dao.models** contains a list with all the loaded models associated with a nominal identifier.
+- **dao.manager** contains the _require('sequelize')_
+- **dao.driver** contains an instance of Sequelize.
 
 For more information on the use of Sequelize see the following [link](https://sequelize.org/master/manual/model-basics.html).
 
 Another important aspect is that in the case of data access, application-level configurations are required, these configurations are stored in a separate file located in _config.json_, Below is an example for the use of the Postgre SQL database:
+
 ```
 [PROJECT_PATH]/cfg/config.json
 ```
+
 ```json
 {
-    "development": {
-        "port": "5432",
-        "host": "127.0.0.1",
-        "database": "my_db_local",
-        "username": "postgres",
-        "password": "postgres",
-        "dialect": "postgres",
-        "protocol": "postgres"
-    },
-    "production": {
-        "use_env_variable": "DATABASE_URL",
-        "dialect": "postgres",
-        "dialectOptions": {
-            "ssl": {
-                "rejectUnauthorized": false
-             }
-        }
-    },
-    "test": {
-        "dialect": "sqlite",
-        "protocol": "sqlite",
-        "storage": ":memory:",
-        "logging": false
+  "development": {
+    "port": "5432",
+    "host": "127.0.0.1",
+    "database": "my_db_local",
+    "username": "postgres",
+    "password": "postgres",
+    "dialect": "postgres",
+    "protocol": "postgres"
+  },
+  "production": {
+    "use_env_variable": "DATABASE_URL",
+    "dialect": "postgres",
+    "dialectOptions": {
+      "ssl": {
+        "rejectUnauthorized": false
+      }
     }
+  },
+  "test": {
+    "dialect": "sqlite",
+    "protocol": "sqlite",
+    "storage": ":memory:",
+    "logging": false
+  }
 }
 ```
 
-### CLI for Sequelize 
+### CLI for Sequelize
 
 Make sure you have [Sequelize](https://sequelize.org/) installed. Then install the Sequelize CLI to be used in your project with
+
 ```
 npm install --save-dev sequelize-cli
 ```
 
 And then you should be able to run the CLI with
+
 ```
 npx sequelize --help
 ```
 
 The command line interface can be improved by adding the following to the **[PROJECT_PATH]/package.json** file in scripts section:
+
 ```json
 {
   "name": "demo.app",
@@ -184,9 +223,7 @@ The command line interface can be improved by adding the following to the **[PRO
 
     "heroku-postbuild": "node_modules/.bin/sequelize db:migrate"
   },
-  "keywords": [
-    "shorter"
-  ],
+  "keywords": ["shorter"],
   "author": "KsMf Team",
   "license": "ISC",
   "dependencies": {
@@ -199,10 +236,12 @@ The command line interface can be improved by adding the following to the **[PRO
     "supertest": "^6.1.3"
   }
 }
-``` 
-These commands represent simple shortcuts to the *sequelize-cli* tool, for more information see the following [link](https://github.com/sequelize/cli#documentation). 
+```
+
+These commands represent simple shortcuts to the _sequelize-cli_ tool, for more information see the following [link](https://github.com/sequelize/cli#documentation).
 
 ### Models
+
 Models are the essence of Sequelize. A model is an abstraction that represents a table in your database. In Sequelize, it is a class that extends Model. The model tells Sequelize several things about the entity it represents, such as the name of the table in the database and which columns it has (and their data types). A model in Sequelize has a name. This name does not have to be the same name of the table it represents in the database. Usually, models have singular names (such as User) while tables have pluralized names (such as Users), although this is fully configurable. For more information, access the following [link ](https://sequelize.org/master/manual/model-basics.html)
 
 ```
@@ -227,92 +266,102 @@ Models are the essence of Sequelize. A model is an abstraction that represents a
 |    |    - Company.js
 - package.json
 ```
-Note that in a typical project you can have the models centralized in the directory *'db/models/'* as well as the migrations in *'db/migrations/'* or have the models organized by each module in the directory *'src/[module-name]/model/'* as is the case of the app module in the previous example. 
+
+Note that in a typical project you can have the models centralized in the directory _'db/models/'_ as well as the migrations in _'db/migrations/'_ or have the models organized by each module in the directory _'src/[module-name]/model/'_ as is the case of the app module in the previous example.
 
 ```js
-'use strict';
-const { Model } = require('sequelize');
+"use strict";
+const { Model } = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   class Person extends Model {
     static associate(models) {
       // define association here
     }
-  };
-  Person.init({
-    source: DataTypes.STRING,
-    base: DataTypes.STRING,
-    state: DataTypes.INTEGER,
-    type: { type: DataTypes.INTEGER, defaultValue: 1 },
-    ownerId: DataTypes.UUID,
-    createdAt: DataTypes.DATE,
-  }, {
-    sequelize,
-    modelName: 'person',
-  });
+  }
+  Person.init(
+    {
+      source: DataTypes.STRING,
+      base: DataTypes.STRING,
+      state: DataTypes.INTEGER,
+      type: { type: DataTypes.INTEGER, defaultValue: 1 },
+      ownerId: DataTypes.UUID,
+      createdAt: DataTypes.DATE,
+    },
+    {
+      sequelize,
+      modelName: "person",
+    }
+  );
   return Person;
 };
 ```
 
 The previous example shows the code of a typical model, this can also be generated automatically with its respective migration by executing the command shown below:
- 
+
 ```
 npx sequelize-cli model:generate --name Person --attributes source:string,base:string,state:integer,ownerId:uuid
 ```
 
 ### Migrations
+
 Just like you use version control systems such as Git to manage changes in your source code, you can use migrations to keep track of changes to the database. With migrations you can transfer your existing database into another state and vice versa: Those state transitions are saved in migration files, which describe how to get to the new state and how to revert the changes in order to get back to the old state. For more information, access the following [link ](https://sequelize.org/master/manual/migrations.html)
 
-KsMf offers useful functions that allow you to modify the database, in this case there are the **addColumn** and **removeColumn** functions, which unlike the native functions of Sequelize, these verify if they exist or not avoiding throwing an error, see example below 
+KsMf offers useful functions that allow you to modify the database, in this case there are the **addColumn** and **removeColumn** functions, which unlike the native functions of Sequelize, these verify if they exist or not avoiding throwing an error, see example below
 
-Run the command 
+Run the command
+
 ```
 npm run db:migrate:generate add
 ```
 
-This will create a file similar to the one shown below: ```[PROJECT_PATH]/db/migrations/20210820153551-add.js```
+This will create a file similar to the one shown below: `[PROJECT_PATH]/db/migrations/20210820153551-add.js`
+
 ```js
-'use strict';
+"use strict";
 module.exports = {
-  up: async (queryInterface, Sequelize) => { },
-  down: async (queryInterface, Sequelize) => { }
+  up: async (queryInterface, Sequelize) => {},
+  down: async (queryInterface, Sequelize) => {},
 };
 ```
 
-Allowing it to be modified in this way in order to add a field called *'demo'* to the *'Person'* table: 
+Allowing it to be modified in this way in order to add a field called _'demo'_ to the _'Person'_ table:
 
 ```js
-'use strict';
+"use strict";
 
-const { addColumn, removeColumn } = require('ksmf').dao.Sequelize;
+const { addColumn, removeColumn } = require("ksmf").dao.Sequelize;
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    return addColumn(queryInterface, Sequelize, 'persons', 'demo', { 
-      type: Sequelize.STRING, 
-      allowNull: true 
+    return addColumn(queryInterface, Sequelize, "persons", "demo", {
+      type: Sequelize.STRING,
+      allowNull: true,
     });
   },
 
   down: async (queryInterface, Sequelize) => {
-    return removeColumn(queryInterface, 'persons', 'demo');
-  }
+    return removeColumn(queryInterface, "persons", "demo");
+  },
 };
 ```
 
-To apply the changes, run the command: 
+To apply the changes, run the command:
+
 ```
 npm run db:migrate
 ```
 
-To remove the changes, run the command: 
+To remove the changes, run the command:
+
 ```
 npm run db:migrate:undo
 ```
 
-### Related topics 
-+ [Modules](./common.modules.md)
-+ [Cotrollers](./common.controllers.md)
-+ [App](./advanced.app_web.md)
-+ [Settings](./advanced.setting.md)
+### Related topics
+
+- [Modules](./common.modules.md)
+- [Cotrollers](./common.controllers.md)
+- [App](./advanced.app_web.md)
+- [Settings](./advanced.setting.md)
 
 The next recomended topic: [Test](./advanced.test.md).

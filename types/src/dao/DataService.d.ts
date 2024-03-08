@@ -310,6 +310,36 @@ declare class DataService extends DataService_base {
         updateOnDuplicate?: any[];
     }, opt?: any): any;
     /**
+     * @description update an entity
+     * @param {Object} target
+     * @param {Object|String|Number} [target.query]
+     * @param {Array} [target.attributes]
+     * @param {Object} [target.include]
+     * @param {Object} [target.where]
+     * @param {Number} [target.limit]
+     * @param {Object} [payload]
+     * @param {Object} [payload.data]
+     * @param {Number} [payload.mode]
+     * @param {Object} [payload.transaction]
+     * @param {boolean} [payload.strict]
+     * @param {any[]} [payload.updateOnDuplicate]
+     * @param {Object} [option]
+     * @returns {Promise<Object>} row
+     */
+    clone(target: {
+        query?: any | string | number;
+        attributes?: any[];
+        include?: any;
+        where?: any;
+        limit?: number;
+    }, payload?: {
+        data?: any;
+        mode?: number;
+        transaction?: any;
+        strict?: boolean;
+        updateOnDuplicate?: any[];
+    }, option?: any): Promise<any>;
+    /**
      * @description get count of data from model
      * @param {Object} options
      * @param {String} [options.col] specify the column on which you want to call the count() method with the col

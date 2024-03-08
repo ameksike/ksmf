@@ -537,6 +537,32 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
+     * @description update an entity
+     * @param {Object} target
+     * @param {Object|String|Number} [target.query] 
+     * @param {Array} [target.attributes] 
+     * @param {Object} [target.include] 
+     * @param {Object} [target.where] 
+     * @param {Number} [target.limit] 
+     * @param {Object} [payload] 
+     * @param {Object} [payload.data] 
+     * @param {Number} [payload.mode] 
+     * @param {Object} [payload.transaction] 
+     * @param {boolean} [payload.strict] 
+     * @param {any[]} [payload.updateOnDuplicate] 
+     * @param {Object} [option] 
+     * @returns {Promise<Object>} row
+     */
+    async clone(target, payload, option) {
+        payload = payload || {};
+        payload.mode = this.constant?.action?.create;
+        target.limit = 1;
+        const targetRow = await this.select(target, option);
+        payload.data = { targetRow, ...payload.data };
+        return this.save(payload, option);
+    }
+
+    /**
      * @description get count of data from model
      * @param {Object} options 
      * @param {String} [options.col] specify the column on which you want to call the count() method with the col

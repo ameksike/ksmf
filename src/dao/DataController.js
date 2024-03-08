@@ -19,12 +19,12 @@ class DataController extends Controller {
      * @type {Console|null}
      */
     logger = null;
-	
+
     /**
      * @type {String}
      */
     srvName;
-    
+
     /**
      * @description configure action 
      * @param {Object} cfg 
@@ -81,7 +81,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:list",
+                src: this.module + ":Controller:Data:list",
                 error: error.message || error,
                 data: query
             });
@@ -105,7 +105,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:select",
+                src: this.module + ":Controller:Data:select",
                 error: error.message || error,
                 data: params
             });
@@ -120,20 +120,22 @@ class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     async insert(req, res) {
+        const config = { flow: req.flow };
         const payload = req.body;
         try {
-            const data = await this.srv.insert({ data: payload });
+            const data = await this.srv.insert({ data: payload }, config);
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:insert",
+                src: this.module + ":Controller:Data:insert",
                 data
             });
+            res.status(config?.action === "create" ? 201 : 200);
             res.json(data);
         }
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:insert",
+                src: this.module + ":Controller:Data:insert",
                 error: error.message || error,
                 data: payload
             });
@@ -148,14 +150,51 @@ class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     async update(req, res) {
+        const config = { flow: req.flow };
         const params = this.srv?.extract(req.query);
         params.query.id = req.body.id || req.params['id'];
         params.data = req.body;
         try {
-            const data = await this.srv.update(params);
+            const data = await this.srv.update(params, config);
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:update",
+                src: this.module + ":Controller:Data:update",
+                data
+            });
+            res.status(config?.action === "create" ? 201 : 200);
+            res.json(data);
+        }
+        catch (error) {
+            this.logger?.error({
+                flow: req.flow,
+                src: this.module + ":Controller:Data:update",
+                error: error.message || error,
+                data: params
+            });
+            res.status(500).end();
+        }
+    }
+
+    /**
+     * @description update user by id
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Promise<any>} DTO
+     */
+    async clone(req, res) {
+        const params = this.srv?.extract(req.query);
+        const keypid = this.srv.getPKs()[0] || "id";
+        const target = {
+            where: {
+                [keypid]: req.params['id']
+            }
+        }
+        params.data = req.body;
+        try {
+            const data = await this.srv.clone(target, params);
+            this.logger?.info({
+                flow: req.flow,
+                src: this.module + ":Controller:Data:clone",
                 data
             });
             res.json(data);
@@ -163,9 +202,9 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:update",
+                src: this.module + ":Controller:Data:clone",
                 error: error.message || error,
-                data: params
+                data: { params, target }
             });
             res.status(500).end();
         }
@@ -178,13 +217,14 @@ class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     async delete(req, res) {
+        const config = { flow: req.flow };
         const params = this.srv?.extract(req.query);
         params.query.id = req.body.id || req.params['id'];
         try {
-            const data = await this.srv.delete(params);
+            const data = await this.srv.delete(params, config);
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:delete",
+                src: this.module + ":Controller:Data:delete",
                 data
             });
             res.json(data);
@@ -192,7 +232,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Default:delete",
+                src: this.module + ":Controller:Data:delete",
                 error: error.message || error,
                 data: params
             });

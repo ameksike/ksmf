@@ -2,9 +2,16 @@ export = App;
 declare class App {
     /**
      * @description initialize library
-     * @param {String} [path]
+     * @param {Object} [option]
+     * @param {String} [option.path]
+     * @param {Object} [option.cfg]
+     * @param {Array<any>} [option.mod]
      **/
-    constructor(path?: string);
+    constructor(option?: {
+        path?: string;
+        cfg?: any;
+        mod?: Array<any>;
+    });
     /**
      * @type {import('ksdp').integration.IoC}
      */
@@ -88,13 +95,18 @@ declare class App {
      */
     emit(event: string, params?: any[], scope?: string): App;
     /**
-     * @description preload configuration file, variables, environments, etc
+     * @description initialize the application
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<App>} self
      */
     init(options?: import('../types').TAppConfig): Promise<App>;
     /**
      * @description preload configuration file, variables, environments, etc
+     * @param {import('../types').TAppConfig} [options]
+     */
+    initLoad(options?: import('../types').TAppConfig): void;
+    /**
+     * @description initialize configurations
      * @param {import('../types').TAppConfig} [options]
      */
     initConfig(options?: import('../types').TAppConfig): this;
