@@ -4,7 +4,7 @@ export = Utl;
  * @module utils/Utl
  */
 declare class Utl {
-    static "__#5@#instance": any;
+    static "__#8@#instance": any;
     static self(): any;
     set config(options: {
         number: {

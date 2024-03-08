@@ -104,26 +104,27 @@ class AppCLI extends App {
 
     /**
      * @description write content in the stdout
-     * @param {String} message 
+     * @param {String|Number|Boolean} message 
      * @param {Object} [driver]
-     * @param {String} [driver.end] 
+     * @param {String|Number|Boolean} [driver.end] 
      * @param {import('../types').TWritableStream} [driver.stdout] 
      * @param {import('../types').TReadableStream} [driver.stdin] 
      */
     write(message, driver = null) {
         driver = driver || {};
         driver.stdout = driver?.stdout || process.stdout;
-        message && driver.stdout.write(message + (driver.end ?? ' \n'));
+        message && driver.stdout.write(message + String(driver.end ?? ' \n'));
     }
 
     /**
      * @description read content from stdin
-     * @param {String} [label] 
+     * @param {String|Number|Boolean} [label] 
      * @param {Object} [driver]
      * @param {String} [driver.end] 
+     * @param {String|Number|Boolean} [driver.default] 
      * @param {import('../types').TWritableStream} [driver.stdout] 
      * @param {import('../types').TReadableStream} [driver.stdin] 
-     * @returns {Promise<String>} content
+     * @returns {Promise<String|Number|Boolean>} content
      */
     read(label, driver = null) {
         driver = driver || {};
@@ -132,7 +133,7 @@ class AppCLI extends App {
         driver.end = driver.end ?? ' ';
         return new Promise((resolve, reject) => {
             this.write(label, driver);
-            driver.stdin.once('data', (data) => resolve(data?.toString().trim()));
+            driver.stdin.once('data', (data) => resolve(data?.toString().trim() || driver?.default));
             driver.stdin.once('error', (err) => reject(err));
         });
     }

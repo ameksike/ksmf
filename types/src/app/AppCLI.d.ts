@@ -35,31 +35,33 @@ declare class AppCLI extends App {
     }): any;
     /**
      * @description write content in the stdout
-     * @param {String} message
+     * @param {String|Number|Boolean} message
      * @param {Object} [driver]
-     * @param {String} [driver.end]
+     * @param {String|Number|Boolean} [driver.end]
      * @param {import('../types').TWritableStream} [driver.stdout]
      * @param {import('../types').TReadableStream} [driver.stdin]
      */
-    write(message: string, driver?: {
-        end?: string;
+    write(message: string | number | boolean, driver?: {
+        end?: string | number | boolean;
         stdout?: import('../types').TWritableStream;
         stdin?: import('../types').TReadableStream;
     }): void;
     /**
      * @description read content from stdin
-     * @param {String} [label]
+     * @param {String|Number|Boolean} [label]
      * @param {Object} [driver]
      * @param {String} [driver.end]
+     * @param {String|Number|Boolean} [driver.default]
      * @param {import('../types').TWritableStream} [driver.stdout]
      * @param {import('../types').TReadableStream} [driver.stdin]
-     * @returns {Promise<String>} content
+     * @returns {Promise<String|Number|Boolean>} content
      */
-    read(label?: string, driver?: {
+    read(label?: string | number | boolean, driver?: {
         end?: string;
+        default?: string | number | boolean;
         stdout?: import('../types').TWritableStream;
         stdin?: import('../types').TReadableStream;
-    }): Promise<string>;
+    }): Promise<string | number | boolean>;
     /**
      * @description stop application
      */
