@@ -61,11 +61,26 @@ By following these steps and utilizing the KsMf framework, you can easily create
 
 The standard input (stdin) and standard output (stdout) are fundamental concepts used in console or CLI (Command Line Interface) applications.
 
+### Standard Output (stdout):
+
+Standard output refers to the stream of data that a program sends to the outside world, typically to the user's screen or to another program. In CLI applications, stdout is where the program prints output or results for the user to see. The program writes output to stdout, which is then displayed in the terminal or console. In Node.js, stdout can be accessed using the process.stdout stream.
+
+File: `./src/demo/index.js`
+
+```js
+class Demo {
+  async run(app) {
+    app.write("Hello world!");
+  }
+}
+```
+
 ### Standard Input (stdin):
 
 Standard input refers to the stream of data that a program receives from the outside world, typically from the user via the keyboard or from another program. In CLI applications, stdin is where the user can input data or commands to be processed by the program. The program reads input from stdin and processes it accordingly. In Node.js, stdin can be accessed using the process.stdin stream.
 
-File: ``` ./src/demo/index.js ```
+File: `./src/demo/index.js`
+
 ```js
 class Demo {
   async run(app) {
@@ -75,15 +90,14 @@ class Demo {
 }
 ```
 
-### Standard Output (stdout):
+It is also possible to define a default value in case the user presses the enter key without specifying any value.
+File: `./src/demo/index.js`
 
-Standard output refers to the stream of data that a program sends to the outside world, typically to the user's screen or to another program. In CLI applications, stdout is where the program prints output or results for the user to see. The program writes output to stdout, which is then displayed in the terminal or console. In Node.js, stdout can be accessed using the process.stdout stream.
-
-File: ``` ./src/demo/index.js ```
 ```js
 class Demo {
   async run(app) {
-    app.write("Hello world!");
+    let data = await app.read("Type your Name:", { default: "Guess" });
+    console.log(data);
   }
 }
 ```
