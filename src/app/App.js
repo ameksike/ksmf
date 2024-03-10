@@ -1,15 +1,15 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		15/11/2021
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        15/11/2021
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.0
  **/
+const _path = require('path');
 const dotenv = require('dotenv');
 const KsDp = require('ksdp');
 const Config = require('./Config');
-const _path = require('path');
 
 class App {
 
@@ -45,14 +45,17 @@ class App {
 
     /**
      * @description initialize library
-     * @param {Object} [option] 
-     * @param {String} [option.path] 
-     * @param {Object} [option.cfg] 
-     * @param {Array<any>} [option.mod] 
+     * @param {Object} [option]
+     * @param {String} [option.path] project root path 
+     * @param {Object} [option.cfg] configuration options 
+     * @param {Object} [option.helper] driver to manage plugins  
+     * @param {Object} [option.event]  driver to manage events 
+     * @param {Object} [option.config] driver to manage configurations
+     * @param {Array<any>} [option.mod] plugins/modules list 
      **/
     constructor(option = null) {
         this.mod = option?.mod || [];
-        this.cfg = option?.cfg || {};
+        this.cfg = { srv: option?.cfg || null };
         this.path = _path.resolve(option?.path || '../../../../');
         this.helper = new KsDp.integration.IoC();
         this.event = new KsDp.behavioral.Observer();
