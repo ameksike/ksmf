@@ -3,13 +3,19 @@ declare class App {
     /**
      * @description initialize library
      * @param {Object} [option]
-     * @param {String} [option.path]
-     * @param {Object} [option.cfg]
-     * @param {Array<any>} [option.mod]
+     * @param {String} [option.path] project root path
+     * @param {Object} [option.cfg] configuration options
+     * @param {Object} [option.helper] driver to manage plugins
+     * @param {Object} [option.event]  driver to manage events
+     * @param {Object} [option.config] driver to manage configurations
+     * @param {Array<any>} [option.mod] plugins/modules list
      **/
     constructor(option?: {
         path?: string;
         cfg?: any;
+        helper?: any;
+        event?: any;
+        config?: any;
         mod?: Array<any>;
     });
     /**

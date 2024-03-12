@@ -2,9 +2,35 @@ export = BaseServer;
 declare const BaseServer_base: typeof import("ksdp/types/src/integration/Dip");
 declare class BaseServer extends BaseServer_base {
     /**
+     * @description configure the web server
+     * @param {Object} [payload]
+     * @param {Object} [payload.web]
+     * @param {Object} [payload.drv]
+     * @param {Object} [payload.logger]
+     * @param {Object} [payload.helper]
+     * @param {Object} [payload.option]
+     * @param {Object} [payload.cookie]
+     * @param {Object} [payload.static]
+     * @param {Object} [payload.session]
+     */
+    constructor(payload?: {
+        web?: any;
+        drv?: any;
+        logger?: any;
+        helper?: any;
+        option?: any;
+        cookie?: any;
+        static?: any;
+        session?: any;
+    });
+    /**
      * @type {Object|null}
      */
     helper: any | null;
+    /**
+     * @type {Object|null}
+     */
+    static: any | null;
     /**
      * @type {Object|null}
      */
@@ -42,6 +68,7 @@ declare class BaseServer extends BaseServer_base {
      * @param {Object} [payload.helper]
      * @param {Object} [payload.option]
      * @param {Object} [payload.cookie]
+     * @param {Object} [payload.static]
      * @param {Object} [payload.session]
      * @returns {Promise<BaseServer>} self
      */
@@ -52,6 +79,7 @@ declare class BaseServer extends BaseServer_base {
         helper?: any;
         option?: any;
         cookie?: any;
+        static?: any;
         session?: any;
     }): Promise<BaseServer>;
     /**
