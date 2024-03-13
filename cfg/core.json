@@ -6,10 +6,9 @@
     "protocol": "http",
     "prefix": "",
     "import": {
-      "db": "cfg/db.js",
-      "log": "cfg/log.json",
-      "helper": "cfg/ioc.json",
-      "constant": "cfg/constant.json"
+      "db": "cfg/core.db.js",
+      "log": "cfg/core.log.json",
+      "helper": "cfg/core.ioc.json"
     },
     "module": {
       "load": [],
@@ -40,8 +39,7 @@
         "plugin.doc",
         "plugin.sequelize"
       ],
-      "onInitModules": [
-      ],
+      "onInitModules": [],
       "onLoadModule": [
         "plugin.doc"
       ],
