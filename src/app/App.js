@@ -222,6 +222,9 @@ class App {
         if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
         }
+        if (this.cfg.srv.module.mode === "auto") {
+            
+        }
         this.emit('onLoadedModules', [modules, this]);
         this.modules = modules;
         return this;
