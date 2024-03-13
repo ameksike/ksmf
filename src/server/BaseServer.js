@@ -80,6 +80,7 @@ class BaseServer extends ksdp.integration.Dip {
      * @param {Object} [payload.helper]
      * @param {Object} [payload.option]
      * @param {Object} [payload.cookie]
+     * @param {Object} [payload.static]
      * @param {Object} [payload.session]
      * @returns {Promise<BaseServer>} self
      */
@@ -90,6 +91,7 @@ class BaseServer extends ksdp.integration.Dip {
         this.helper = payload?.helper || this.helper;
         this.option = payload?.option || this.option;
         this.cookie = payload?.cookie || this.cookie;
+        this.static = payload?.static || this.static;
         this.session = payload?.session || this.session;
         return Promise.resolve(this);
     }

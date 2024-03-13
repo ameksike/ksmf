@@ -30,15 +30,15 @@ declare class BaseServer extends BaseServer_base {
     /**
      * @type {Object|null}
      */
-    static: any | null;
-    /**
-     * @type {Object|null}
-     */
     option: any | null;
     /**
      * @type {Object|null}
      */
     cookie: any | null;
+    /**
+     * @type {Object|null}
+     */
+    static: any | null;
     /**
      * @type {Session|null}
      */

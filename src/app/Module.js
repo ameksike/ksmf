@@ -241,7 +241,10 @@ class Module {
      * @param {String} [opt.controller]
      * @param {String} [opt.path]
      * @param {Object} [opt.params]
-     * @param {Object} [opt.options] 
+     * @param {Object} [opt.method]
+     * @param {Object} [opt.options]  
+     * @param {Object} [opt.delegate]
+     * @param {Function} [opt.handler] 
      * @param {Object} [opt.dependency] 
      * @param {Boolean} [opt.strict] 
      * @returns {Object} locator
