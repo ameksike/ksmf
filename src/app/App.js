@@ -1,15 +1,16 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		15/11/2021
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        15/11/2021
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.0
  **/
+const _path = require('path');
 const dotenv = require('dotenv');
 const KsDp = require('ksdp');
 const Config = require('./Config');
-const _path = require('path');
+const Dir = require('./Dir');
 
 class App {
 
@@ -29,6 +30,11 @@ class App {
     config = null;
 
     /**
+     * @type {Dir|null}
+     */
+    dir = null;
+
+    /**
      * @type {Console|null}
      */
     logger = null;
@@ -46,17 +52,22 @@ class App {
     /**
      * @description initialize library
      * @param {Object} [option] 
-     * @param {String} [option.path] 
-     * @param {Object} [option.cfg] 
-     * @param {Array<any>} [option.mod] 
+     * @param {String} [option.path] project root path 
+     * @param {Object} [option.cfg] configuration options 
+     * @param {Object} [option.helper] driver to manage plugins  
+     * @param {Object} [option.event]  driver to manage events 
+     * @param {Object} [option.config] driver to manage configurations
+     * @param {Object} [option.dir] driver to manage directories
+     * @param {Array<any>} [option.mod] plugins/modules list 
      **/
     constructor(option = null) {
         this.mod = option?.mod || [];
-        this.cfg = option?.cfg || {};
+        this.cfg = { srv: option?.cfg };
         this.path = _path.resolve(option?.path || '../../../../');
-        this.helper = new KsDp.integration.IoC();
-        this.event = new KsDp.behavioral.Observer();
-        this.config = new Config();
+        this.helper = option?.helper || new KsDp.integration.IoC();
+        this.event = option?.event || new KsDp.behavioral.Observer();
+        this.config = option?.config || new Config();
+        this.dir = option?.dir || new Dir();
     }
 
     /**
@@ -129,7 +140,15 @@ class App {
      * @returns {App} self
      */
     emit(event, params = [], scope = 'ksmf') {
-        this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+        try {
+            this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+        }
+        catch (error) {
+            this.logger?.error({
+                src: 'KsMf:App:emit',
+                error
+            });
+        }
         return this;
     }
 
@@ -156,11 +175,13 @@ class App {
         dotenv.config();
         const env = process.env || {};
         const eid = env["NODE_ENV"] || 'development';
+        const loc = this.config.load('cfg/core.json', { dir: _path.resolve(__dirname, '../../'), id: eid });
         const srv = options?.config || this.cfg?.srv || this.config.load('cfg/core.json', { dir: this.path, id: eid });
         const pac = this.config.load(_path.join(this.path, 'package.json'));
         this.cfg.env = env;
         this.cfg.eid = eid;
-        this.cfg.srv = srv;
+        this.cfg.srv = { ...loc, ...srv };
+        this.cfg.srv.helper = { ...loc.helper, ...srv?.helper };
         this.cfg.path = this.path;
         this.cfg.pack = pac;
     }
@@ -197,11 +218,20 @@ class App {
      */
     initEvents() {
         for (let event in this.cfg.srv.event) {
-            const eventList = this.cfg.srv.event[event];
+            let eventList = this.cfg.srv.event[event];
             for (let elm in eventList) {
-                const subscriber = eventList[elm];
-                if (this.event && this.event.add instanceof Function) {
-                    this.event.add(this.helper.get(subscriber), event, "ksmf");
+                let subscriber = eventList[elm];
+                if (subscriber && this.event?.add instanceof Function) {
+                    try {
+                        let handler = this.helper.get(subscriber);
+                        handler && this.event.add(handler, event, "ksmf");
+                    }
+                    catch (error) {
+                        this.logger?.error({
+                            src: 'KsMf:App:initEvents',
+                            error
+                        })
+                    }
                 }
             }
         }
@@ -211,11 +241,21 @@ class App {
     /**
      * @description load modules 
      */
-    initModules() {
+    async initModules() {
         this.emit('onInitModules', [this.cfg.srv.module.load, this]);
         const modules = [];
+        const mode = this.cfg?.srv?.module?.mode;
         if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
+        }
+        if (mode === "auto" || mode === "dev") {
+            const option = { watchRecursive: mode === "dev", readRecursive: false, onlyDir: true };
+            const modDir = _path.resolve(this.cfg?.srv?.module?.path || _path.join(this.path, 'src'));
+            await this.dir.on(modDir, (item) => {
+                if (item.name) {
+                    this.initModule(item.name, modules);
+                }
+            }, option);
         }
         this.emit('onLoadedModules', [modules, this]);
         this.modules = modules;
@@ -232,7 +272,7 @@ class App {
         const name = (typeof (item) === 'string') ? item : item.name;
         const options = {
             // ... EXPRESS APP
-            frm: this,
+            app: this,
             // ... extraoptions
             ...this.initModuleOpts(),
             // ... DATA ACCESS Object 

@@ -20,6 +20,13 @@ declare class Manager {
     startUsage: NodeJS.CpuUsage;
     configure(cfg: any): void;
     /**
+     * @description Set options on Initialize Configuration Event
+     * @param {Object} cfg
+     * @param {Object} app
+     */
+    onInitConfig(cfg: any, app: any): void;
+    app: any;
+    /**
      * @description KsMf Wrapper
      * @param {Object} info
      */

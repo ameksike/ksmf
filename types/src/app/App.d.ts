@@ -3,13 +3,21 @@ declare class App {
     /**
      * @description initialize library
      * @param {Object} [option]
-     * @param {String} [option.path]
-     * @param {Object} [option.cfg]
-     * @param {Array<any>} [option.mod]
+     * @param {String} [option.path] project root path
+     * @param {Object} [option.cfg] configuration options
+     * @param {Object} [option.helper] driver to manage plugins
+     * @param {Object} [option.event]  driver to manage events
+     * @param {Object} [option.config] driver to manage configurations
+     * @param {Object} [option.dir] driver to manage directories
+     * @param {Array<any>} [option.mod] plugins/modules list
      **/
     constructor(option?: {
         path?: string;
         cfg?: any;
+        helper?: any;
+        event?: any;
+        config?: any;
+        dir?: any;
         mod?: Array<any>;
     });
     /**
@@ -24,6 +32,10 @@ declare class App {
      * @type {Config|null}
      */
     config: Config | null;
+    /**
+     * @type {Dir|null}
+     */
+    dir: Dir | null;
     /**
      * @type {Console|null}
      */
@@ -117,7 +129,7 @@ declare class App {
     /**
      * @description load modules
      */
-    initModules(): this;
+    initModules(): Promise<this>;
     modules: any[];
     /**
      * @description initialize a module
@@ -138,3 +150,4 @@ declare class App {
     run(options?: import('../types').TAppConfig): Promise<void>;
 }
 import Config = require("./Config");
+import Dir = require("./Dir");

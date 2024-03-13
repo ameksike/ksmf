@@ -25,6 +25,10 @@ declare class Module {
      */
     helper: any | null;
     /**
+     * @type {Object|null}
+     */
+    app: any | null;
+    /**
      * @type {Console|null}
      */
     logger: Console | null;
@@ -44,6 +48,7 @@ declare class Module {
      * @param {Object} [payload.drv]
      * @param {Object} [payload.opt]
      * @param {Object} [payload.rest]
+     * @param {Object} [payload.server]
      * @param {Object} [payload.routes]
      * @param {Object} [payload.prefix]
      * @param {Object} [payload.middleware]
@@ -55,14 +60,14 @@ declare class Module {
         drv?: any;
         opt?: any;
         rest?: any;
+        server?: any;
         routes?: any;
         prefix?: any;
         middleware?: any;
     }): Module;
-    app: any;
+    opt: any;
     web: any;
     drv: any;
-    opt: any;
     name: any;
     prefix: any;
     rest: any;
@@ -121,24 +126,38 @@ declare class Module {
      * @param {Object} opt
      * @param {String} [opt.route]
      * @param {String} [opt.name]
+     * @param {String} [opt.action]
      * @param {String} [opt.controller]
      * @param {String} [opt.path]
-     * @param {String} [opt.strict]
      * @param {Object} [opt.params]
+     * @param {Object} [opt.method]
      * @param {Object} [opt.options]
+     * @param {Object} [opt.delegate]
+     * @param {Function} [opt.handler]
      * @param {Object} [opt.dependency]
+     * @param {Boolean} [opt.strict]
      * @returns {Object} locator
      */
     getLocator(opt: {
         route?: string;
         name?: string;
+        action?: string;
         controller?: string;
         path?: string;
-        strict?: string;
         params?: any;
+        method?: any;
         options?: any;
+        delegate?: any;
+        handler?: Function;
         dependency?: any;
+        strict?: boolean;
     }): any;
+    /**
+     * @description get a controller instance
+     * @param {Object} locator
+     * @returns {Object} controller
+     */
+    getController(locator: any): any;
     /**
      * @description get middleware list by controller
      * @param {Object} controller

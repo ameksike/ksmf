@@ -174,7 +174,7 @@ class AppWEB extends App {
      */
     initModuleOpts() {
         return {
-            app: this.server,
+            server: this.server,
             web: this.web,
             drv: this.drv
         }

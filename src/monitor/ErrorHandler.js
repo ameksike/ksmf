@@ -35,10 +35,11 @@ class ErrorHandler {
     /**
      * @description Set options on Initialize Configuration Event 
      * @param {Object} cfg 
+     * @param {Object} cfg 
      */
-    onInitConfig(cfg) {
+    onInitConfig(cfg, app) {
         this.logger = this.helper?.get("logger") || this.logger;
-        this.app = this.helper?.get("app") || this.app;
+        this.app = app || this.helper?.get("app") || this.app;
         this.init();
     }
 

@@ -17,7 +17,8 @@ module.exports = {
         Controller: require('./src/app/Controller'),
         Module: require('./src/app/Module'),
         Utl: require('./src/app/Utl'),
-        Url: require('./src/app/Url')
+        Url: require('./src/app/Url'),
+        Dir: require('./src/app/Dir')
     },
     monitor: {
         Manager: require('./src/monitor/Manager'),

@@ -7,6 +7,7 @@ export declare namespace app {
     let Module: typeof import("./src/app/Module");
     let Utl: typeof import("./src/app/Utl");
     let Url: typeof import("./src/app/Url");
+    let Dir: typeof import("./src/app/Dir");
 }
 export declare namespace monitor {
     let Manager: typeof import("./src/monitor/Manager");

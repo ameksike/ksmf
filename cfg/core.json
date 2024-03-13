@@ -1,47 +1,52 @@
 {
   "default": {
     "envkey": "",
-    "port": 3005,
+    "port": 3003,
     "host": "localhost",
     "protocol": "http",
-    "prefix": "/api/v1",
+    "prefix": "",
     "import": {
-      "db": "cfg/db.js",
-      "log": "cfg/log.json",
-      "helper": "cfg/ioc.json",
-      "module": "cfg/module.json",
-      "constant": "cfg/constant.json"
+      "db": "cfg/core.db.js",
+      "log": "cfg/core.log.json",
+      "helper": "cfg/core.ioc.json"
+    },
+    "module": {
+      "load": [],
+      "mode": "dev"
     },
     "doc": {
       "url": "/api/v1/doc",
       "src": "cfg/doc.json"
     },
     "cors": {
-      "allowed": ["https://app.forestadmin.com"]
+      "allowed": [
+        "https://app.forestadmin.com"
+      ]
     },
     "cookie": {
       "active": true
     },
     "session": {
-      "name": "tata"
+      "name": "_ksmf_"
     },
     "fingerprint": {
       "active": true
     },
     "event": {
       "onInitConfig": [
-        "logger.wrapper",
-        "error.wrapper",
-        "dao.wrapper",
-        "doc.wrapper"
+        "plugin.logger",
+        "plugin.monitor",
+        "plugin.error",
+        "plugin.doc",
+        "plugin.sequelize"
       ],
-      "onInitModules": ["dao.wrapper"],
-      "onLoadModule": ["dao.wrapper", "doc.wrapper"],
-      "onLoadedModules": ["dao.wrapper", "ksmf.forestadmin.wrapper"],
-      "onInitApp": ["logger.wrapper"],
-      "onInitCompleted": ["doc.wrapper"],
-      "onStart": ["monitor.wrapper"],
-      "onError": ["monitor.wrapper"]
+      "onInitModules": [],
+      "onLoadModule": [],
+      "onLoadedModules": [],
+      "onInitApp": [],
+      "onInitCompleted": [],
+      "onStart": [],
+      "onError": []
     }
   }
 }

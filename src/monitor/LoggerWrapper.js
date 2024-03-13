@@ -25,21 +25,25 @@ class LoggerWrapper {
     /**
      * @description Set options on Initialize Configuration Event 
      * @param {Object} cfg 
+     * @param {Object} app 
      */
-    onInitConfig(cfg) {
+    onInitConfig(cfg, app) {
         this.manager?.configure(cfg.srv?.log);
         const logger = this.manager?.build();
-        logger && this.helper?.set(logger, 'logger');
+        // logger && this.helper?.set(logger, 'logger');
+        this.app = app || this.helper?.get('app');
+        logger && this.app?.register(logger, 'logger');
+        this.app?.subscribe(this, 'onInitApp');
     }
 
     /**
      * @description Set options on Initialize App Event 
-     * @param {Object} web 
+     * @param {Object} server 
      */
-    onInitApp(web) {
+    onInitApp(server) {
         const logger = this.helper?.get('logger');
         (logger?.trackOutbound instanceof Function) && logger.trackOutbound();
-        web && (logger?.trackInbound instanceof Function) && web.use(logger.trackInbound());
+        server.web.use instanceof Function && (logger?.trackInbound instanceof Function) && server.web.use(logger.trackInbound());
     }
 }
 module.exports = LoggerWrapper;
