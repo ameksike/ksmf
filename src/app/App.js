@@ -45,7 +45,7 @@ class App {
 
     /**
      * @description initialize library
-     * @param {Object} [option]
+     * @param {Object} [option] 
      * @param {String} [option.path] project root path 
      * @param {Object} [option.cfg] configuration options 
      * @param {Object} [option.helper] driver to manage plugins  
@@ -55,7 +55,7 @@ class App {
      **/
     constructor(option = null) {
         this.mod = option?.mod || [];
-        this.cfg = { srv: option?.cfg || null };
+        this.cfg = { srv: option?.cfg };
         this.path = _path.resolve(option?.path || '../../../../');
         this.helper = new KsDp.integration.IoC();
         this.event = new KsDp.behavioral.Observer();
@@ -159,11 +159,12 @@ class App {
         dotenv.config();
         const env = process.env || {};
         const eid = env["NODE_ENV"] || 'development';
+        const loc = this.config.load('cfg/core.json', { dir: _path.resolve(__dirname, '../../'), id: eid });
         const srv = options?.config || this.cfg?.srv || this.config.load('cfg/core.json', { dir: this.path, id: eid });
         const pac = this.config.load(_path.join(this.path, 'package.json'));
         this.cfg.env = env;
         this.cfg.eid = eid;
-        this.cfg.srv = srv;
+        this.cfg.srv = { ...loc, ...srv };
         this.cfg.path = this.path;
         this.cfg.pack = pac;
     }
@@ -200,11 +201,12 @@ class App {
      */
     initEvents() {
         for (let event in this.cfg.srv.event) {
-            const eventList = this.cfg.srv.event[event];
+            let eventList = this.cfg.srv.event[event];
             for (let elm in eventList) {
-                const subscriber = eventList[elm];
-                if (this.event && this.event.add instanceof Function) {
-                    this.event.add(this.helper.get(subscriber), event, "ksmf");
+                let subscriber = eventList[elm];
+                if (subscriber && this.event?.add instanceof Function) {
+                    let handler = this.helper.get(subscriber);
+                    handler && this.event.add(handler, event, "ksmf");
                 }
             }
         }
@@ -235,7 +237,7 @@ class App {
         const name = (typeof (item) === 'string') ? item : item.name;
         const options = {
             // ... EXPRESS APP
-            frm: this,
+            app: this,
             // ... extraoptions
             ...this.initModuleOpts(),
             // ... DATA ACCESS Object 

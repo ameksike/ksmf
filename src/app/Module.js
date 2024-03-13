@@ -14,6 +14,11 @@ class Module {
     helper = null;
 
     /**
+     * @type {Object|null}
+     */
+    app = null;
+
+    /**
      * @type {Console|null}
      */
     logger = null;
@@ -47,6 +52,7 @@ class Module {
      * @param {Object} [payload.drv]
      * @param {Object} [payload.opt] 
      * @param {Object} [payload.rest] 
+     * @param {Object} [payload.server] 
      * @param {Object} [payload.routes] 
      * @param {Object} [payload.prefix] 
      * @param {Object} [payload.middleware] 
@@ -54,9 +60,10 @@ class Module {
      */
     configure(payload) {
         this.app = payload?.app || this.app || null;
+        this.opt = payload?.opt || this.opt || null;
+
         this.web = payload?.web || this.web || null;
         this.drv = payload?.drv || this.drv || null;
-        this.opt = payload?.opt || this.opt || null;
 
         this.name = this.opt?.name || "";
         this.prefix = payload?.prefix || payload?.opt?.prefix || "/" + this.name;
@@ -119,18 +126,18 @@ class Module {
      * @param {String} [opt.path]
      */
     initRouterWeb(opt) {
-        if (!opt?.action || !this.app || !this.helper || typeof (this.app[opt.method]) !== 'function') return;
+        if (typeof (this.app?.server?.set) !== 'function') return;
         // ... load controller 
         const _locator = this.getLocator(opt);
         const _prefix = _locator?.route || opt?.route;
-        const _controller = this.helper.get(_locator);
+        const _controller = this.getController(_locator);
         // ... define routes  
-        this.app.set({
+        this.app.server.set({
             method: opt.method,
             route: _prefix,
             middlewares: this.getMiddlewareList(_controller, opt) || [],
             handler: (req, res, next) => {
-                const _action = _controller[opt.action];
+                const _action = _controller[opt?.action || opt?.method];
                 if (_action instanceof Function) {
                     _action.apply(_controller, [req, res, next]);
                 }
@@ -146,78 +153,78 @@ class Module {
      * @param {String} [opt.path]
      */
     initRouterREST(opt) {
-        if (!this.app || !this.helper) {
+        if (!this.helper || typeof (this.app?.server?.set) !== 'function') {
             return null;
         }
         // ... load controller 
         const _locator = this.getLocator(opt);
         const _prefix = _locator?.route || opt?.route;
-        const _controller = this.helper.get(_locator);
+        const _controller = this.getController(_locator);
         if (!_controller) return null;
         // ... define route select
-        this.app.set({
+        this.app?.server.set({
             method: 'get',
             route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             middlewares: this.getMiddlewareList(_controller, opt, 'select') || [],
             handler: (req, res, next) => _controller.select(req, res, next)
         });
         // ... define route clone
-        this.app.set({
+        this.app?.server.set({
             method: 'post',
             route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             middlewares: this.getMiddlewareList(_controller, opt, 'clone') || [],
             handler: (req, res, next) => _controller.clone(req, res, next)
         });
         // ... define route update
-        this.app.set({
+        this.app?.server.set({
             method: 'put',
             route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             middlewares: this.getMiddlewareList(_controller, opt, 'update') || [],
             handler: (req, res, next) => _controller.update(req, res, next)
         });
-        this.app.set({
+        this.app?.server.set({
             method: 'patch',
             route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             middlewares: this.getMiddlewareList(_controller, opt, 'update') || [],
             handler: (req, res, next) => _controller.update(req, res, next)
         });
         // ... define route delete
-        this.app.set({
+        this.app?.server.set({
             method: 'delete',
             route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             middlewares: this.getMiddlewareList(_controller, opt, 'delete') || [],
             handler: (req, res, next) => _controller.delete(req, res, next)
         });
         // ... define route option
-        this.app.set({
+        this.app?.server.set({
             method: 'options',
             route: (_prefix + '/:id').replace(/[\/\/]+/g, '/'),
             middlewares: this.getMiddlewareList(_controller, opt, 'option') || [],
             handler: (req, res, next) => _controller.option(req, res, next)
         });
         // ... define route list 
-        this.app.set({
+        this.app?.server.set({
             method: 'get',
             route: _prefix,
             middlewares: this.getMiddlewareList(_controller, opt, 'list') || [],
             handler: (req, res, next) => _controller.list(req, res, next)
         });
         // ... define route insert
-        this.app.set({
+        this.app?.server.set({
             method: 'post',
             route: _prefix,
             middlewares: this.getMiddlewareList(_controller, opt, 'insert') || [],
             handler: (req, res, next) => _controller.insert(req, res, next)
         });
         // ... define route options
-        this.app.set({
+        this.app?.server.set({
             method: 'options',
             route: _prefix,
             middlewares: this.getMiddlewareList(_controller, opt, 'options') || [],
             handler: (req, res, next) => _controller.options(req, res, next)
         });
         // ... define route clean
-        this.app.set({
+        this.app?.server.set({
             method: 'delete',
             route: _prefix,
             middlewares: this.getMiddlewareList(_controller, opt, 'clean') || [],
@@ -230,12 +237,13 @@ class Module {
      * @param {Object} opt
      * @param {String} [opt.route]
      * @param {String} [opt.name]
+     * @param {String} [opt.action]
      * @param {String} [opt.controller]
      * @param {String} [opt.path]
-     * @param {String} [opt.strict] 
-     * @param {Object} [opt.params] 
+     * @param {Object} [opt.params]
      * @param {Object} [opt.options] 
      * @param {Object} [opt.dependency] 
+     * @param {Boolean} [opt.strict] 
      * @returns {Object} locator
      */
     getLocator(opt) {
@@ -248,6 +256,9 @@ class Module {
             path: opt.path || 'controller',
             module: this.name,
             moduleType: this.type || this._?.type,
+            delegate: opt.delegate || null,
+            handler: opt.handler || null,
+            method: opt.method || null,
             options: {
                 opt: this.opt,
                 module: this.name,
@@ -260,6 +271,23 @@ class Module {
                 ...opt.dependency
             }
         }
+    }
+
+    /**
+     * @description get a controller instance 
+     * @param {Object} locator 
+     * @returns {Object} controller 
+     */
+    getController(locator) {
+        if (locator?.delegate && typeof (locator?.delegate) === "object") {
+            return locator?.delegate;
+        }
+        if (locator?.handler && typeof (locator?.handler) === "function") {
+            return {
+                [locator.action || locator.method]: locator?.handler
+            }
+        }
+        return this.helper?.get instanceof Function && this.helper.get(locator);
     }
 
     /**
@@ -279,7 +307,7 @@ class Module {
                 );
             }
             const middlewareModule = this.initMiddlewareList(this.middleware);
-            const middlewareController = this.initMiddlewareList(controller.middleware);
+            const middlewareController = this.initMiddlewareList(controller?.middleware);
             const middlewareRoute = opt.middleware && opt.middleware instanceof Array ? opt.middleware : [];
             this.drv?.json instanceof Function && middlewareModule.global.push(this.drv.json());
             return [
