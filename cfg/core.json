@@ -1,7 +1,7 @@
 {
   "default": {
     "envkey": "",
-    "port": 3005,
+    "port": 3003,
     "host": "localhost",
     "protocol": "http",
     "prefix": "",
