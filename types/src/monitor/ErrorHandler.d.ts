@@ -25,8 +25,9 @@ declare class ErrorHandler {
     /**
      * @description Set options on Initialize Configuration Event
      * @param {Object} cfg
+     * @param {Object} cfg
      */
-    onInitConfig(cfg: any): void;
+    onInitConfig(cfg: any, app: any): void;
     init(): void;
     onUncaughtException(error: any, origin: any): void;
     onUncaughtExceptionMonitor(error: any, origin: any): void;

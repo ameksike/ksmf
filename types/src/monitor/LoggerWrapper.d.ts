@@ -23,11 +23,13 @@ declare class LoggerWrapper {
     /**
      * @description Set options on Initialize Configuration Event
      * @param {Object} cfg
+     * @param {Object} app
      */
-    onInitConfig(cfg: any): void;
+    onInitConfig(cfg: any, app: any): void;
+    app: any;
     /**
      * @description Set options on Initialize App Event
-     * @param {Object} web
+     * @param {Object} server
      */
-    onInitApp(web: any): void;
+    onInitApp(server: any): void;
 }

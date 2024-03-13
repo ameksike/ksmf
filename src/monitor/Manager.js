@@ -30,6 +30,17 @@ class Manager {
     }
 
     /**
+     * @description Set options on Initialize Configuration Event 
+     * @param {Object} cfg 
+     * @param {Object} app 
+     */
+    onInitConfig(cfg, app) {
+        this.app = app || this.helper?.get('app');
+        this.app?.subscribe(this, 'onStart');
+        this.app?.subscribe(this, 'onError');
+    }
+
+    /**
      * @description KsMf Wrapper
      * @param {Object} info 
      */

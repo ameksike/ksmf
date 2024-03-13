@@ -35,29 +35,18 @@
     "event": {
       "onInitConfig": [
         "plugin.logger",
+        "plugin.monitor",
         "plugin.error",
         "plugin.doc",
         "plugin.sequelize"
       ],
       "onInitModules": [],
-      "onLoadModule": [
-        "plugin.doc"
-      ],
-      "onLoadedModules": [
-        "plugin.forestadmin"
-      ],
-      "onInitApp": [
-        "plugin.logger"
-      ],
-      "onInitCompleted": [
-        "plugin.doc"
-      ],
-      "onStart": [
-        "plugin.monitor"
-      ],
-      "onError": [
-        "plugin.monitor"
-      ]
+      "onLoadModule": [],
+      "onLoadedModules": [],
+      "onInitApp": [],
+      "onInitCompleted": [],
+      "onStart": [],
+      "onError": []
     }
   }
 }

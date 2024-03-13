@@ -140,7 +140,15 @@ class App {
      * @returns {App} self
      */
     emit(event, params = [], scope = 'ksmf') {
-        this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+        try {
+            this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+        }
+        catch (error) {
+            this.logger?.error({
+                src: 'KsMf:App:emit',
+                error
+            });
+        }
         return this;
     }
 
@@ -173,6 +181,7 @@ class App {
         this.cfg.env = env;
         this.cfg.eid = eid;
         this.cfg.srv = { ...loc, ...srv };
+        this.cfg.srv.helper = { ...loc.helper, ...srv?.helper };
         this.cfg.path = this.path;
         this.cfg.pack = pac;
     }
@@ -213,8 +222,16 @@ class App {
             for (let elm in eventList) {
                 let subscriber = eventList[elm];
                 if (subscriber && this.event?.add instanceof Function) {
-                    let handler = this.helper.get(subscriber);
-                    handler && this.event.add(handler, event, "ksmf");
+                    try {
+                        let handler = this.helper.get(subscriber);
+                        handler && this.event.add(handler, event, "ksmf");
+                    }
+                    catch (error) {
+                        this.logger?.error({
+                            src: 'KsMf:App:initEvents',
+                            error
+                        })
+                    }
                 }
             }
         }
