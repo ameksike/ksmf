@@ -9,15 +9,20 @@
       "db": "cfg/db.js",
       "log": "cfg/log.json",
       "helper": "cfg/ioc.json",
-      "module": "cfg/module.json",
       "constant": "cfg/constant.json"
+    },
+    "module": {
+      "load": [],
+      "mode": "dev"
     },
     "doc": {
       "url": "/api/v1/doc",
       "src": "cfg/doc.json"
     },
     "cors": {
-      "allowed": ["https://app.forestadmin.com"]
+      "allowed": [
+        "https://app.forestadmin.com"
+      ]
     },
     "cookie": {
       "active": true
@@ -30,18 +35,31 @@
     },
     "event": {
       "onInitConfig": [
-        "logger.wrapper",
-        "error.wrapper",
-        "dao.wrapper",
-        "doc.wrapper"
+        "plugin.logger",
+        "plugin.error",
+        "plugin.doc",
+        "plugin.sequelize"
       ],
-      "onInitModules": ["dao.wrapper"],
-      "onLoadModule": ["dao.wrapper", "doc.wrapper"],
-      "onLoadedModules": ["dao.wrapper", "ksmf.forestadmin.wrapper"],
-      "onInitApp": ["logger.wrapper"],
-      "onInitCompleted": ["doc.wrapper"],
-      "onStart": ["monitor.wrapper"],
-      "onError": ["monitor.wrapper"]
+      "onInitModules": [
+      ],
+      "onLoadModule": [
+        "plugin.doc"
+      ],
+      "onLoadedModules": [
+        "plugin.forestadmin"
+      ],
+      "onInitApp": [
+        "plugin.logger"
+      ],
+      "onInitCompleted": [
+        "plugin.doc"
+      ],
+      "onStart": [
+        "plugin.monitor"
+      ],
+      "onError": [
+        "plugin.monitor"
+      ]
     }
   }
 }

@@ -11,34 +11,20 @@
       "helper": "helper"
     }
   },
-  "dao": {
-    "name": "ksmf-sequelize",
-    "type": "package",
-    "dependency": {
-      "helper": "helper"
-    }
-  },
-  "dao.wrapper": {
+  "plugin.sequelize": {
     "name": "ksmf-sequelize",
     "type": "lib",
     "params": {
-        "exclude": ["forest"],
-        "service": "rest"
+      "exclude": [
+        "forest"
+      ],
+      "service": "rest"
     },
-    "namespace": "cls.Wrapper",
     "dependency": {
       "helper": "helper"
     }
   },
-  "doc.wrapper": {
-    "name": "ksmf",
-    "type": "lib",
-    "namespace": "doc.Swagger",
-    "dependency": {
-      "helper": "helper"
-    }
-  },
-  "error.wrapper": {
+  "plugin.error": {
     "name": "ksmf",
     "type": "lib",
     "namespace": "monitor.Error",
@@ -46,7 +32,7 @@
       "helper": "helper"
     }
   },
-  "logger.wrapper": {
+  "plugin.logger": {
     "name": "ksmf",
     "type": "lib",
     "namespace": "monitor.LoggerWrapper",
@@ -66,7 +52,7 @@
       }
     }
   },
-  "monitor.wrapper": {
+  "plugin.monitor": {
     "name": "ksmf",
     "type": "lib",
     "namespace": "monitor.Manager",
@@ -74,10 +60,43 @@
       "helper": "helper"
     }
   },
-  "data.service": {
+  "plugin.data.service": {
     "name": "ksmf",
     "type": "lib",
     "namespace": "dao.DataService",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "plugin.forestadmin": {
+    "name": "ksmf-forestadmin",
+    "type": "lib",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "plugin.adminjs": {
+    "name": "ksmf-adminjs",
+    "type": "lib",
+    "dependency": {
+      "helper": "helper"
+    }
+  },
+  "plugin.cdm": {
+    "type": "raw",
+    "data": {
+      "model": {
+        "User": "User",
+        "Domain": "Domain",
+        "Credential": "Credential",
+        "CredentialState": "CredentialState"
+      }
+    }
+  },
+  "plugin.doc": {
+    "name": "ksmf",
+    "type": "lib",
+    "namespace": "doc.Swagger",
     "dependency": {
       "helper": "helper"
     }
