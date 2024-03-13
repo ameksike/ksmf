@@ -8,6 +8,7 @@ declare class App {
      * @param {Object} [option.helper] driver to manage plugins
      * @param {Object} [option.event]  driver to manage events
      * @param {Object} [option.config] driver to manage configurations
+     * @param {Object} [option.dir] driver to manage directories
      * @param {Array<any>} [option.mod] plugins/modules list
      **/
     constructor(option?: {
@@ -16,6 +17,7 @@ declare class App {
         helper?: any;
         event?: any;
         config?: any;
+        dir?: any;
         mod?: Array<any>;
     });
     /**
@@ -30,6 +32,10 @@ declare class App {
      * @type {Config|null}
      */
     config: Config | null;
+    /**
+     * @type {Dir|null}
+     */
+    dir: Dir | null;
     /**
      * @type {Console|null}
      */
@@ -123,7 +129,7 @@ declare class App {
     /**
      * @description load modules
      */
-    initModules(): this;
+    initModules(): Promise<this>;
     modules: any[];
     /**
      * @description initialize a module
@@ -144,3 +150,4 @@ declare class App {
     run(options?: import('../types').TAppConfig): Promise<void>;
 }
 import Config = require("./Config");
+import Dir = require("./Dir");

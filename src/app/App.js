@@ -10,6 +10,7 @@ const _path = require('path');
 const dotenv = require('dotenv');
 const KsDp = require('ksdp');
 const Config = require('./Config');
+const Dir = require('./Dir');
 
 class App {
 
@@ -27,6 +28,11 @@ class App {
      * @type {Config|null}
      */
     config = null;
+
+    /**
+     * @type {Dir|null}
+     */
+    dir = null;
 
     /**
      * @type {Console|null}
@@ -51,15 +57,17 @@ class App {
      * @param {Object} [option.helper] driver to manage plugins  
      * @param {Object} [option.event]  driver to manage events 
      * @param {Object} [option.config] driver to manage configurations
+     * @param {Object} [option.dir] driver to manage directories
      * @param {Array<any>} [option.mod] plugins/modules list 
      **/
     constructor(option = null) {
         this.mod = option?.mod || [];
         this.cfg = { srv: option?.cfg };
         this.path = _path.resolve(option?.path || '../../../../');
-        this.helper = new KsDp.integration.IoC();
-        this.event = new KsDp.behavioral.Observer();
-        this.config = new Config();
+        this.helper = option?.helper || new KsDp.integration.IoC();
+        this.event = option?.event || new KsDp.behavioral.Observer();
+        this.config = option?.config || new Config();
+        this.dir = option?.dir || new Dir();
     }
 
     /**
@@ -216,14 +224,21 @@ class App {
     /**
      * @description load modules 
      */
-    initModules() {
+    async initModules() {
         this.emit('onInitModules', [this.cfg.srv.module.load, this]);
         const modules = [];
+        const mode = this.cfg?.srv?.module?.mode;
         if (this.cfg?.srv?.module?.load) {
             this.cfg.srv.module.load.forEach(item => this.initModule(item, modules));
         }
-        if (this.cfg.srv.module.mode === "auto") {
-            
+        if (mode === "auto" || mode === "dev") {
+            const option = { watchRecursive: mode === "dev", readRecursive: false, onlyDir: true };
+            const modDir = _path.resolve(this.cfg?.srv?.module?.path || _path.join(this.path, 'src'));
+            await this.dir.on(modDir, (item) => {
+                if (item.name) {
+                    this.initModule(item.name, modules);
+                }
+            }, option);
         }
         this.emit('onLoadedModules', [modules, this]);
         this.modules = modules;
