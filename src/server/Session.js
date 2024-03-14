@@ -34,7 +34,7 @@ class SessionService extends ksdp.integration.Dip {
         super();
         this.logger = option?.logger || null;
         this.sessionKey = option?.sessionKey || this.sessionKey;
-        this.sessionKey = option?.authService || this.authService;
+        this.authService = option?.authService || this.authService;
     }
 
     /**
@@ -209,7 +209,7 @@ class SessionService extends ksdp.integration.Dip {
         const { req } = context || {};
         // get session 
         const sess = this.select(req, key) || {};
-        sess.access_token = this.getToken(req);
+        sess.access_token = sess.access_token || this.getToken(req);
 
         if (sess) {
             // register user
