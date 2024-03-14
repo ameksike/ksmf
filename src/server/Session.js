@@ -34,7 +34,7 @@ class SessionService extends ksdp.integration.Dip {
         super();
         this.logger = option?.logger || null;
         this.sessionKey = option?.sessionKey || this.sessionKey;
-        this.sessionKey = option?.authService || this.authService;
+        this.authService = option?.authService || this.authService;
     }
 
     /**
@@ -46,6 +46,9 @@ class SessionService extends ksdp.integration.Dip {
     init(app, option = null) {
         if (app?.initSession instanceof Function) {
             app?.initSession(option)
+        }
+        if (app?.web?.use instanceof Function && option?.middleware instanceof Function) {
+            app.web.use(option.middleware);
         }
         return this;
     }
@@ -73,10 +76,10 @@ class SessionService extends ksdp.integration.Dip {
 
     /**
      * @description wrapper to set options on Initialize App Event 
-     * @param {Object} web 
+     * @param {Object} server 
      */
-    onInitApp(web) {
-        this.init(web);
+    onInitApp(server) {
+        this.init(server);
     }
 
     /**
@@ -206,7 +209,7 @@ class SessionService extends ksdp.integration.Dip {
         const { req } = context || {};
         // get session 
         const sess = this.select(req, key) || {};
-        sess.access_token = this.getToken(req);
+        sess.access_token = sess.access_token || this.getToken(req);
 
         if (sess) {
             // register user
