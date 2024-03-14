@@ -1,7 +1,7 @@
 {
   "name": "ksmf",
   "version": "1.3.8",
-  "description": "Modular Microframework for create minimalistic web application or REST API",
+  "description": "Modular Microframework for create minimalistic CLI/Web application or REST API",
   "types": "types/index.d.ts",
   "exports": "./index.js",
   "main": "./index.js",
