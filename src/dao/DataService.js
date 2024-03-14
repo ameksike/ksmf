@@ -558,7 +558,13 @@ class DataService extends ksdp.integration.Dip {
         payload.mode = this.constant?.action?.create;
         target.limit = 1;
         const targetRow = await this.select(target, option);
-        payload.data = { targetRow, ...payload.data };
+        const contentRow = targetRow.dataValues || targetRow;
+        const keys = this.getPKs()
+        for (let key of keys) {
+            delete contentRow[key];
+        }
+        const content = payload?.data || payload;
+        payload.data = { ...contentRow, ...content };
         return this.save(payload, option);
     }
 
