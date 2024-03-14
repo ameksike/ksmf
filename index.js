@@ -26,7 +26,12 @@ module.exports = {
         Logger: require('./src/monitor/Logger'),
         LoggerManager: require('./src/monitor/LoggerManager'),
         LoggerSimple: require('./src/monitor/LoggerSimple'),
-        LoggerWrapper: require('./src/monitor/LoggerWrapper')
+        LoggerWrapper: require('./src/monitor/LoggerWrapper'),
+        /**
+         * @description Session entry to keep backward compatibility
+         * @deprecated
+         */
+        Session: require('./src/server/Session')
     },
     server: {
         Base: require('./src/server/BaseServer'),

@@ -16,13 +16,15 @@ export declare namespace monitor {
     let LoggerManager: typeof import("./src/monitor/LoggerManager");
     let LoggerSimple: typeof import("./src/monitor/LoggerSimple");
     let LoggerWrapper: typeof import("./src/monitor/LoggerWrapper");
+    let Session: typeof import("./src/server/Session");
 }
 export declare namespace server {
     let Base_1: typeof import("./src/server/BaseServer");
     export { Base_1 as Base };
     export let Request: typeof import("./src/server/BaseRequest");
     export let Response: typeof import("./src/server/BaseResponse");
-    export let Session: typeof import("./src/server/Session");
+    let Session_1: typeof import("./src/server/Session");
+    export { Session_1 as Session };
 }
 export declare namespace proxy {
     let App: typeof import("./src/proxy/ProxyApp");

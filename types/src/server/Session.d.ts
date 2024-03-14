@@ -39,9 +39,9 @@ declare class SessionService extends SessionService_base {
     getConfig(option: any): any;
     /**
      * @description wrapper to set options on Initialize App Event
-     * @param {Object} web
+     * @param {Object} server
      */
-    onInitApp(web: any): void;
+    onInitApp(server: any): void;
     /**
      * @description get request token
      * @param {Object} req

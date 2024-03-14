@@ -47,6 +47,9 @@ class SessionService extends ksdp.integration.Dip {
         if (app?.initSession instanceof Function) {
             app?.initSession(option)
         }
+        if (app?.web?.use instanceof Function && option?.middleware instanceof Function) {
+            app.web.use(option.middleware);
+        }
         return this;
     }
 
@@ -73,10 +76,10 @@ class SessionService extends ksdp.integration.Dip {
 
     /**
      * @description wrapper to set options on Initialize App Event 
-     * @param {Object} web 
+     * @param {Object} server 
      */
-    onInitApp(web) {
-        this.init(web);
+    onInitApp(server) {
+        this.init(server);
     }
 
     /**
