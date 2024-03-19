@@ -148,20 +148,24 @@ class LoggerManager {
                         src: "KsMf:Logger:Track:Redirect",
                         data
                     }));
-                    this.wrap(res, "send", (data) => obj?.debug && obj.debug({
-                        flow: req.flow,
-                        level: _this.level.debug,
-                        src: "KsMf:Logger:Track:Response",
-                        data: KsCryp.decode(data, "json")
-                    }));
-                    this.wrap(res, "write", (data) => obj?.debug && obj.debug({
-                        flow: req.flow,
-                        level: _this.level.debug,
-                        src: "KsMf:Logger:Track:Response",
-                        data: KsCryp.decode(data, "json")
-                    }));
+                    this.wrap(res, "write", (data) => {
+                        !(data instanceof Buffer) && obj?.debug instanceof Function && obj.debug({
+                            flow: req.flow,
+                            level: _this.level.debug,
+                            src: "KsMf:Logger:Track:write:Response",
+                            data: KsCryp.decode(data, "json")
+                        })
+                    });
+                    this.wrap(res, "send", (data) => {
+                        typeof data === "string" && obj?.debug instanceof Function && obj.debug({
+                            flow: req.flow,
+                            level: _this.level.debug,
+                            src: "KsMf:Logger:Track:Response",
+                            data: KsCryp.decode(data, "json")
+                        })
+                    });
                     this.wrap(res, "end", function (chunk, encoding) {
-                        const location = res?.getHeader && res.getHeader("Location");
+                        const location = res?.getHeader instanceof Function && res.getHeader("Location");
                         location && obj?.debug && obj.debug({
                             flow: req.flow,
                             level: _this.level.debug,

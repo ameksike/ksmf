@@ -12,6 +12,7 @@ declare class BaseServer extends BaseServer_base {
      * @param {Object} [payload.cookie]
      * @param {Object} [payload.static]
      * @param {Object} [payload.session]
+     * @param {Boolean} [payload.configured]
      */
     constructor(payload?: {
         web?: any;
@@ -22,6 +23,7 @@ declare class BaseServer extends BaseServer_base {
         cookie?: any;
         static?: any;
         session?: any;
+        configured?: boolean;
     });
     /**
      * @type {Object|null}
@@ -59,6 +61,10 @@ declare class BaseServer extends BaseServer_base {
      * @type {Object|null}
      */
     drv: any | null;
+    /**
+     * @type {Boolean}
+     */
+    configured: boolean;
     /**
      * @description configure the web server
      * @param {Object} [payload]

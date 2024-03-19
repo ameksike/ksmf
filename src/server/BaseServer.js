@@ -48,6 +48,11 @@ class BaseServer extends ksdp.integration.Dip {
     drv = null;
 
     /**
+     * @type {Boolean}
+     */
+    configured = null;
+
+    /**
      * @description configure the web server
      * @param {Object} [payload]
      * @param {Object} [payload.web]
@@ -58,6 +63,7 @@ class BaseServer extends ksdp.integration.Dip {
      * @param {Object} [payload.cookie]
      * @param {Object} [payload.static]
      * @param {Object} [payload.session]
+     * @param {Boolean} [payload.configured]
      */
     constructor(payload = undefined) {
         super();
@@ -69,6 +75,7 @@ class BaseServer extends ksdp.integration.Dip {
         this.cookie = payload?.cookie || this.cookie;
         this.static = payload?.static || this.static;
         this.session = payload?.session || this.session;
+        this.configured = payload?.configured ?? false;
     }
 
     /**
@@ -93,6 +100,7 @@ class BaseServer extends ksdp.integration.Dip {
         this.cookie = payload?.cookie || this.cookie;
         this.static = payload?.static || this.static;
         this.session = payload?.session || this.session;
+        this.configured = true;
         return Promise.resolve(this);
     }
 

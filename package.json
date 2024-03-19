@@ -1,6 +1,6 @@
 {
   "name": "ksmf",
-  "version": "1.3.8",
+  "version": "1.3.9",
   "description": "Modular Microframework for create minimalistic CLI/Web application or REST API",
   "types": "types/index.d.ts",
   "exports": "./index.js",
@@ -49,7 +49,7 @@
   "dependencies": {
     "dotenv": "^16.4.1",
     "kscryp": "^1.0.18",
-    "ksdp": "^1.3.2",
+    "ksdp": "^1.3.4",
     "kstpl": "^1.0.2"
   },
   "devDependencies": {
