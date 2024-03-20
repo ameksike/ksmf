@@ -315,6 +315,7 @@ declare class DataService extends DataService_base {
      * @param {Object|String|Number} [target.query]
      * @param {Array} [target.attributes]
      * @param {Object} [target.include]
+     * @param {Array<String>} [target.exclude]
      * @param {Object} [target.where]
      * @param {Number} [target.limit]
      * @param {Object} [payload]
@@ -330,6 +331,7 @@ declare class DataService extends DataService_base {
         query?: any | string | number;
         attributes?: any[];
         include?: any;
+        exclude?: Array<string>;
         where?: any;
         limit?: number;
     }, payload?: {

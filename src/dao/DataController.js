@@ -75,6 +75,7 @@ class DataController extends Controller {
     async list(req, res) {
         const query = this.srv?.extract(req.query);
         try {
+            query.flow = req.flow;
             const data = await this.srv.select(query);
             res.json(data);
         }
@@ -98,6 +99,7 @@ class DataController extends Controller {
     async select(req, res) {
         const params = this.srv?.extract(req.query);
         params.query.id = req.params['id'];
+        params.flow = req.flow;
         try {
             const data = await this.srv.select(params);
             res.json(data);
@@ -182,6 +184,7 @@ class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     async clone(req, res) {
+        const config = { flow: req.flow };
         const params = this.srv?.extract(req.query);
         const keypid = this.srv.getPKs()[0] || "id";
         const target = {
@@ -191,7 +194,7 @@ class DataController extends Controller {
         }
         params.data = req.body;
         try {
-            const data = await this.srv.clone(target, params);
+            const data = await this.srv.clone(target, params, config);
             this.logger?.info({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:clone",
