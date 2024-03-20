@@ -542,6 +542,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object|String|Number} [target.query] 
      * @param {Array} [target.attributes] 
      * @param {Object} [target.include] 
+     * @param {Array<String>} [target.exclude] 
      * @param {Object} [target.where] 
      * @param {Number} [target.limit] 
      * @param {Object} [payload] 
@@ -562,6 +563,11 @@ class DataService extends ksdp.integration.Dip {
         const keys = this.getPKs()
         for (let key of keys) {
             delete contentRow[key];
+        }
+        if (Array.isArray(target?.exclude)) {
+            for (let i in target.exclude) {
+                delete contentRow[target.exclude[i]];
+            }
         }
         const content = payload?.data || payload;
         payload.data = { ...contentRow, ...content };
