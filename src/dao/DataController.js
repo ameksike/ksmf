@@ -193,6 +193,7 @@ class DataController extends Controller {
             }
         }
         params.data = req.body;
+        params?.strict && (config.strict = params.strict);
         try {
             const data = await this.srv.clone(target, params, config);
             this.logger?.info({
