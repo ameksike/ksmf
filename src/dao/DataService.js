@@ -557,16 +557,30 @@ class DataService extends ksdp.integration.Dip {
     async clone(target, payload, option) {
         payload = payload || {};
         payload.mode = this.constant?.action?.create;
-        target.limit = 1;
-        const targetRow = await this.select(target, option);
-        const contentRow = targetRow.dataValues || targetRow;
-        const keys = this.getPKs()
-        for (let key of keys) {
-            delete contentRow[key];
+        target && (target.limit = 1);
+        let targetRow = target ? await this.select(target, option) : null;
+        let contentRow = targetRow?.dataValues || targetRow;
+        if (!contentRow && option?.strict) {
+            const logger = this.getLogger();
+            logger?.error({
+                flow: option?.flow,
+                src: "KsMf:DAO:" + this.modelName + ":clone",
+                data: payload,
+                error: { message: "Target not found" },
+            });
+            return null;
+        } else {
+            contentRow = {};
         }
-        if (Array.isArray(target?.exclude)) {
-            for (let i in target.exclude) {
-                delete contentRow[target.exclude[i]];
+        if (targetRow) {
+            let keys = this.getPKs()
+            for (let key of keys) {
+                delete contentRow[key];
+            }
+            if (Array.isArray(target?.exclude)) {
+                for (let i in target.exclude) {
+                    delete contentRow[target.exclude[i]];
+                }
             }
         }
         const content = payload?.data || payload;
