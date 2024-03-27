@@ -570,7 +570,7 @@ class DataService extends ksdp.integration.Dip {
             });
             return null;
         } else {
-            contentRow = {};
+            contentRow = contentRow || {};
         }
         if (targetRow) {
             let keys = this.getPKs()
