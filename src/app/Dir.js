@@ -193,7 +193,7 @@ class Dir {
             }
             return { data, directory, event: 'read_end' };
         } catch (error) {
-            this.logger?.error({
+            this.logger?.error instanceof Function && this.logger.error({
                 flow: Date.now() + '00',
                 src: "KsMf:Dir:read",
                 error,
