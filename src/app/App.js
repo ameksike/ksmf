@@ -144,7 +144,7 @@ class App {
             this.event?.emit instanceof Function && this.event.emit(event, scope, params);
         }
         catch (error) {
-            this.logger?.error({
+            this.logger?.error instanceof Function && this.logger.error({
                 src: 'KsMf:App:emit',
                 error
             });
@@ -230,7 +230,7 @@ class App {
                         this.logger?.error({
                             src: 'KsMf:App:initEvents',
                             error
-                        })
+                        });
                     }
                 }
             }
@@ -253,7 +253,15 @@ class App {
             const modDir = _path.resolve(this.cfg?.srv?.module?.path || _path.join(this.path, 'src'));
             await this.dir.on(modDir, (item) => {
                 if (item.name) {
-                    this.initModule(item.name, modules);
+                    try {
+                        this.initModule(item.name, modules);
+                    }
+                    catch (error) {
+                        this.logger?.error({
+                            src: 'KsMf:App:initModule',
+                            error
+                        });
+                    }
                 }
             }, option);
         }
@@ -319,6 +327,7 @@ class App {
         }
         if (obj) {
             modules?.push(obj);
+            this.initModuleSetup(obj, item);
             this.emit('onLoadModule', [obj, name, _path.join(this.cfg.srv.module.path, name, "model"), this]);
         }
         return obj;
@@ -330,6 +339,16 @@ class App {
      */
     initModuleOpts() {
         return {};
+    }
+
+    /**
+     * @description initialize the module config
+     * @param {Object} module 
+     * @param {Object} option 
+     * @returns {Object} module
+     */
+    initModuleSetup(module, option) {
+        return module;
     }
 
     /**

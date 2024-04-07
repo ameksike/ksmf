@@ -181,6 +181,27 @@ class AppWEB extends App {
     }
 
     /**
+     * @description initialize the module config
+     * @param {Object} module 
+     * @param {Object} option 
+     * @returns {Object} module
+     */
+    initModuleSetup(module, option) {
+        if (module?.listen instanceof Function) {
+            this.server?.set({
+                route: '/' + option?.name,
+                handler: (req, res, next) => module.listen(req, res, next)
+            });
+        } else if (module instanceof Function) {
+            this.server?.set({
+                route: '/' + option?.name,
+                handler: (req, res, next) => module(req, res, next)
+            });
+        }
+        return module;
+    }
+
+    /**
      * @description initialize middleware applications
      * @param {import('../types').TAppConfig} [options]
      */
