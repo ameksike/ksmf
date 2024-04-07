@@ -49,7 +49,7 @@
   "dependencies": {
     "dotenv": "^16.4.1",
     "kscryp": "^1.0.18",
-    "ksdp": "^1.3.4",
+    "ksdp": "^1.4.2",
     "kstpl": "^1.0.2"
   },
   "devDependencies": {
