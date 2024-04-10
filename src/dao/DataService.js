@@ -172,6 +172,8 @@ class DataService extends ksdp.integration.Dip {
      */
     async select(payload, opt) {
         try {
+            opt = opt || {};
+            payload = payload || {};
             payload.tmp = {};
 
             const model = this.getModel();
@@ -434,6 +436,7 @@ class DataService extends ksdp.integration.Dip {
      */
     async query(payload = {}) {
         try {
+            payload = payload || {};
             const driver = this.getDriver();
             let sql = payload.sql.replace(/:table/ig, this.getTableName());
             let params = payload.params || {};
@@ -514,6 +517,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object} row
      */
     insert(payload, opt) {
+        payload = payload || {};
         payload.mode = this.constant?.action?.create;
         return this.save(payload, opt);
     }
@@ -532,6 +536,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object} row
      */
     update(payload, opt) {
+        payload = payload || {};
         payload.mode = this.constant?.action?.update;
         return this.save(payload, opt);
     }
