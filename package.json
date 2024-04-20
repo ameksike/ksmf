@@ -47,10 +47,10 @@
   },
   "homepage": "https://github.com/ameksike/ksmf/wiki",
   "dependencies": {
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.5",
     "kscryp": "^1.0.18",
     "ksdp": "^1.4.2",
-    "kstpl": "^1.0.2"
+    "kstpl": "^1.1.0"
   },
   "devDependencies": {
     "jest": "^29.7.0"
