@@ -9,8 +9,8 @@
 const _path = require('path');
 const dotenv = require('dotenv');
 const KsDp = require('ksdp');
-const Config = require('./Config');
-const Dir = require('./Dir');
+const Config = require('../common/Config');
+const Dir = require('../common/Dir');
 
 class App {
 
@@ -20,19 +20,19 @@ class App {
     helper;
 
     /**
-     * @type {import('ksdp').behavioral.Observer}
+     * @type {import('ksdp').behavioral.Emitter}
      */
-    event;
+    srvEvent;
 
     /**
      * @type {Config|null}
      */
-    config = null;
+    srvConfig = null;
 
     /**
      * @type {Dir|null}
      */
-    dir = null;
+    srvDir = null;
 
     /**
      * @type {Console|null}
@@ -53,21 +53,38 @@ class App {
      * @description initialize library
      * @param {Object} [option] 
      * @param {String} [option.path] project root path 
-     * @param {Object} [option.cfg] configuration options 
-     * @param {Object} [option.helper] driver to manage plugins  
-     * @param {Object} [option.event]  driver to manage events 
-     * @param {Object} [option.config] driver to manage configurations
-     * @param {Object} [option.dir] driver to manage directories
+     * @param {Object} [option.config] configuration options 
+     * @param {Object} [option.srvHelper] driver to manage plugins  
+     * @param {Object} [option.srvEvent]  driver to manage events 
+     * @param {Object} [option.srvConfig] driver to manage configurations
+     * @param {Object} [option.srvDir] driver to manage directories
      * @param {Array<any>} [option.mod] plugins/modules list 
      **/
     constructor(option = null) {
         this.mod = option?.mod || [];
-        this.cfg = { srv: option?.cfg };
+        this.cfg = { srv: option?.config };
         this.path = _path.resolve(option?.path || '../../../../');
-        this.helper = option?.helper || new KsDp.integration.IoC();
-        this.event = option?.event || new KsDp.behavioral.Observer();
-        this.config = option?.config || new Config();
-        this.dir = option?.dir || new Dir();
+
+        this.helper = option?.srvHelper || new KsDp.integration.IoC.cls.Async();
+        this.srvEvent = option?.srvEvent || new KsDp.behavioral.Emitter();
+        this.srvConfig = option?.srvConfig || new Config();
+        this.srvDir = option?.srvDir || new Dir();
+    }
+
+    /**
+     * @description start application 
+     * @param {import('../types').TAppConfig} [options] 
+     */
+    async start(options = null) {
+        this.emit('onStart', [options, this]);
+    }
+
+    /**
+     * @description stop application 
+     * @param {import('../types').TAppConfig} [options] 
+     */
+    async stop(options = null) {
+        this.emit('onStop', [options, this]);
     }
 
     /**
@@ -111,8 +128,8 @@ class App {
      * @param {Array} [option.rows]
      * @return {App} self
      */
-    subscribe(subscriber, event, option = null, scope = 'ksmf') {
-        this.event?.subscribe(subscriber, event, scope, option);
+    subscribe(subscriber, event, option = null) {
+        this.srvEvent?.subscribe(subscriber, event, option);
         return this;
     }
 
@@ -125,10 +142,11 @@ class App {
      * @param {String} [option.scope] 
      * @param {Number} [option.count] 
      * @param {Array} [option.rows] 
+     * @param {Array|Object|Function} [subscriber] 
      * @return {App} self
      */
-    unsubscribe(event, option = null, scope = 'ksmf') {
-        this.event?.unsubscribe(event, scope, option);
+    unsubscribe(event, option = null, subscriber = null) {
+        this.srvEvent?.unsubscribe(event, subscriber, option);
         return this;
     }
 
@@ -139,9 +157,9 @@ class App {
      * @param {String} scope 
      * @returns {App} self
      */
-    emit(event, params = [], scope = 'ksmf') {
+    emit(event, params = []) {
         try {
-            this.event?.emit instanceof Function && this.event.emit(event, scope, params);
+            this.srvEvent?.emit instanceof Function && this.srvEvent.emit(event, ...params);
         }
         catch (error) {
             this.logger?.error instanceof Function && this.logger.error({
@@ -174,10 +192,12 @@ class App {
     initLoad(options) {
         dotenv.config();
         const env = process.env || {};
+        const flc = env["CFG_FILE"] || 'cfg/core.json';
         const eid = env["NODE_ENV"] || 'development';
-        const loc = this.config.load('cfg/core.json', { dir: _path.resolve(__dirname, '../../'), id: eid });
-        const srv = options?.config || this.cfg?.srv || this.config.load('cfg/core.json', { dir: this.path, id: eid });
-        const pac = this.config.load(_path.join(this.path, 'package.json'));
+        const loc = this.srvConfig.load('cfg/core.json', { dir: _path.resolve(__dirname, '../../'), id: eid });
+        const srv = options?.config || this.cfg?.srv || this.srvConfig.load(flc, { dir: this.path, id: eid });
+        const pac = this.srvConfig.load(_path.join(this.path, 'package.json'));
+
         this.cfg.env = env;
         this.cfg.eid = eid;
         this.cfg.srv = { ...loc, ...srv };
@@ -190,9 +210,10 @@ class App {
      * @description initialize configurations 
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options) {
-        this.cfg.srv.module = this.cfg.srv.module || {};
-        this.cfg.srv.module.path = _path.join(this.path, 'src/');
+    async initConfig(options) {
+        this.cfg.srv.module = options?.module || this.cfg.srv.module || {};
+        this.cfg.srv.module.path = options?.module?.path || _path.join(this.path, 'src/');
+        this.cfg.srv.module.path = _path.resolve(this.cfg.srv.module.path.replace('./', this.path));
         this.cfg.srv.log = this.cfg.env.LOG_LEVEL ? this.cfg.env.LOG_LEVEL : this.cfg.srv.log;
         this.cfg.srv.event = this.cfg.srv.event || {};
         this.cfg.srv.doc = this.cfg.srv.doc || {};
@@ -206,9 +227,9 @@ class App {
                 on: (error) => this.emit('onError', [error, this])
             }
         });
-        this.helper.set(this, 'app');
+        await this.helper.set(this, 'app');
         // ... configure Events ...
-        this.initEvents();
+        await this.initEvents();
         this.emit('onInitConfig', [this.cfg, this]);
         return this;
     }
@@ -216,15 +237,15 @@ class App {
     /**
      * @description initialize event handler 
      */
-    initEvents() {
+    async initEvents() {
         for (let event in this.cfg.srv.event) {
             let eventList = this.cfg.srv.event[event];
             for (let elm in eventList) {
                 let subscriber = eventList[elm];
-                if (subscriber && this.event?.add instanceof Function) {
+                if (subscriber && this.srvEvent?.add instanceof Function) {
                     try {
-                        let handler = this.helper.get(subscriber);
-                        handler && this.event.add(handler, event, "ksmf");
+                        let handler = await this.helper.get(subscriber);
+                        handler && this.srvEvent.add(handler, event);
                     }
                     catch (error) {
                         this.logger?.error({
@@ -251,10 +272,10 @@ class App {
         if (mode === "auto" || mode === "dev") {
             const option = { watchRecursive: mode === "dev", readRecursive: false, onlyDir: true };
             const modDir = _path.resolve(this.cfg?.srv?.module?.path || _path.join(this.path, 'src'));
-            await this.dir.on(modDir, (item) => {
+            await this.srvDir.on(modDir, async (item) => {
                 if (item.name) {
                     try {
-                        this.initModule(item.name, modules);
+                        await this.initModule(item.name, modules);
                     }
                     catch (error) {
                         this.logger?.error({
@@ -276,7 +297,7 @@ class App {
      * @param {Array} modules 
      * @returns {Object} module
      */
-    initModule(item, modules) {
+    async initModule(item, modules) {
         const name = (typeof (item) === 'string') ? item : item.name;
         const options = {
             // ... EXPRESS APP
@@ -320,14 +341,15 @@ class App {
                 ...dependency
             };
         }
-        let obj = this.helper.get(item);
+        let obj = await this.helper.get(item);
         if (!obj) {
             item.type = 'lib';
-            obj = this.helper.get(item);
+            obj = await this.helper.get(item);
         }
+        console.log({ name: item.name, active: !!obj });
         if (obj) {
             modules?.push(obj);
-            this.initModuleSetup(obj, item);
+            await this.initModuleSetup(obj, item);
             this.emit('onLoadModule', [obj, name, _path.join(this.cfg.srv.module.path, name, "model"), this]);
         }
         return obj;
@@ -349,14 +371,6 @@ class App {
      */
     initModuleSetup(module, option) {
         return module;
-    }
-
-    /**
-     * @description start server 
-     * @param {import('../types').TAppConfig} [options] 
-     */
-    async run(options = null) {
-        this.emit('onStart', [options, this]);
     }
 }
 
