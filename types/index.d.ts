@@ -1,52 +1,55 @@
 export declare namespace app {
-    let Base: typeof import("./src/app/App");
-    let WEB: typeof import("./src/app/AppWEB");
-    let RTA: typeof import("./src/app/AppRTA");
-    let CLI: typeof import("./src/app/AppCLI");
-    let Controller: typeof import("./src/app/Controller");
-    let Module: typeof import("./src/app/Module");
-    let Utl: typeof import("./src/app/Utl");
-    let Url: typeof import("./src/app/Url");
-    let Dir: typeof import("./src/app/Dir");
+    let Base: any;
+    let WEB: any;
+    let RTA: any;
+    let CLI: any;
+    let Proxy: any;
+}
+export declare namespace common {
+    let Utl: any;
+    let Url: any;
+    let Dir: any;
+    let Config: any;
+}
+export declare namespace plugin {
+    let Controller: any;
+    let Module: any;
 }
 export declare namespace monitor {
-    let Manager: typeof import("./src/monitor/Manager");
-    let Error: typeof import("./src/monitor/ErrorHandler");
-    let Logger: typeof import("./src/monitor/Logger");
-    let LoggerManager: typeof import("./src/monitor/LoggerManager");
-    let LoggerSimple: typeof import("./src/monitor/LoggerSimple");
-    let LoggerWrapper: typeof import("./src/monitor/LoggerWrapper");
-    let Session: typeof import("./src/server/Session");
+    let Manager: any;
+    let Error: any;
+    let Logger: any;
+    let LoggerManager: any;
+    let LoggerSimple: any;
+    let LoggerWrapper: any;
 }
 export declare namespace server {
-    let Base_1: typeof import("./src/server/BaseServer");
+    let Base_1: any;
     export { Base_1 as Base };
-    export let Request: typeof import("./src/server/BaseRequest");
-    export let Response: typeof import("./src/server/BaseResponse");
-    let Session_1: typeof import("./src/server/Session");
-    export { Session_1 as Session };
+    export let Request: any;
+    export let Response: any;
+    export let Session: any;
 }
 export declare namespace proxy {
-    let App: typeof import("./src/proxy/ProxyApp");
-    let Rule: typeof import("./src/proxy/ProxyRule");
-    let Auth: typeof import("./src/proxy/ProxyAuth");
+    let Rule: any;
+    let Auth: any;
 }
 export declare namespace dao {
-    let Base_2: typeof import("./src/dao/DAOBase");
+    let Base_2: any;
     export { Base_2 as Base };
-    export let DataModule: typeof import("./src/dao/DataModule");
-    export let DataService: typeof import("./src/dao/DataService");
-    export let DataController: typeof import("./src/dao/DataController");
-    export let Redis: typeof import("./src/dao/DAORedis");
+    export let DataModule: any;
+    export let DataService: any;
+    export let DataController: any;
+    export let Redis: any;
 }
 export declare namespace view {
-    let Tpl: typeof import("./src/view/Tpl");
+    let Tpl: any;
 }
 export declare namespace task {
-    let Cron: typeof import("./src/task/cron");
+    let Cron: any;
 }
 export declare namespace doc {
-    let Swagger: typeof import("./src/doc/Swagger");
+    let Swagger: any;
 }
-declare let _default: typeof import("./src/app/AppWEB");
+declare let _default: any;
 export { _default as default };
