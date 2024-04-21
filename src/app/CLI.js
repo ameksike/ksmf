@@ -1,12 +1,10 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		07/03/2020
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.3
- * @requires    dotenv
- * @requires    ksdp
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        07/03/2020
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.3
  **/
 const App = require('./App');
 const _path = require('path');
@@ -14,13 +12,13 @@ const _path = require('path');
 class AppCLI extends App {
 
     /**
-     * @description start server 
+     * @description start the application 
      * @param {import('../types').TAppConfig} [options] 
      */
-    async run(options = null) {
+    async start(options = null) {
         try {
             this.init(options);
-            let { module, action } = this.getMetaModule(process.argv[3]);
+            let { module, action } = this.seach(process.argv[3]);
             if (!module) {
                 return null;
             }
@@ -37,11 +35,20 @@ class AppCLI extends App {
     }
 
     /**
+     * @description stop the application 
+     * @param {import('../types').TAppConfig} [options] 
+     */
+    stop(options = null) {
+        process.exit(options?.code ?? 0);
+    }
+
+    /**
      * @description search a module by CLI route
      * @param {String|null} route
      * @param {String} [sep=':']
+     * @returns {{module: Object; action:String}} meta
      */
-    getMetaModule(route, sep = ':') {
+    seach(route, sep = ':') {
         if (!route) {
             return null;
         }
@@ -137,13 +144,6 @@ class AppCLI extends App {
             driver.stdin.once('data', (data) => resolve(data?.toString().trim() || driver?.default));
             driver.stdin.once('error', (err) => reject(err));
         });
-    }
-
-    /**
-     * @description stop application 
-     */
-    stop() {
-        process.exit(0);
     }
 }
 

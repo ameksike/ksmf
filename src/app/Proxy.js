@@ -1,18 +1,17 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		15/11/2021
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
- * @dependencies AppWEB, HttpHandler
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        15/11/2021
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.0
  **/
 const http = require('http');
 const net = require('net')
 const url = require('url')
 
-const AppWEB = require('../app/AppWEB');
-const HttpHandler = require('../app/HttpHandler');
+const AppWEB = require('./WEB');
+const HttpHandler = require('../common/Http');
 
 class ProxyApp {
     /**

@@ -48,7 +48,7 @@ class AppWEB extends App {
      * @description start server 
      * @param {import('../types').TAppConfig} [options] 
      */
-    async run(options = null) {
+    async start(options = null) {
         if (!this.server || options?.force) {
             await this.init(options);
         }
@@ -63,14 +63,6 @@ class AppWEB extends App {
             message: 'SERVER_LISTENING',
             ...metadata
         }, this]);
-    }
-
-    /**
-     * @description alias for start server 
-     * @param {import('../types').TAppConfig} [options]
-     */
-    start(options = null) {
-        this.run(options);
     }
 
     /**
@@ -91,10 +83,10 @@ class AppWEB extends App {
         if (this.server) {
             return this.server;
         }
-        this.server = this.helper.get('server');
+        this.server = await this.helper.get('server');
         if (!this.server) {
-            this.server = this.helper.get({ name: 'ksmf-express', type: 'package' }) || new Server();
-            this.helper.set(this.server, 'server');
+            this.server = await this.helper.get({ name: 'ksmf-express', type: 'package' }) || new Server();
+            await this.helper.set(this.server, 'server');
         }
         if (!this.server.configured || options?.force) {
             await this.server.configure(options);
@@ -190,12 +182,16 @@ class AppWEB extends App {
         if (module?.listen instanceof Function) {
             this.server?.set({
                 route: '/' + option?.name,
-                handler: (req, res, next) => module.listen(req, res, next)
+                handler: (req, res, next) => {
+                    module.listen(req, res, next);
+                }
             });
         } else if (module instanceof Function) {
             this.server?.set({
                 route: '/' + option?.name,
-                handler: (req, res, next) => module(req, res, next)
+                handler: (req, res, next) => {
+                    module(req, res, next)
+                }
             });
         }
         return module;
@@ -266,10 +262,10 @@ class AppWEB extends App {
             this.server.set({
                 route: pathname,
                 method: route.method,
-                handler: (req, res, next) => {
+                handler: async (req, res, next) => {
                     route.path = route.path || 'controller';
                     route.name = route.name || route.controller;
-                    const controller = this.helper.get(route);
+                    const controller = await this.helper.get(route);
                     if (!controller || !controller[route.action]) {
                         this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
                     }

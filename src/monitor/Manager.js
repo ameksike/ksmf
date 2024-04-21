@@ -1,8 +1,8 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		22/04/2023
- * @copyright  	Copyright (c) 2020-2030
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        22/04/2020
+ * @copyright   Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
  **/
@@ -34,8 +34,8 @@ class Manager {
      * @param {Object} cfg 
      * @param {Object} app 
      */
-    onInitConfig(cfg, app) {
-        this.app = app || this.helper?.get('app');
+    async onInitConfig(cfg, app) {
+        this.app = app || await this.helper?.get('app');
         this.app?.subscribe(this, 'onStart');
         this.app?.subscribe(this, 'onError');
     }
@@ -44,9 +44,9 @@ class Manager {
      * @description KsMf Wrapper
      * @param {Object} info 
      */
-    onStart(info = {}) {
-        const app = this.helper?.get('app');
-        const logger = this.helper?.get('logger') || this.logger;
+    async onStart(info = {}) {
+        const app = await this.helper?.get('app');
+        const logger = await this.helper?.get('logger') || this.logger;
         const routes = app?.server?.routes instanceof Function && app.server.routes();
         logger?.info({
             src: "KSMF:Monitor:onStart",
@@ -64,8 +64,8 @@ class Manager {
      * @description error handler
      * @param {Object} error 
      */
-    onError(error) {
-        const logger = this.helper?.get('logger') || this.logger;
+    async onError(error) {
+        const logger = await this.helper?.get('logger') || this.logger;
         (logger?.error instanceof Function) && logger?.error({
             src: "KSMF:Monitor:onError",
             message: error?.message || error,

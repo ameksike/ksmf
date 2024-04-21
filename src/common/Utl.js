@@ -1,6 +1,6 @@
 /**
  * @description Allow different data type conversions.
- * @module utils/Utl 
+ * @module common 
  */
 class Utl {
     #config = {

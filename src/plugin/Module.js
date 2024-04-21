@@ -1,10 +1,10 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		07/03/2020
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        07/03/2020
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.4
  **/
 class Module {
 
@@ -27,11 +27,6 @@ class Module {
      * @type {String|null}
      */
     type;
-
-    /**
-     * @type {Object|null}
-     */
-    _ = null;
 
     /**
      * @description initialize module
@@ -125,12 +120,12 @@ class Module {
      * @param {String} [opt.method]
      * @param {String} [opt.path]
      */
-    initRouterWeb(opt) {
+    async initRouterWeb(opt) {
         if (typeof (this.app?.server?.set) !== 'function') return;
         // ... load controller 
         const _locator = this.getLocator(opt);
         const _prefix = _locator?.route || opt?.route;
-        const _controller = this.getController(_locator);
+        const _controller = await this.getController(_locator);
         // ... define routes  
         this.app.server.set({
             method: opt.method,
@@ -152,14 +147,14 @@ class Module {
      * @param {String} [opt.controller]
      * @param {String} [opt.path]
      */
-    initRouterREST(opt) {
+    async initRouterREST(opt) {
         if (!this.helper || typeof (this.app?.server?.set) !== 'function') {
             return null;
         }
         // ... load controller 
         const _locator = this.getLocator(opt);
         const _prefix = _locator?.route || opt?.route;
-        const _controller = this.getController(_locator);
+        const _controller = await this.getController(_locator);
         if (!_controller) return null;
         // ... define route select
         this.app?.server.set({
@@ -258,7 +253,7 @@ class Module {
             name: opt.controller,
             path: opt.path || 'controller',
             module: this.name,
-            moduleType: this.type || this._?.type,
+            moduleType: this.type,
             delegate: opt.delegate || null,
             handler: opt.handler || null,
             method: opt.method || null,
@@ -281,7 +276,7 @@ class Module {
      * @param {Object} locator 
      * @returns {Object} controller 
      */
-    getController(locator) {
+    async getController(locator) {
         if (locator?.delegate && typeof (locator?.delegate) === "object") {
             return locator?.delegate;
         }
@@ -290,7 +285,7 @@ class Module {
                 [locator.action || locator.method]: locator?.handler
             }
         }
-        return this.helper?.get instanceof Function && this.helper.get(locator);
+        return this.helper?.get instanceof Function && await this.helper.get(locator);
     }
 
     /**

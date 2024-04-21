@@ -1,8 +1,8 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		22/04/2023
- * @copyright  	Copyright (c) 2020-2030
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        22/04/2023
+ * @copyright   Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
  **/
@@ -27,11 +27,11 @@ class LoggerWrapper {
      * @param {Object} cfg 
      * @param {Object} app 
      */
-    onInitConfig(cfg, app) {
+    async onInitConfig(cfg, app) {
         this.manager?.configure(cfg.srv?.log);
         const logger = this.manager?.build();
         // logger && this.helper?.set(logger, 'logger');
-        this.app = app || this.helper?.get('app');
+        this.app = app || await this.helper?.get('app');
         logger && this.app?.register(logger, 'logger');
         this.app?.subscribe(this, 'onInitApp');
     }
@@ -40,8 +40,8 @@ class LoggerWrapper {
      * @description Set options on Initialize App Event 
      * @param {Object} server 
      */
-    onInitApp(server) {
-        const logger = this.helper?.get('logger');
+    async onInitApp(server) {
+        const logger = await this.helper?.get('logger');
         (logger?.trackOutbound instanceof Function) && logger.trackOutbound();
         server.web.use instanceof Function && (logger?.trackInbound instanceof Function) && server.web.use(logger.trackInbound());
     }

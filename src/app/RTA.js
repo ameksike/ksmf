@@ -8,7 +8,7 @@
  * @dependencies AppWEB, HttpHandler
  **/
 const http = require('http');
-const AppWEB = require('./AppWEB');
+const AppWEB = require('./WEB');
 
 class AppRTA {
 
