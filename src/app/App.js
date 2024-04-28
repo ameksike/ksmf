@@ -346,7 +346,6 @@ class App {
             item.type = 'lib';
             obj = await this.helper.get(item);
         }
-        console.log({ name: item.name, active: !!obj });
         if (obj) {
             modules?.push(obj);
             await this.initModuleSetup(obj, item);
