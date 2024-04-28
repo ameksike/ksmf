@@ -14,7 +14,9 @@
  * @property {Object} [fingerprint]  
  * @property {Object} [cors]  
  * @property {Boolean} [force]  
- * @property {Object} [config]  
+ * @property {Object} [config] 
+ * @property {Number} [code]
+ * @property {Object} [module]
  */
 
 /**

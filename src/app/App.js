@@ -154,7 +154,6 @@ class App {
      * @description safely trigger events
      * @param {String} event 
      * @param {Array} params 
-     * @param {String} scope 
      * @returns {App} self
      */
     emit(event, params = []) {
