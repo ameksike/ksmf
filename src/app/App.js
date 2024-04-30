@@ -341,6 +341,7 @@ class App {
                 ...dependency
             };
         }
+        item.mode = 'transient';
         let obj = await this.helper.get(item);
         if (!obj) {
             item.type = 'lib';
