@@ -1,5 +1,5 @@
 const KsMf = require('../index');
-const utl = new KsMf.app.Utl();
+const utl = new KsMf.common.Utl();
 
 describe('Utl', () => {
 

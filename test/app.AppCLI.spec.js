@@ -3,6 +3,7 @@ const KsMf = require('../');
 const app = new KsMf.app.CLI({
     path: __dirname + '/../'
 });
+const { EventEmitter } = require('events');
 
 describe('App CLI', () => {
 
@@ -13,7 +14,7 @@ describe('App CLI', () => {
         expect(app.cfg?.eid?.length > 1).toBe(false);
         expect(!!app.cfg.env).toBe(false);
         expect(app.helper).toBeInstanceOf(Object);
-        expect(app.event).toBeInstanceOf(Object);
+        expect(app.srvEvent).toBeInstanceOf(EventEmitter);
         expect(app.mod).toBeInstanceOf(Array);
     });
 
@@ -23,9 +24,9 @@ describe('App CLI', () => {
         expect(app.cfg.eid.length > 1).toBe(true);
         expect(!!app.cfg.env).toBe(true);
         expect(app.cfg.pack).toBeInstanceOf(Object);
-        expect(app.config).toBeInstanceOf(Object);
+        expect(app.srvConfig).toBeInstanceOf(Object);
+        expect(app.srvEvent).toBeInstanceOf(EventEmitter);
         expect(app.helper).toBeInstanceOf(Object);
-        expect(app.event).toBeInstanceOf(Object);
         expect(app.mod).toBeInstanceOf(Array);
     });
 
