@@ -519,11 +519,11 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description insert an entity
      * @param {Object} payload 
-     * @param {Object} payload.data 
-     * @param {Object} payload.where 
-     * @param {Object} payload.row 
-     * @param {Number} payload.mode 
-     * @param {Object} payload.transaction 
+     * @param {Object} [payload.data] 
+     * @param {Object} [payload.where] 
+     * @param {Object} [payload.row] 
+     * @param {Number} [payload.mode] 
+     * @param {Object} [payload.transaction] 
      * @returns {Object} row
      */
     insert(payload, opt) {
