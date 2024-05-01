@@ -48,6 +48,8 @@ class Module {
      * @param {Object} [payload.opt] 
      * @param {String} [payload.opt.name]
      * @param {String} [payload.opt.prefix]
+     * @param {Array} [payload.opt.routes]
+     * @param {Boolean} [payload.opt.rest]
      * @param {Boolean} [payload.rest] 
      * @param {Object} [payload.server] 
      * @param {Object} [payload.routes] 
@@ -64,8 +66,8 @@ class Module {
 
         this.name = this.opt?.name || "";
         this.prefix = payload?.prefix || payload?.opt?.prefix || "/" + this.name;
-        this.rest = payload?.rest ?? this.rest ?? true;
-        this.routes = payload?.routes || this.routes || [];
+        this.rest = payload?.rest ?? payload?.opt?.rest ?? this.rest ?? true;
+        this.routes = payload?.routes || payload?.opt?.routes || this.routes || [];
 
         this.middleware = this.initMiddlewareList(payload?.middleware || this.middleware);
         return this;
