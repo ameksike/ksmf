@@ -342,7 +342,7 @@ class App {
         }
         item.mode = 'transient';
         let obj = await this.helper.get(item);
-        if (!obj) {
+        if (!obj && this.cfg?.srv?.module?.npm) {
             item.type = 'lib';
             obj = await this.helper.get(item);
         }
