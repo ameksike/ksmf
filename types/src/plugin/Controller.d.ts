@@ -1,11 +1,11 @@
 export = Controller;
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		07/03/2020
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        07/03/2020
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.2
  **/
 declare class Controller {
     /**

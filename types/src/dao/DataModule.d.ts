@@ -18,4 +18,4 @@ declare class DataModule extends Module {
     db: any;
     init(): any;
 }
-import Module = require("../app/Module");
+import Module = require("../plugin/Module");

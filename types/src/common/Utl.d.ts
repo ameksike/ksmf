@@ -1,10 +1,10 @@
 export = Utl;
 /**
  * @description Allow different data type conversions.
- * @module utils/Utl
+ * @module common
  */
 declare class Utl {
-    static "__#9@#instance": any;
+    static "__#13@#instance": any;
     static self(): any;
     set config(options: {
         number: {

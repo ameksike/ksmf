@@ -43,5 +43,5 @@ declare class AppRTA {
      */
     initAuth(req: any, res: any): Promise<boolean>;
 }
-import AppWEB = require("./AppWEB");
+import AppWEB = require("./WEB");
 import http = require("http");

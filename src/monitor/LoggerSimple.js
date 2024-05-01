@@ -1,8 +1,8 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		05/03/2023
- * @copyright  	Copyright (c) 2020-2035
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        05/03/2023
+ * @copyright   Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
  */

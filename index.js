@@ -2,7 +2,7 @@
  * @author      Antonio Membrides Espinosa
  * @email       tonykssa@gmail.com
  * @date        20/05/2020
- * @copyright   Copyright (c) 2020-2035
+ * @copyright   Copyright (c) 2020-2055
  * @license     GPL
  * @version     1.0
  * @description For more information see: https://github.com/ameksike/ksmf/wiki  
@@ -11,14 +11,20 @@
 module.exports = {
     app: {
         Base: require('./src/app/App'),
-        WEB: require('./src/app/AppWEB'),
-        RTA: require('./src/app/AppRTA'),
-        CLI: require('./src/app/AppCLI'),
-        Controller: require('./src/app/Controller'),
-        Module: require('./src/app/Module'),
-        Utl: require('./src/app/Utl'),
-        Url: require('./src/app/Url'),
-        Dir: require('./src/app/Dir')
+        WEB: require('./src/app/WEB'),
+        RTA: require('./src/app/RTA'),
+        CLI: require('./src/app/CLI'),
+        Proxy: require('./src/app/Proxy'),
+    },
+    common: {
+        Utl: require('./src/common/Utl'),
+        Url: require('./src/common/Url'),
+        Dir: require('./src/common/Dir'),
+        Config: require('./src/common/Config')
+    },
+    plugin: {
+        Controller: require('./src/plugin/Controller'),
+        Module: require('./src/plugin/Module'),
     },
     monitor: {
         Manager: require('./src/monitor/Manager'),
@@ -27,11 +33,6 @@ module.exports = {
         LoggerManager: require('./src/monitor/LoggerManager'),
         LoggerSimple: require('./src/monitor/LoggerSimple'),
         LoggerWrapper: require('./src/monitor/LoggerWrapper'),
-        /**
-         * @description Session entry to keep backward compatibility
-         * @deprecated
-         */
-        Session: require('./src/server/Session')
     },
     server: {
         Base: require('./src/server/BaseServer'),
@@ -40,9 +41,8 @@ module.exports = {
         Session: require('./src/server/Session')
     },
     proxy: {
-        App: require('./src/proxy/ProxyApp'),
-        Rule: require('./src/proxy/ProxyRule'),
-        Auth: require('./src/proxy/ProxyAuth')
+        Rule: require('./src/proxy/Rule'),
+        Auth: require('./src/proxy/Auth')
     },
     dao: {
         Base: require('./src/dao/DAOBase'),
@@ -65,6 +65,5 @@ module.exports = {
          * @deprecated
          */
         Swagger: require('./src/doc/Swagger')
-    },
-    default: require('./src/app/AppWEB')
+    }
 };

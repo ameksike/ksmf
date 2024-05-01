@@ -1,9 +1,9 @@
 export = Manager;
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		22/04/2023
- * @copyright  	Copyright (c) 2020-2030
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        22/04/2020
+ * @copyright   Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
  **/
@@ -24,18 +24,18 @@ declare class Manager {
      * @param {Object} cfg
      * @param {Object} app
      */
-    onInitConfig(cfg: any, app: any): void;
+    onInitConfig(cfg: any, app: any): Promise<void>;
     app: any;
     /**
      * @description KsMf Wrapper
      * @param {Object} info
      */
-    onStart(info?: any): void;
+    onStart(info?: any): Promise<void>;
     /**
      * @description error handler
      * @param {Object} error
      */
-    onError(error: any): void;
+    onError(error: any): Promise<void>;
     /**
      * @description get platform information
      * @returns {Object} info

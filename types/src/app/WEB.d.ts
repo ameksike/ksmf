@@ -20,11 +20,6 @@ declare class AppWEB extends App {
      */
     option: any | null;
     /**
-     * @description alias for start server
-     * @param {import('../types').TAppConfig} [options]
-     */
-    start(options?: import('../types').TAppConfig): void;
-    /**
      * @description stop server
      */
     stop(): Promise<void>;
@@ -52,7 +47,7 @@ declare class AppWEB extends App {
      * @description preload configuration file, variables, environments, etc
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options?: import('../types').TAppConfig): this;
+    initConfig(options?: import('../types').TAppConfig): Promise<this>;
     /**
      * @description initialize middleware applications
      * @param {import('../types').TAppConfig} [options]

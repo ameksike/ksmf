@@ -1,16 +1,17 @@
 export = AppCLI;
 declare class AppCLI extends App {
     /**
-     * @description start server
+     * @description start the application
      * @param {import('../types').TAppConfig} [options]
      */
-    run(options?: import('../types').TAppConfig): Promise<any>;
+    start(options?: import('../types').TAppConfig): Promise<any>;
     /**
      * @description search a module by CLI route
      * @param {String|null} route
      * @param {String} [sep=':']
+     * @returns {{module: Object; action:String}} meta
      */
-    getMetaModule(route: string | null, sep?: string): {
+    seach(route: string | null, sep?: string): {
         module: any;
         action: string;
     };
@@ -62,9 +63,5 @@ declare class AppCLI extends App {
         stdout?: import('../types').TWritableStream;
         stdin?: import('../types').TReadableStream;
     }): Promise<string | number | boolean>;
-    /**
-     * @description stop application
-     */
-    stop(): void;
 }
 import App = require("./App");

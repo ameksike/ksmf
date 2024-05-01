@@ -1,6 +1,6 @@
 {
   "name": "ksmf",
-  "version": "1.3.14",
+  "version": "1.4.0",
   "description": "Modular Microframework for create minimalistic CLI/Web application or REST API",
   "types": "types/index.d.ts",
   "exports": "./index.js",
@@ -47,10 +47,10 @@
   },
   "homepage": "https://github.com/ameksike/ksmf/wiki",
   "dependencies": {
-    "dotenv": "^16.4.1",
+    "dotenv": "^16.4.5",
     "kscryp": "^1.0.18",
-    "ksdp": "^1.4.2",
-    "kstpl": "^1.0.2"
+    "ksdp": "^1.4.4",
+    "kstpl": "^1.1.0"
   },
   "devDependencies": {
     "jest": "^29.7.0"

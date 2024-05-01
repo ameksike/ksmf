@@ -8,7 +8,7 @@
  * @dependencies AppWEB, HttpHandler
  **/
 const http = require('http');
-const AppWEB = require('./AppWEB');
+const AppWEB = require('./WEB');
 
 class AppRTA {
 
@@ -22,7 +22,7 @@ class AppRTA {
      */
     init() {
         try {
-            this.app.event.add(this, 'onLoadModule', "ksmf");
+            this.app.srvEvent.add(this, 'onLoadModule');
             this.app.init();
         } catch (error) {
             this.app.setError(error);

@@ -1,6 +1,16 @@
+/**
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        21/05/2022
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.0
+ **/
+
 const ksdp = require("ksdp");
 const kscrip = require("kscryp");
-const Utl = require("../app/Utl");
+const Utl = require("../common/Utl");
+
 class DataService extends ksdp.integration.Dip {
 
     /**
@@ -509,11 +519,11 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description insert an entity
      * @param {Object} payload 
-     * @param {Object} payload.data 
-     * @param {Object} payload.where 
-     * @param {Object} payload.row 
-     * @param {Number} payload.mode 
-     * @param {Object} payload.transaction 
+     * @param {Object} [payload.data] 
+     * @param {Object} [payload.where] 
+     * @param {Object} [payload.row] 
+     * @param {Number} [payload.mode] 
+     * @param {Object} [payload.transaction] 
      * @returns {Object} row
      */
     insert(payload, opt) {

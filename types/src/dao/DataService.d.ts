@@ -273,19 +273,19 @@ declare class DataService extends DataService_base {
     /**
      * @description insert an entity
      * @param {Object} payload
-     * @param {Object} payload.data
-     * @param {Object} payload.where
-     * @param {Object} payload.row
-     * @param {Number} payload.mode
-     * @param {Object} payload.transaction
+     * @param {Object} [payload.data]
+     * @param {Object} [payload.where]
+     * @param {Object} [payload.row]
+     * @param {Number} [payload.mode]
+     * @param {Object} [payload.transaction]
      * @returns {Object} row
      */
     insert(payload: {
-        data: any;
-        where: any;
-        row: any;
-        mode: number;
-        transaction: any;
+        data?: any;
+        where?: any;
+        row?: any;
+        mode?: number;
+        transaction?: any;
     }, opt: any): any;
     /**
      * @description update an entity
@@ -383,4 +383,4 @@ declare class DataService extends DataService_base {
         order?: any[];
     };
 }
-import Utl = require("../app/Utl");
+import Utl = require("../common/Utl");

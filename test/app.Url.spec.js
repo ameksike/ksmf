@@ -1,5 +1,5 @@
 const KsMf = require('../index');
-const uri = KsMf.app.Url.self();
+const uri = KsMf.common.Url.self();
 
 describe('Url', () => {
 

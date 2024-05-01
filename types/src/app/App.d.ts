@@ -4,20 +4,20 @@ declare class App {
      * @description initialize library
      * @param {Object} [option]
      * @param {String} [option.path] project root path
-     * @param {Object} [option.cfg] configuration options
-     * @param {Object} [option.helper] driver to manage plugins
-     * @param {Object} [option.event]  driver to manage events
-     * @param {Object} [option.config] driver to manage configurations
-     * @param {Object} [option.dir] driver to manage directories
+     * @param {Object} [option.config] configuration options
+     * @param {Object} [option.srvHelper] driver to manage plugins
+     * @param {Object} [option.srvEvent]  driver to manage events
+     * @param {Object} [option.srvConfig] driver to manage configurations
+     * @param {Object} [option.srvDir] driver to manage directories
      * @param {Array<any>} [option.mod] plugins/modules list
      **/
     constructor(option?: {
         path?: string;
-        cfg?: any;
-        helper?: any;
-        event?: any;
         config?: any;
-        dir?: any;
+        srvHelper?: any;
+        srvEvent?: any;
+        srvConfig?: any;
+        srvDir?: any;
         mod?: Array<any>;
     });
     /**
@@ -25,17 +25,17 @@ declare class App {
      */
     helper: import("ksdp/types/src/integration/IoC");
     /**
-     * @type {import('ksdp').behavioral.Observer}
+     * @type {import('ksdp').behavioral.Emitter}
      */
-    event: import("ksdp/types/src/behavioral/Observer");
+    srvEvent: import("ksdp/types/src/behavioral/Emitter");
     /**
      * @type {Config|null}
      */
-    config: Config | null;
+    srvConfig: Config | null;
     /**
      * @type {Dir|null}
      */
-    dir: Dir | null;
+    srvDir: Dir | null;
     /**
      * @type {Console|null}
      */
@@ -49,6 +49,16 @@ declare class App {
      */
     cfg: any;
     path: string;
+    /**
+     * @description start application
+     * @param {import('../types').TAppConfig} [options]
+     */
+    start(options?: import('../types').TAppConfig): Promise<void>;
+    /**
+     * @description stop application
+     * @param {import('../types').TAppConfig} [options]
+     */
+    stop(options?: import('../types').TAppConfig): Promise<void>;
     /**
      * @description register a plugin
      * @param {Object|String|Function|Array} plugin
@@ -79,7 +89,7 @@ declare class App {
         scope?: string;
         index?: number;
         rows?: any[];
-    }, scope?: string): App;
+    }): App;
     /**
      * @description remove listener from event
      * @param {String} event
@@ -89,6 +99,7 @@ declare class App {
      * @param {String} [option.scope]
      * @param {Number} [option.count]
      * @param {Array} [option.rows]
+     * @param {Array|Object|Function} [subscriber]
      * @return {App} self
      */
     unsubscribe(event: string, option?: {
@@ -97,15 +108,14 @@ declare class App {
         scope?: string;
         count?: number;
         rows?: any[];
-    }, scope?: string): App;
+    }, subscriber?: any[] | any | Function): App;
     /**
      * @description safely trigger events
      * @param {String} event
      * @param {Array} params
-     * @param {String} scope
      * @returns {App} self
      */
-    emit(event: string, params?: any[], scope?: string): App;
+    emit(event: string, params?: any[]): App;
     /**
      * @description initialize the application
      * @param {import('../types').TAppConfig} [options]
@@ -121,11 +131,11 @@ declare class App {
      * @description initialize configurations
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options?: import('../types').TAppConfig): this;
+    initConfig(options?: import('../types').TAppConfig): Promise<this>;
     /**
      * @description initialize event handler
      */
-    initEvents(): this;
+    initEvents(): Promise<this>;
     /**
      * @description load modules
      */
@@ -135,19 +145,21 @@ declare class App {
      * @description initialize a module
      * @param {import('../types').TOption|String} item
      * @param {Array} modules
-     * @returns {Object} module
+     * @returns {Promise<Object>} module
      */
-    initModule(item: import('../types').TOption | string, modules: any[]): any;
+    initModule(item: import('../types').TOption | string, modules: any[]): Promise<any>;
     /**
      * @description initialize the module options
      * @returns {Object}
      */
     initModuleOpts(): any;
     /**
-     * @description start server
-     * @param {import('../types').TAppConfig} [options]
+     * @description initialize the module config
+     * @param {Object} module
+     * @param {Object} option
+     * @returns {Object} module
      */
-    run(options?: import('../types').TAppConfig): Promise<void>;
+    initModuleSetup(module: any, option: any): any;
 }
-import Config = require("./Config");
-import Dir = require("./Dir");
+import Config = require("../common/Config");
+import Dir = require("../common/Dir");

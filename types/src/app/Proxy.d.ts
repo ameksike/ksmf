@@ -52,5 +52,5 @@ declare class ProxyApp {
     initAuth(req: any, res: any): Promise<boolean>;
     pipe(req: any, clientSocket: any, srv: any): void;
 }
-import AppWEB = require("../app/AppWEB");
+import AppWEB = require("./WEB");
 import http = require("http");

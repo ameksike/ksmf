@@ -14,25 +14,29 @@
  * @property {Object} [fingerprint]  
  * @property {Object} [cors]  
  * @property {Boolean} [force]  
- * @property {Object} [config]  
+ * @property {Object} [config] 
+ * @property {Number} [code]
+ * @property {Object} [module] 
+ * @property {String} [mode]
  */
 
 /**
  * @typedef {Object} TOption
- * @property {String} [item.name] 
- * @property {String} [item.type] 
- * @property {Object} [item.options] 
- * @property {Object} [item.params] 
- * @property {Object} [item.dependency] 
+ * @property {String} [name] 
+ * @property {String} [type] 
+ * @property {String} [mode] 
+ * @property {Object} [options] 
+ * @property {Object} [params] 
+ * @property {Object} [dependency] 
  */
 
 /**
  * @typedef {Object} TCLIArgReq
- * @property {String} [item.name] 
- * @property {String} [item.type] 
- * @property {Object} [item.options] 
- * @property {Object} [item.params] 
- * @property {Object} [item.dependency] 
+ * @property {String} [name] 
+ * @property {String} [type] 
+ * @property {Object} [options] 
+ * @property {Object} [params] 
+ * @property {Object} [dependency] 
  */
 
 /**

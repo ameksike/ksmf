@@ -1,6 +1,6 @@
 /**
  * @description Utility for URL manipulation 
- * @module utils/Url 
+ * @module common
  */
 const _url = require("url");
 class UrlUtil {

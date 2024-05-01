@@ -12,7 +12,16 @@
     },
     "module": {
       "load": [],
-      "mode": "dev"
+      "mode": "dev",
+      "default": {
+        "name": "ksmf",
+        "type": "lib",
+        "mode": "transient",
+        "namespace": "plugin.Module",
+        "dependency": {
+          "helper": "helper"
+        }
+      }
     },
     "doc": {
       "url": "/api/v1/doc",

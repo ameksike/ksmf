@@ -1,13 +1,13 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		21/05/2022
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        21/05/2022
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.0
  **/
 
-const Module = require('../app/Module');
+const Module = require('../plugin/Module');
 
 class DataModule extends Module {
 

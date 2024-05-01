@@ -1,11 +1,11 @@
 export = Module;
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		07/03/2020
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        07/03/2020
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.4
  **/
 declare class Module {
     /**
@@ -36,10 +36,6 @@ declare class Module {
      * @type {String|null}
      */
     type: string | null;
-    /**
-     * @type {Object|null}
-     */
-    _: any | null;
     /**
      * @description initialize module
      * @param {Object} payload
@@ -106,7 +102,7 @@ declare class Module {
         controller?: string;
         method?: string;
         path?: string;
-    }): void;
+    }): Promise<void>;
     /**
      * @description allow customized REST routes initialization by module
      * @param {Object} opt
@@ -120,7 +116,7 @@ declare class Module {
         name?: string;
         controller?: string;
         path?: string;
-    }): any;
+    }): Promise<any>;
     /**
      * @description get IoC locator options
      * @param {Object} opt
@@ -155,9 +151,9 @@ declare class Module {
     /**
      * @description get a controller instance
      * @param {Object} locator
-     * @returns {Object} controller
+     * @returns {Promise<Object>} controller
      */
-    getController(locator: any): any;
+    getController(locator: any): Promise<any>;
     /**
      * @description get middleware list by controller
      * @param {Object} controller

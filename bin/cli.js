@@ -17,23 +17,9 @@ try {
     const path = require('path');
 
     let dir = path.resolve(process.cwd());
-    let act = process.argv[2] || 'web';
-
-    switch (act) {
-        case 'web':
-            app = new KsMf.app.WEB({ path: dir });
-            break;
-
-        case 'proxy':
-            app = new KsMf.proxy.App({ path: dir });
-            break;
-
-        default:
-            app = new KsMf.app.CLI({ path: dir });
-            break;
-    }
-
-    app?.run();
+    let act = process.argv[2] || 'WEB';
+    app = KsMf.app[act] ? new KsMf.app[act]({ path: dir }) : new KsMf.app.CLI({ path: dir });
+    app?.start();
 }
 catch (error) {
     console.log({

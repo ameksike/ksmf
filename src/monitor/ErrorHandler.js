@@ -1,8 +1,8 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		07/03/2020
- * @copyright  	Copyright (c) 2020-2030
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        07/03/2020
+ * @copyright   Copyright (c) 2020-2030
  * @license    	GPL
  * @version    	1.0
  **/
@@ -37,9 +37,9 @@ class ErrorHandler {
      * @param {Object} cfg 
      * @param {Object} cfg 
      */
-    onInitConfig(cfg, app) {
-        this.logger = this.helper?.get("logger") || this.logger;
-        this.app = app || this.helper?.get("app") || this.app;
+    async onInitConfig(cfg, app) {
+        this.logger = await this.helper?.get("logger") || this.logger;
+        this.app = app || await this.helper?.get("app") || this.app;
         this.init();
     }
 

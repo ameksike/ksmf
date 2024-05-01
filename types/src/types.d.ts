@@ -11,10 +11,14 @@ export type TAppConfig = {
     cors?: any;
     force?: boolean;
     config?: any;
+    code?: number;
+    module?: any;
+    mode?: string;
 };
 export type TOption = {
     name?: string;
     type?: string;
+    mode?: string;
     options?: any;
     params?: any;
     dependency?: any;

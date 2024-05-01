@@ -75,4 +75,4 @@ declare class DataController extends Controller {
      */
     delete(req: any, res: any): Promise<any>;
 }
-import Controller = require("../app/Controller");
+import Controller = require("../plugin/Controller");
