@@ -294,7 +294,7 @@ class App {
      * @description initialize a module
      * @param {import('../types').TOption|String} item 
      * @param {Array} modules 
-     * @returns {Object} module
+     * @returns {Promise<Object>} module
      */
     async initModule(item, modules) {
         const name = (typeof (item) === 'string') ? item : item.name;

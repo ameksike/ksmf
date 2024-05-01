@@ -274,7 +274,7 @@ class Module {
     /**
      * @description get a controller instance 
      * @param {Object} locator 
-     * @returns {Object} controller 
+     * @returns {Promise<Object>} controller 
      */
     async getController(locator) {
         if (locator?.delegate && typeof (locator?.delegate) === "object") {

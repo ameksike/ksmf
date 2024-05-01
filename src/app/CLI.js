@@ -38,7 +38,8 @@ class AppCLI extends App {
      * @description stop the application 
      * @param {import('../types').TAppConfig} [options] 
      */
-    stop(options = null) {
+    async stop(options = null) {
+        await super.stop(options);
         process.exit(options?.code ?? 0);
     }
 
