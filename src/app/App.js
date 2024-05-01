@@ -341,11 +341,20 @@ class App {
             };
         }
         item.mode = 'transient';
+        // load common plugins 
         let obj = await this.helper.get(item);
+        // load npm plugins 
         if (!obj && this.cfg?.srv?.module?.npm) {
             item.type = 'lib';
             obj = await this.helper.get(item);
         }
+        // load default plugins 
+        if (!obj && this.cfg?.srv?.module?.default) {
+            let tmp = { ...this.cfg?.srv?.module?.default };
+            tmp.options = { ...tmp.options, ...item.options };
+            obj = await this.helper.get(tmp);
+        }
+        // initialize plugins
         if (obj) {
             modules?.push(obj);
             await this.initModuleSetup(obj, item);
