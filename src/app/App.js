@@ -350,7 +350,8 @@ class App {
         }
         // load default plugins 
         if (!obj && this.cfg?.srv?.module?.default) {
-            let tmp = { ...this.cfg?.srv?.module?.default };
+            let cfg = await this.helper.get({ file: _path.join(this.cfg?.srv?.module?.path, name, "package.json") });
+            let tmp = { ...this.cfg?.srv?.module?.default, ...cfg };
             tmp.options = { ...tmp.options, ...item.options };
             obj = await this.helper.get(tmp);
         }

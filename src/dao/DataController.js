@@ -42,11 +42,11 @@ class DataController extends Controller {
 
     async init() {
         //... Define logger service as global for his controller
-        this.logger = this.helper.get('logger');
+        this.logger = await this.helper.get('logger');
         //... Define user service as global for his controller
         this.srv = typeof this.srv === "object" ?
             this.srv :
-            (this.helper.get(typeof this.srv === "string" ? this.srv : {
+            (await this.helper.get(typeof this.srv === "string" ? this.srv : {
                 name: this.srvName,
                 path: 'service',
                 module: this.module,
@@ -97,10 +97,11 @@ class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     async select(req, res) {
-        const params = this.srv?.extract(req.query);
-        params.query.id = req.params['id'];
-        params.flow = req.flow;
+        let params;
         try {
+            params = this.srv.extract(req.query);
+            params.query.id = req.params['id'];
+            params.flow = req.flow;
             const data = await this.srv.select(params);
             res.json(data);
         }
