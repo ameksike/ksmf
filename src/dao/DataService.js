@@ -624,23 +624,39 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
-     * @description get filters as query 
+     * @description get filters from query as JSON format 
      *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
      * @param {Array} filter 
+     * @returns {Object}
+     * @example 
+     *  filter=[["name", "Ant", "eq"],["age", 12]]
+     *  filter=[{"field":"name", "value":"Ant", "operator":"eq"},["field":"age", "value":12]]
+     *  filter={"field":"name", "value":"Ant", "operator":"eq"}
+     *  filter={"field":"name", "value":"1,5,8", "operator":"in"}
+     *  filter={"field":"name", "value":[1,5,8], "operator":"in"}
      */
     asQuery(filter) {
         filter = kscrip.decode(filter, "json");
         if (!filter) return {};
-        const Sequelize = this.getManager();
+        filter = Array.isArray(filter) ? filter : [filter];
+        const driver = this.getManager();
         const model = this.getModel();
         const where = {};
-        for (let i in filter) {
-            let [field, value, operator = 'eq'] = filter[i];
+        for (let item of filter) {
+            let [field, value, operator = 'eq'] = Array.isArray(item) ? item : [item?.field, item?.value, item?.operator];
+            operator = (typeof operator === 'string' && operator.toLowerCase()) || 'eq';
             if (model?.tableAttributes?.hasOwnProperty(field)) {
-                value = ['like', 'ilike'].includes((operator || '').toLowerCase()) ? '%' + value + '%' : value;
-                if (Sequelize.Op[operator]) {
+                if (typeof value === 'string' && value) {
+                    if ('in' === operator) {
+                        value = value.split(',');
+                    }
+                    if (!(value[0] === '%' || value[value.length - 1] === '%') && ['like', 'ilike'].includes(operator)) {
+                        value = '%' + value + '%';
+                    }
+                }
+                if (driver.Op[operator]) {
                     where[field] = {
-                        [Sequelize.Op[operator]]: value
+                        [driver.Op[operator]]: value
                     }
                 }
             }
