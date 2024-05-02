@@ -148,17 +148,26 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Boolean}
      */
     iSingle(payload, opt) {
-        const map = payload?.where || {};
-        if (payload.auto || payload.auto === undefined) {
-            const pks = this.getPKs();
-            const con = this.utl.contains(pks, Object.keys(map));
-            if (con.length === pks.length || map[this.modelKeyStr]) {
+        try {
+            if (payload?.limit === 1) {
                 return true;
             }
+            const map = payload?.where || {};
+            if (payload.auto || payload.auto === undefined) {
+                const pks = this.getPKs();
+                const con = this.utl.contains(pks, Object.keys(map));
+                if (con.length === pks.length || map[this.modelKeyStr]) {
+                    let driver = this.getManager();
+                    let mainKey = map[pks[0]];
+                    return typeof mainKey === 'object' ? !!mainKey[driver?.Op?.eq] : !!mainKey;
+                }
+            }
+            payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
+            return Boolean(payload.quantity === this.constant?.quantity?.one);
         }
-        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
-        payload.quantity = payload?.limit === 1 ? this.constant?.quantity?.one : payload.quantity;
-        return Boolean(payload.quantity === this.constant?.quantity?.one);
+        catch (_) {
+            return false;
+        }
     }
 
     /**
@@ -488,7 +497,13 @@ class DataService extends ksdp.integration.Dip {
         }
         try {
             const row = await this.select(payload, opt);
-            return row && await row.destroy();
+            if (row?.data) {
+                let where = this.getWhere(payload, opt) || {};
+                let res = await model.destroy({ where });
+                return res ? row : null;
+            } else {
+                return row && await row.destroy();
+            }
         } catch (error) {
             const logger = this.getLogger();
             logger?.error({
@@ -629,6 +644,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Array} filter 
      * @returns {Object}
      * @example 
+     *  filter=[["id", [78,79,80]]]
      *  filter=[["name", "Ant", "eq"],["age", 12]]
      *  filter=[{"field":"name", "value":"Ant", "operator":"eq"},["field":"age", "value":12]]
      *  filter={"field":"name", "value":"Ant", "operator":"eq"}
@@ -636,32 +652,40 @@ class DataService extends ksdp.integration.Dip {
      *  filter={"field":"name", "value":[1,5,8], "operator":"in"}
      */
     asQuery(filter) {
-        filter = kscrip.decode(filter, "json");
-        if (!filter) return {};
-        filter = Array.isArray(filter) ? filter : [filter];
-        const driver = this.getManager();
-        const model = this.getModel();
-        const where = {};
-        for (let item of filter) {
-            let [field, value, operator = 'eq'] = Array.isArray(item) ? item : [item?.field, item?.value, item?.operator];
-            operator = (typeof operator === 'string' && operator.toLowerCase()) || 'eq';
-            if (model?.tableAttributes?.hasOwnProperty(field)) {
-                if (typeof value === 'string' && value) {
-                    if ('in' === operator) {
-                        value = value.split(',');
+        try {
+            filter = kscrip.decode(filter, "json");
+            if (!filter) return {};
+            filter = Array.isArray(filter) ? filter : [filter];
+            const driver = this.getManager();
+            const model = this.getModel();
+            const where = {};
+            for (let item of filter) {
+                let [field, value, operator = 'eq'] = Array.isArray(item) ? item : [item?.field, item?.value, item?.operator];
+                operator = (typeof operator === 'string' && operator.toLowerCase()) || 'eq';
+                if (model?.tableAttributes?.hasOwnProperty(field)) {
+                    if (typeof value === 'string' && value) {
+                        if ('in' === operator) {
+                            value = value.split(',');
+                        }
+                        if (!(value[0] === '%' || value[value.length - 1] === '%') && ['like', 'ilike'].includes(operator)) {
+                            value = '%' + value + '%';
+                        }
                     }
-                    if (!(value[0] === '%' || value[value.length - 1] === '%') && ['like', 'ilike'].includes(operator)) {
-                        value = '%' + value + '%';
+                    if (Array.isArray(value)) {
+                        operator = 'in';
                     }
-                }
-                if (driver.Op[operator]) {
-                    where[field] = {
-                        [driver.Op[operator]]: value
+                    if (driver.Op[operator]) {
+                        where[field] = {
+                            [driver.Op[operator]]: value
+                        }
                     }
                 }
             }
+            return where;
         }
-        return where;
+        catch (_) {
+            return {};
+        }
     }
 
     /**
@@ -671,10 +695,15 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Array} order options
      */
     asOrder(sort) {
-        const list = kscrip.decode(sort, "json");
-        if (!list) return [];
-        const model = this.getModel();
-        return list?.filter && list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
+        try {
+            const list = kscrip.decode(sort, "json");
+            if (!list) return [];
+            const model = this.getModel();
+            return list?.filter && list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
+        }
+        catch (_) {
+            return null;
+        }
     }
 
     /**
@@ -685,7 +714,6 @@ class DataService extends ksdp.integration.Dip {
         if (this.logger) {
             return this.logger;
         }
-
         if (this.helper) {
             return this.helper.get('logger');
         }
@@ -693,10 +721,11 @@ class DataService extends ksdp.integration.Dip {
 
     /**
      * @description Extract hotkeys from request parameters 
-     * @param {Object} req 
+     * @param {Object} payload 
      * @returns {{ page?: Number; size?: Number; filter?: Object; query?: Object; order?:Array}}
      */
-    extract(req) {
+    extract(payload) {
+        const req = { ...payload };
         const res = {};
         if (req.page) {
             res.page = req.page;
