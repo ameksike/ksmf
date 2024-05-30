@@ -40,4 +40,15 @@
  * @typedef {import('stream').Writable} TWritableStream
  */
 
+
+/**
+ * @typedef {Object} TSearchOption
+ * @property {Number} [page] 
+ * @property {Number} [size] 
+ * @property {Object} [order] 
+ * @property {Object} [where] 
+ * @property {Object} [query] 
+ * @property {Object} [attributes] 
+ */
+
 module.exports = {};

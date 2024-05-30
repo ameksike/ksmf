@@ -4,7 +4,7 @@ export = Utl;
  * @module utils/Utl
  */
 declare class Utl {
-    static "__#9@#instance": any;
+    static "__#13@#instance": any;
     static self(): any;
     set config(options: {
         number: {
@@ -248,5 +248,12 @@ declare class Utl {
         query: any;
         body: any;
     }): any;
+    /**
+     * @description trasform objects using delegates
+     * @param {*} obj
+     * @param {Object} delegate
+     * @returns {*}
+     */
+    transform(obj: any, delegate?: any, key?: any): any;
     #private;
 }

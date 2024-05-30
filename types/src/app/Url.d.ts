@@ -1,6 +1,6 @@
 export = UrlUtil;
 declare class UrlUtil {
-    static "__#10@#instance": any;
+    static "__#14@#instance": any;
     static self(): any;
     /**
      * @description Convert an url string to an object

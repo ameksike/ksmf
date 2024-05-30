@@ -144,6 +144,13 @@ declare class App {
      */
     initModuleOpts(): any;
     /**
+     * @description initialize the module config
+     * @param {Object} module
+     * @param {Object} option
+     * @returns {Object} module
+     */
+    initModuleSetup(module: any, option: any): any;
+    /**
      * @description start server
      * @param {import('../types').TAppConfig} [options]
      */

@@ -22,6 +22,9 @@ declare class DataService extends DataService_base {
      * @param {String} [cfg.modelStatus]
      * @param {Array} [cfg.updateOnDuplicate]
      * @param {Object} [cfg.constant]
+     * @param {Object} [cfg.mapAttributeKey]
+     * @param {Object} [cfg.mapSearchKey]
+     * @param {Object} [cfg.mapOrderKey]
      * @param {Object} [cfg.utl]
      * @param {{ models?: Object; driver?: Object; manager?: Object}} [cfg.dao]
      * @param {Object} [cfg.logger]
@@ -36,6 +39,9 @@ declare class DataService extends DataService_base {
         modelStatus?: string;
         updateOnDuplicate?: any[];
         constant?: any;
+        mapAttributeKey?: any;
+        mapSearchKey?: any;
+        mapOrderKey?: any;
         utl?: any;
         dao?: {
             models?: any;
@@ -52,6 +58,9 @@ declare class DataService extends DataService_base {
     modelStatus: any;
     updateOnDuplicate: any;
     dao: any;
+    mapSearchKey: any;
+    mapAttributeKey: any;
+    mapOrderKey: any;
     constant: any;
     /**
      * @description get paginator options
@@ -273,19 +282,19 @@ declare class DataService extends DataService_base {
     /**
      * @description insert an entity
      * @param {Object} payload
-     * @param {Object} payload.data
-     * @param {Object} payload.where
-     * @param {Object} payload.row
-     * @param {Number} payload.mode
-     * @param {Object} payload.transaction
+     * @param {Object} [payload.data]
+     * @param {Object} [payload.where]
+     * @param {Object} [payload.row]
+     * @param {Number} [payload.mode]
+     * @param {Object} [payload.transaction]
      * @returns {Object} row
      */
     insert(payload: {
-        data: any;
-        where: any;
-        row: any;
-        mode: number;
-        transaction: any;
+        data?: any;
+        where?: any;
+        row?: any;
+        mode?: number;
+        transaction?: any;
     }, opt: any): any;
     /**
      * @description update an entity
@@ -353,18 +362,57 @@ declare class DataService extends DataService_base {
         distinct?: boolean;
     }): Promise<number>;
     /**
-     * @description get filters as query
-     *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
-     * @param {Array} filter
+     * @description get a search vector per item
+     * @param {Object|Array} item
+     * @returns {Array} vector
      */
-    asQuery(filter: any[]): {};
+    asFilterItemVector(item: any | any[]): any[];
+    /**
+     * @description get the vector value
+     * @param {*} value
+     * @param {String} operator
+     * @returns {*} value
+     */
+    asFilterItemValue(value: any, operator: string): any;
+    /**
+     * @description get filters from query as JSON format
+     *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
+     * @param {String} filter
+     * @returns {Object}
+     * @example
+     *  filter=[["id", [78,79,80]]]
+     *  filter=[["name", "Ant", "eq"],["age", 12]]
+     *  filter=[{"field":"name", "value":"Ant", "operator":"eq"},["field":"age", "value":12]]
+     *  filter={"field":"name", "value":"Ant", "operator":"eq"}
+     *  filter={"field":"name", "value":"1,5,8", "operator":"in"}
+     *  filter={"field":"name", "value":[1,5,8], "operator":"in"}
+     *  filter={"value":[{"field":"name", "value":"demo1"},{"field":"group", "value":"demo1"}],"operator":"or"}
+     *  filter={"value":[["name", "demo1"],["group", "value"]],"operator":"or"}
+     */
+    asFilter(filter: string): any;
     /**
      * @description get sort obtion as order format
      *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#ordering-and-grouping
      * @param {Array} sort
      * @returns {Array} order options
+     * @example
+     *  ['title', 'DESC'],
+     *  ['Task', 'createdAt', 'DESC'],
+     *  [{model: Task, as: 'Task'}, 'createdAt', 'DESC'],
      */
     asOrder(sort: any[]): any[];
+    /**
+     * @description map attributes from service
+     * @param {String} attributes
+     * @returns {Object}
+     */
+    asAttributes(attributes: string): any;
+    /**
+     * @description transform to a query language
+     * @param {String} data
+     * @returns {Object}
+     */
+    asQuery(data: string): any;
     /**
      * @description Get Logger Object
      * @returns {Object} Logger
@@ -372,15 +420,9 @@ declare class DataService extends DataService_base {
     getLogger(): any;
     /**
      * @description Extract hotkeys from request parameters
-     * @param {Object} req
-     * @returns {{ page?: Number; size?: Number; filter?: Object; query?: Object; order?:Array}}
+     * @param {Object} payload
+     * @returns {import("../types").TSearchOption}
      */
-    extract(req: any): {
-        page?: number;
-        size?: number;
-        filter?: any;
-        query?: any;
-        order?: any[];
-    };
+    extract(payload: any): import("../types").TSearchOption;
 }
 import Utl = require("../app/Utl");
