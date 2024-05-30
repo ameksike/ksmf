@@ -217,7 +217,6 @@ class DataService extends ksdp.integration.Dip {
             }
 
             const cfg = {
-                subQuery: false,
                 attributes: payload?.attributes,
                 offset: paginator.offset,
                 limit: paginator.limit,
