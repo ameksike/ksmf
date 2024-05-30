@@ -769,7 +769,7 @@ class DataService extends ksdp.integration.Dip {
         const query = kscrip.decode(data, "json");
         return this.utl.transform(query, {
             onKey: (key, value) => this.mapSearchKey[key] ?? driver.Op[key] ?? key,
-            onVal: (value, key) => value
+            onVal: (value, key) => (key = "in" && typeof value === "string") ? value.split(",") : value
         });
     }
 
