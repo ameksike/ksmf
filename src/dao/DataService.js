@@ -821,7 +821,7 @@ class DataService extends ksdp.integration.Dip {
         if (req.ql) {
             const queryValue = (new URLSearchParams("val=" + req.ql)).get('val');
             const query = this.asQuery(queryValue);
-            res.where = { ...query, ...res.where };
+            res.where = res.where ? { ...res.where, ...query } : query;
             delete req["ql"];
         }
 
