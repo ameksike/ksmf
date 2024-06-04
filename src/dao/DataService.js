@@ -697,6 +697,7 @@ class DataService extends ksdp.integration.Dip {
      */
     asFilter(filter) {
         try {
+            filter = (new URLSearchParams("val=" + filter)).get('val');
             let filters = kscrip.decode(filter, "json");
             if (!filters) return {};
             filters = Array.isArray(filters) ? filters : [filters];
@@ -765,6 +766,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     asQuery(data) {
+        data = (new URLSearchParams("val=" + data)).get('val');
         const driver = this.getManager();
         const query = kscrip.decode(data, "json");
         return this.utl.transform(query, {
@@ -813,15 +815,28 @@ class DataService extends ksdp.integration.Dip {
         }
 
         if (req.filter) {
-            const filterValue = (new URLSearchParams("val=" + req.filter)).get('val');
-            res.where = this.asFilter(filterValue);
+            if (Array.isArray(req.filter)) {
+                for (let item of req.filter) {
+                    let filterValue = this.asFilter(item);
+                    res.where = res.where ? { ...res.where, ...filterValue } : filterValue;
+                }
+            } else {
+                let filterValue = this.asFilter(req.filter);
+                res.where = res.where ? { ...res.where, ...filterValue } : filterValue;
+            }
             delete req["filter"];
         }
 
         if (req.ql) {
-            const queryValue = (new URLSearchParams("val=" + req.ql)).get('val');
-            const query = this.asQuery(queryValue);
-            res.where = res.where ? { ...res.where, ...query } : query;
+            if (Array.isArray(req.ql)) {
+                for (let item of req.ql) {
+                    let query = this.asQuery(item);
+                    res.where = res.where ? { ...res.where, ...query } : query;
+                }
+            } else {
+                let query = this.asQuery(req.ql);
+                res.where = res.where ? { ...res.where, ...query } : query;
+            }
             delete req["ql"];
         }
 
