@@ -165,6 +165,7 @@ declare class DataService extends DataService_base {
     driver: any;
     getManager(): any;
     manager: any;
+    getAttrList(key?: any, defaults?: string): any;
     /**
      * @description get attributes map
      * @param {Object|Array} lst
@@ -307,7 +308,7 @@ declare class DataService extends DataService_base {
      * @param {boolean} [payload.strict]
      * @param {any[]} [payload.updateOnDuplicate]
      * @param {Object} [opt]
-     * @returns {Object} row
+     * @returns {Promise<any>} row
      */
     update(payload: {
         data?: any;
@@ -317,7 +318,7 @@ declare class DataService extends DataService_base {
         transaction?: any;
         strict?: boolean;
         updateOnDuplicate?: any[];
-    }, opt?: any): any;
+    }, opt?: any): Promise<any>;
     /**
      * @description update an entity
      * @param {Object} target
@@ -424,5 +425,10 @@ declare class DataService extends DataService_base {
      * @returns {import("../types").TSearchOption}
      */
     extract(payload: any): import("../types").TSearchOption;
+    /**
+     * @description Create a transaction
+     * @returns {Object}
+     */
+    createTransaction(handler: any): any;
 }
 import Utl = require("../app/Utl");

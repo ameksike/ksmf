@@ -568,7 +568,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {boolean} [payload.strict] 
      * @param {any[]} [payload.updateOnDuplicate] 
      * @param {Object} [opt] 
-     * @returns {Object} row
+     * @returns {Promise<any>} row
      */
     async update(payload, opt) {
         let { data, transaction, ...options } = payload;
