@@ -858,6 +858,14 @@ class DataService extends ksdp.integration.Dip {
         res.query = { ...req };
         return res;
     }
+
+    /**
+     * @description create a transaction
+     * @returns {Object}
+     */
+    createTransaction() {
+        return this.dao.driver.transaction();
+    }
 }
 
 module.exports = DataService;
