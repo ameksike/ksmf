@@ -291,6 +291,11 @@ class DataService extends ksdp.integration.Dip {
         return this.manager;
     }
 
+    getAttrList(key = null, defaults = 'basic') {
+        let list = this.getModel()?.attrs || {};
+        return key ? (list[key] || list[defaults]) : list;
+    }
+
     /**
      * @description get attributes map
      * @param {Object|Array} lst 
@@ -565,10 +570,28 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} [opt] 
      * @returns {Object} row
      */
-    update(payload, opt) {
-        payload = payload || {};
-        payload.mode = this.constant?.action?.update;
-        return this.save(payload, opt);
+    async update(payload, opt) {
+        let { data, transaction, ...options } = payload;
+        transaction = transaction || await this.createTransaction();
+        try {
+            let model = this.getModel();
+            await model.update(data, { ...options, transaction });
+            let result = await model.findAll({ ...options, transaction });
+            await transaction.commit();
+            return result;
+        } catch (error) {
+            opt = opt || {};
+            opt.error = error;
+            await transaction?.rollback();
+            const logger = this.getLogger();
+            logger?.error({
+                flow: opt.flow,
+                src: "KsMf:DAO:" + this.modelName + ":Update",
+                data: payload,
+                error: { message: error?.message || error, stack: error?.stack },
+            });
+            return null;
+        }
     }
 
     /**
@@ -860,11 +883,12 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
-     * @description create a transaction
+     * @description Create a transaction
      * @returns {Object}
      */
-    createTransaction() {
-        return this.dao.driver.transaction();
+    createTransaction(handler) {
+        handler = handler instanceof Function ? handler : undefined;
+        return this.dao.driver.transaction(handler);
     }
 }
 
