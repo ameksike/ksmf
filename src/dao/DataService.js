@@ -291,9 +291,18 @@ class DataService extends ksdp.integration.Dip {
         return this.manager;
     }
 
-    getAttrList(key = null, defaults = 'basic') {
-        let list = this.getModel()?.attrs || {};
-        return key ? (list[key] || list[defaults]) : list;
+    /**
+     * @description get attribute list configuration
+     * @param {Object} [option]
+     * @param {String} [option.key]  
+     * @param {String} [option.defaults]  
+     * @param {String} [option.model]  
+     * @returns {String|Object|Array}
+     */
+    getAttrList(option) {
+        let { key = null, defaults = 'basic', model } = option || {};
+        let list = this.getModel(model)?.attrs || {};
+        return (key ? (list[key] || list[defaults]) : list) || {};
     }
 
     /**

@@ -165,7 +165,19 @@ declare class DataService extends DataService_base {
     driver: any;
     getManager(): any;
     manager: any;
-    getAttrList(key?: any, defaults?: string): any;
+    /**
+     * @description get attribute list configuration
+     * @param {Object} [option]
+     * @param {String} [option.key]
+     * @param {String} [option.defaults]
+     * @param {String} [option.model]
+     * @returns {String|Object|Array}
+     */
+    getAttrList(option?: {
+        key?: string;
+        defaults?: string;
+        model?: string;
+    }): string | any | any[];
     /**
      * @description get attributes map
      * @param {Object|Array} lst
