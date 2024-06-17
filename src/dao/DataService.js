@@ -729,7 +729,7 @@ class DataService extends ksdp.integration.Dip {
      */
     asFilter(filter) {
         try {
-            filter = (new URLSearchParams("val=" + filter)).get('val');
+            filter = typeof filter === "string" ? (new URLSearchParams("val=" + filter)).get('val') : filter;
             let filters = kscrip.decode(filter, "json");
             if (!filters) return {};
             filters = Array.isArray(filters) ? filters : [filters];
