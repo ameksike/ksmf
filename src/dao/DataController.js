@@ -204,7 +204,7 @@ class DataController extends Controller {
         const config = { flow: req.flow };
         const params = this.srv?.extract(req.query);
         const keypid = this.srv?.getPKs()[0] || "id";
-        const exclude = this.srv?.getAttrList({ key: 'exclude' }) || {};
+        const exclude = params?.attributes?.exclude || this.srv?.getAttrList({ key: 'exclude' }) || {};
         const target = {
             exclude,
             where: {
