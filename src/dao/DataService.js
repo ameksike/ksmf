@@ -103,6 +103,21 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
+     * @description Get primary key field name
+     * @param {Number|String|null} value 
+     * @returns {String}
+     */
+    getFieldId(value = null) {
+        let id = this.modelKey || this.getPKs()[0] || "id";
+        if (typeof value === "number" || !isNaN(value)) {
+            return id; // TODO: check this PK selection
+        } else if (value && typeof value === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
+            this.modelKeyStr
+        }
+        return id;
+    }
+
+    /**
      * @description format the where clause
      * @param {Object} payload 
      * @param {Object} [options] 
@@ -110,11 +125,11 @@ class DataService extends ksdp.integration.Dip {
      */
     getWhere({ where, query }, options) {
         let subFilter = {};
+        let pks = this.getFieldId(query);
         if (typeof query === "number" || !isNaN(query)) {
-            let pks = this.modelKey || this.getPKs()[0] || "id"; // TODO: check this PK selection
             subFilter[pks] = parseInt(query);
         } else if (typeof query === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
-            subFilter[this.modelKeyStr] = query;
+            subFilter[pks] = query;
         }
         let subQuery = this.getAttrs(query);
         return { ...where, ...subQuery, ...subFilter };
@@ -894,6 +909,11 @@ class DataService extends ksdp.integration.Dip {
         if (req.order) {
             res.order = this.asOrder(req.order);
             delete req["order"];
+        }
+
+        if (req.where) {
+            res.where = { ...req.where, ...res.where };
+            delete req["where"];
         }
 
         res.query = { ...req };

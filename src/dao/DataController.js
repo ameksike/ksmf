@@ -271,6 +271,25 @@ class DataController extends Controller {
             res.status(500).end();
         }
     }
+
+    /**
+     * @description Bulk delete by id
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Promise<any>} DTO
+     */
+    clean(req, res) {
+        let ids = req.body.ids || req.body;
+        if (!Array.isArray(ids)) {
+            return res.status(400).end();
+        }
+        let pks = this.srv?.getFieldId();
+        req.query = req.query || {};
+        pks && (req.query.where = {
+            [pks]: { [this.srv?.dao?.manager?.Op?.in]: ids }
+        });
+        return this.delete(req, res);
+    }
 }
 
 module.exports = DataController;
