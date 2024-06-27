@@ -42,11 +42,11 @@ class DataController extends Controller {
 
     async init() {
         //... Define logger service as global for his controller
-        this.logger = this.helper.get('logger');
+        this.logger = this.logger || this.helper?.get('logger');
         //... Define user service as global for his controller
         this.srv = typeof this.srv === "object" ?
             this.srv :
-            (this.helper.get(typeof this.srv === "string" ? this.srv : {
+            (this.helper?.get(typeof this.srv === "string" ? this.srv : (this.srvName && {
                 name: this.srvName,
                 path: 'service',
                 module: this.module,
@@ -55,7 +55,7 @@ class DataController extends Controller {
                     dao: 'dao',
                     helper: 'helper'
                 }
-            }));
+            })));
         this.initValidations();
     }
 
@@ -73,18 +73,21 @@ class DataController extends Controller {
      * @example {{page?: Number; size?: Number; total?: Number; data?: Object[] }}
      */
     async list(req, res) {
-        const query = this.srv?.extract(req.query);
         try {
-            query.flow = req.flow;
-            const data = await this.srv.select(query);
-            res.json(data);
+            const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
+            delete req.query.format;
+            const flow = req.flow;
+            const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
+            const options = this.srv?.extract(req.query) || {};
+            const data = await this.srv?.select({ flow, attributes, ...options });
+            data ? res.json(data) : res.status(400).end();
         }
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:list",
                 error: error.message || error,
-                data: query
+                data: req.query
             });
             res.status(500).end();
         }
@@ -97,19 +100,22 @@ class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     async select(req, res) {
-        const params = this.srv?.extract(req.query);
-        params.query.id = req.params['id'];
-        params.flow = req.flow;
         try {
-            const data = await this.srv.select(params);
-            res.json(data);
+            const format = req.query.format || 'basic';
+            delete req.query.format;
+            const flow = req.flow;
+            const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
+            const options = this.srv?.extract(req.query) || {};
+            options.query.id = req.params['id'];
+            const data = await this.srv?.select({ limit: 1, flow, attributes, ...options });
+            data ? res.json(data) : res.status(404).end();
         }
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:select",
-                error: error.message || error,
-                data: params
+                error: error?.message || error,
+                data: req.query
             });
             res.status(500).end();
         }
@@ -123,9 +129,12 @@ class DataController extends Controller {
      */
     async insert(req, res) {
         const config = { flow: req.flow };
-        const payload = req.body;
+        const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
+        delete req.query.format;
         try {
-            const data = await this.srv.insert({ data: payload }, config);
+            const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
+            const options = this.srv?.extract(req.query);
+            const data = await this.srv.insert({ attributes, data: req.body, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:insert",
@@ -138,8 +147,8 @@ class DataController extends Controller {
             this.logger?.error({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:insert",
-                error: error.message || error,
-                data: payload
+                error: error?.message || error,
+                data: req.body
             });
             res.status(500).end();
         }
@@ -153,25 +162,33 @@ class DataController extends Controller {
      */
     async update(req, res) {
         const config = { flow: req.flow };
-        const params = this.srv?.extract(req.query);
-        params.query.id = req.body.id || req.params['id'];
-        params.data = req.body;
+        const data = req.body;
+        const id = req.params.id || data.id;
+        const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
+        delete req.query.format;
         try {
-            const data = await this.srv.update(params, config);
+            const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
+            const options = this.srv?.extract(req.query);
+            options.query = options.query || { id };
+            options.query.id = id;
+            const result = await this.srv.update({ data, attributes, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:update",
                 data
             });
+            if (!result || !result?.length) {
+                return res.status(404).end();
+            }
             res.status(config?.action === "create" ? 201 : 200);
-            res.json(data);
+            res.json(id && result?.length === 1 ? result[0] : result);
         }
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:update",
-                error: error.message || error,
-                data: params
+                error: error?.message || error,
+                data: { id, body: data }
             });
             res.status(500).end();
         }
@@ -186,8 +203,10 @@ class DataController extends Controller {
     async clone(req, res) {
         const config = { flow: req.flow };
         const params = this.srv?.extract(req.query);
-        const keypid = this.srv.getPKs()[0] || "id";
+        const keypid = this.srv?.getPKs()[0] || "id";
+        const exclude = params?.attributes?.exclude || this.srv?.getAttrList({ key: 'exclude' }) || {};
         const target = {
+            exclude,
             where: {
                 [keypid]: req.params['id']
             }
@@ -222,26 +241,54 @@ class DataController extends Controller {
      */
     async delete(req, res) {
         const config = { flow: req.flow };
-        const params = this.srv?.extract(req.query);
-        params.query.id = req.body.id || req.params['id'];
+        const data = req.body;
+        const id = req.params.id || data.id;
+        const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
+        delete req.query.format;
         try {
-            const data = await this.srv.delete(params, config);
+            const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
+            const options = this.srv?.extract(req.query);
+            options.query = options.query || { id };
+            options.query.id = id;
+            const result = await this.srv.delete({ data, attributes, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:delete",
-                data
+                data: result
             });
-            res.json(data);
+            if (!result) {
+                return res.status(404).end();
+            }
+            res.json(id && result?.length === 1 ? result[0] : result);
         }
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:delete",
                 error: error.message || error,
-                data: params
+                data: { id, body: data }
             });
             res.status(500).end();
         }
+    }
+
+    /**
+     * @description Bulk delete by id
+     * @param {Object} req 
+     * @param {Object} res 
+     * @returns {Promise<any>} DTO
+     */
+    clean(req, res) {
+        let ids = req.body.ids || req.body;
+        if (!Array.isArray(ids)) {
+            return res.status(400).end();
+        }
+        let pks = this.srv?.getFieldId();
+        req.query = req.query || {};
+        pks && (req.query.where = {
+            [pks]: { [this.srv?.dao?.manager?.Op?.in]: ids }
+        });
+        return this.delete(req, res);
     }
 }
 

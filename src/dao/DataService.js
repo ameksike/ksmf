@@ -103,6 +103,21 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
+     * @description Get primary key field name
+     * @param {Number|String|null} value 
+     * @returns {String}
+     */
+    getFieldId(value = null) {
+        let id = this.modelKey || this.getPKs()[0] || "id";
+        if (typeof value === "number" || !isNaN(value)) {
+            return id; // TODO: check this PK selection
+        } else if (value && typeof value === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
+            this.modelKeyStr
+        }
+        return id;
+    }
+
+    /**
      * @description format the where clause
      * @param {Object} payload 
      * @param {Object} [options] 
@@ -110,11 +125,11 @@ class DataService extends ksdp.integration.Dip {
      */
     getWhere({ where, query }, options) {
         let subFilter = {};
+        let pks = this.getFieldId(query);
         if (typeof query === "number" || !isNaN(query)) {
-            let pks = this.modelKey || this.getPKs()[0] || "id"; // TODO: check this PK selection
             subFilter[pks] = parseInt(query);
         } else if (typeof query === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
-            subFilter[this.modelKeyStr] = query;
+            subFilter[pks] = query;
         }
         let subQuery = this.getAttrs(query);
         return { ...where, ...subQuery, ...subFilter };
@@ -584,8 +599,10 @@ class DataService extends ksdp.integration.Dip {
         transaction = transaction || await this.createTransaction();
         try {
             let model = this.getModel();
-            await model.update(data, { ...options, transaction });
-            let result = await model.findAll({ ...options, transaction });
+            let where = this.getWhere(payload, opt);
+            let config = { ...options, where, transaction };
+            await model.update(data, config);
+            let result = await model.findAll(config);
             await transaction.commit();
             return result;
         } catch (error) {
@@ -785,10 +802,15 @@ class DataService extends ksdp.integration.Dip {
      * @description map attributes from service
      * @param {String} attributes 
      * @returns {Object}
+     * @example 
+     *  fields=name
+     *  fields=name,status
+     *  attributes=name,status
+     *  attributes=["name","status"]
      */
     asAttributes(attributes) {
         let list = kscrip.decode(attributes, "json");
-        list = Array.isArray(list) ? list : [list];
+        list = Array.isArray(list) ? list : (typeof list === "string" ? list.split(",") : [list]);
         return list?.map(attr => this.mapAttributeKey[attr] ?? attr);
     }
 
@@ -872,9 +894,11 @@ class DataService extends ksdp.integration.Dip {
             delete req["ql"];
         }
 
-        if (req.attributes) {
+        if (req.attributes || req.fields) {
+            req.attributes = req.attributes || req.fields;
             res.attributes = this.asAttributes(req.attributes);
             delete req["attributes"];
+            delete req["fields"];
         }
 
         if (req.exclude) {
@@ -885,6 +909,11 @@ class DataService extends ksdp.integration.Dip {
         if (req.order) {
             res.order = this.asOrder(req.order);
             delete req["order"];
+        }
+
+        if (req.where) {
+            res.where = { ...req.where, ...res.where };
+            delete req["where"];
         }
 
         res.query = { ...req };
