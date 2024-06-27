@@ -584,8 +584,10 @@ class DataService extends ksdp.integration.Dip {
         transaction = transaction || await this.createTransaction();
         try {
             let model = this.getModel();
-            await model.update(data, { ...options, transaction });
-            let result = await model.findAll({ ...options, transaction });
+            let where = this.getWhere(payload, opt);
+            let config = { ...options, where, transaction };
+            await model.update(data, config);
+            let result = await model.findAll(config);
             await transaction.commit();
             return result;
         } catch (error) {
@@ -785,10 +787,15 @@ class DataService extends ksdp.integration.Dip {
      * @description map attributes from service
      * @param {String} attributes 
      * @returns {Object}
+     * @example 
+     *  fields=name
+     *  fields=name,status
+     *  attributes=name,status
+     *  attributes=["name","status"]
      */
     asAttributes(attributes) {
         let list = kscrip.decode(attributes, "json");
-        list = Array.isArray(list) ? list : [list];
+        list = Array.isArray(list) ? list : (typeof list === "string" ? list.split(",") : [list]);
         return list?.map(attr => this.mapAttributeKey[attr] ?? attr);
     }
 
@@ -872,9 +879,11 @@ class DataService extends ksdp.integration.Dip {
             delete req["ql"];
         }
 
-        if (req.attributes) {
+        if (req.attributes || req.fields) {
+            req.attributes = req.attributes || req.fields;
             res.attributes = this.asAttributes(req.attributes);
             delete req["attributes"];
+            delete req["fields"];
         }
 
         if (req.exclude) {
