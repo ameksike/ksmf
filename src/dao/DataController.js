@@ -74,7 +74,7 @@ class DataController extends Controller {
      */
     async list(req, res) {
         try {
-            const format = req.query.format || 'basic';
+            const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
             delete req.query.format;
             const flow = req.flow;
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
@@ -129,7 +129,7 @@ class DataController extends Controller {
      */
     async insert(req, res) {
         const config = { flow: req.flow };
-        const format = req.query.format || 'basic';
+        const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
         delete req.query.format;
         try {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
@@ -164,7 +164,7 @@ class DataController extends Controller {
         const config = { flow: req.flow };
         const data = req.body;
         const id = req.params.id || data.id;
-        const format = req.query.format || 'basic';
+        const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
         delete req.query.format;
         try {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
@@ -204,7 +204,9 @@ class DataController extends Controller {
         const config = { flow: req.flow };
         const params = this.srv?.extract(req.query);
         const keypid = this.srv?.getPKs()[0] || "id";
+        const exclude = this.srv?.getAttrList({ key: 'exclude' }) || {};
         const target = {
+            exclude,
             where: {
                 [keypid]: req.params['id']
             }
@@ -241,7 +243,7 @@ class DataController extends Controller {
         const config = { flow: req.flow };
         const data = req.body;
         const id = req.params.id || data.id;
-        const format = req.query.format || 'basic';
+        const format = req.query?.format && req.query.format !== 'exclude' ? req.query.format : 'basic';
         delete req.query.format;
         try {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
