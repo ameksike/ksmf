@@ -109,7 +109,11 @@ class DataService extends ksdp.integration.Dip {
      */
     getFieldId(value = null) {
         let id = this.modelKey || this.getPKs()[0] || "id";
-        if (typeof value === "number" || !isNaN(value)) {
+        /**
+         * @type {*}
+         */
+        let tmp = value;
+        if (typeof value === "number" || !isNaN(tmp)) {
             return id; // TODO: check this PK selection
         } else if (value && typeof value === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
             this.modelKeyStr

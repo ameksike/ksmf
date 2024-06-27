@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = AppRTA;
 declare class AppRTA {
     constructor(option: any);

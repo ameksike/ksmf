@@ -111,17 +111,17 @@ declare class App {
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<App>} self
      */
-    init(options?: import('../types').TAppConfig): Promise<App>;
+    init(options?: import("../types").TAppConfig): Promise<App>;
     /**
      * @description preload configuration file, variables, environments, etc
      * @param {import('../types').TAppConfig} [options]
      */
-    initLoad(options?: import('../types').TAppConfig): void;
+    initLoad(options?: import("../types").TAppConfig): void;
     /**
      * @description initialize configurations
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options?: import('../types').TAppConfig): this;
+    initConfig(options?: import("../types").TAppConfig): this;
     /**
      * @description initialize event handler
      */
@@ -137,7 +137,7 @@ declare class App {
      * @param {Array} modules
      * @returns {Object} module
      */
-    initModule(item: import('../types').TOption | string, modules: any[]): any;
+    initModule(item: import("../types").TOption | string, modules: any[]): any;
     /**
      * @description initialize the module options
      * @returns {Object}
@@ -154,7 +154,7 @@ declare class App {
      * @description start server
      * @param {import('../types').TAppConfig} [options]
      */
-    run(options?: import('../types').TAppConfig): Promise<void>;
+    run(options?: import("../types").TAppConfig): Promise<void>;
 }
 import Config = require("./Config");
 import Dir = require("./Dir");

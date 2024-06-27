@@ -202,9 +202,11 @@ class App {
             path: this.cfg.srv.module.path,
             src: this.cfg.srv.helper,
             name: 'helper',
+            /*
+            TODO: check this issue
             error: {
-                on: (error) => this.emit('onError', [error, this])
-            }
+               on: (error) => this.emit('onError', [error, this])
+            }*/
         });
         this.helper.set(this, 'app');
         // ... configure Events ...

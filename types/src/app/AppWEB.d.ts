@@ -23,7 +23,7 @@ declare class AppWEB extends App {
      * @description alias for start server
      * @param {import('../types').TAppConfig} [options]
      */
-    start(options?: import('../types').TAppConfig): void;
+    start(options?: import("../types").TAppConfig): void;
     /**
      * @description stop server
      */
@@ -33,7 +33,7 @@ declare class AppWEB extends App {
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<import('../server/BaseServer')>} server
      */
-    getServer(options?: import('../types').TAppConfig): Promise<import('../server/BaseServer')>;
+    getServer(options?: import("../types").TAppConfig): Promise<import("../server/BaseServer")>;
     /**
      * @description throw application error
      * @param {Object} error
@@ -47,17 +47,17 @@ declare class AppWEB extends App {
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<AppWEB>} self
      */
-    init(options?: import('../types').TAppConfig): Promise<AppWEB>;
+    init(options?: import("../types").TAppConfig): Promise<AppWEB>;
     /**
      * @description preload configuration file, variables, environments, etc
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options?: import('../types').TAppConfig): this;
+    initConfig(options?: import("../types").TAppConfig): this;
     /**
      * @description initialize middleware applications
      * @param {import('../types').TAppConfig} [options]
      */
-    initApp(options?: import('../types').TAppConfig): Promise<this>;
+    initApp(options?: import("../types").TAppConfig): Promise<this>;
     /**
      * @description load application routes
      * @returns {AppWEB} self
