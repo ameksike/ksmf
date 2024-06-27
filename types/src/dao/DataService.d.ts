@@ -70,6 +70,12 @@ declare class DataService extends DataService_base {
      */
     getPaginator(payload: any, options?: any): any;
     /**
+     * @description Get primary key field name
+     * @param {Number|String|null} value
+     * @returns {String}
+     */
+    getFieldId(value?: number | string | null): string;
+    /**
      * @description format the where clause
      * @param {Object} payload
      * @param {Object} [options]
@@ -418,6 +424,11 @@ declare class DataService extends DataService_base {
      * @description map attributes from service
      * @param {String} attributes
      * @returns {Object}
+     * @example
+     *  fields=name
+     *  fields=name,status
+     *  attributes=name,status
+     *  attributes=["name","status"]
      */
     asAttributes(attributes: string): any;
     /**

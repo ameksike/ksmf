@@ -74,5 +74,12 @@ declare class DataController extends Controller {
      * @returns {Promise<any>} DTO
      */
     delete(req: any, res: any): Promise<any>;
+    /**
+     * @description Bulk delete by id
+     * @param {Object} req
+     * @param {Object} res
+     * @returns {Promise<any>} DTO
+     */
+    clean(req: any, res: any): Promise<any>;
 }
 import Controller = require("../app/Controller");
