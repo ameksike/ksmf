@@ -90,8 +90,8 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     getPaginator(payload, options) {
-        let { page, size, limit, jump } = payload;
-        if (page === "none") return {};
+        let { page, size, limit, jump, pagination } = payload;
+        if (pagination === "none") return {};
         page = parseInt(page) || 1;
         jump = page > 0 ? page - 1 : 0;
         size = parseInt(limit) || parseInt(size) || 10;
@@ -524,6 +524,9 @@ class DataService extends ksdp.integration.Dip {
      * @description read/update/create 
      * @param {Object} payload 
      * @param {Object} payload.data 
+     * @param {String} payload.pagination 
+     * @param {Number} payload.page 
+     * @param {Number} payload.size 
      * @param {Object} payload.where 
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
@@ -536,7 +539,7 @@ class DataService extends ksdp.integration.Dip {
             return null;
         }
         try {
-            payload.page = payload.page || "none";
+            payload.pagination = payload.pagination || (!payload.page && !payload.size && "none");
             const row = await this.select(payload, opt);
             if (row?.data) {
                 let where = this.getWhere(payload, opt) || {};
