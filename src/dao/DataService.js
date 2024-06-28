@@ -842,6 +842,50 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
+     * @description conver to include mode item
+     * @param {Object} item 
+     * @returns {Object} model
+     */
+    asIncludeItem(item) {
+        if (!item?.model) {
+            return null;
+        }
+        let model = this.getModel(item.model);
+        if (!model) {
+            return null;
+        }
+        let result = { model };
+        let format = item.format && item.format !== 'exclude' ? item.format : 'basic';
+        let attributes = item?.attributes || item?.fields || this.getAttrList({ model: item.model, key: format });
+        if (attributes) {
+            result.attributes = attributes;
+        }
+        if (item.required !== undefined && item.required !== null) {
+            result.required = !!item.required;
+        }
+        if (typeof item.as === "string" && item.as) {
+            result.as = item.as;
+        }
+        return result;
+    }
+
+    /**
+     * @description Get Include Object
+     * @param {String|Array<Object>} data 
+     * @returns {Array<Object>}
+     */
+    asInclude(data) {
+        let tmp = kscrip.decode(data, "json");
+        let list = Array.isArray(tmp) ? tmp : [tmp];
+        let result = [];
+        for (let item of list) {
+            let itm = this.asIncludeItem(item);
+            itm && result.push(itm);
+        }
+        return result;
+    }
+
+    /**
      * @description Get Logger Object
      * @returns {Object} Logger
      */
@@ -926,6 +970,11 @@ class DataService extends ksdp.integration.Dip {
         if (req.where) {
             res.where = { ...req.where, ...res.where };
             delete req["where"];
+        }
+
+        if (req.include) {
+            res.include = this.asInclude(req.include);
+            delete req["include"];
         }
 
         res.query = { ...req };
