@@ -268,6 +268,9 @@ declare class DataService extends DataService_base {
      * @description read/update/create
      * @param {Object} payload
      * @param {Object} payload.data
+     * @param {String} payload.pagination
+     * @param {Number} payload.page
+     * @param {Number} payload.size
      * @param {Object} payload.where
      * @param {Object} payload.row
      * @param {Number} payload.mode
@@ -276,6 +279,9 @@ declare class DataService extends DataService_base {
      */
     delete(payload: {
         data: any;
+        pagination: string;
+        page: number;
+        size: number;
         where: any;
         row: any;
         mode: number;

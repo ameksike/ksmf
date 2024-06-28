@@ -90,7 +90,8 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     getPaginator(payload, options) {
-        let { page, size, limit, jump } = payload;
+        let { page, size, limit, jump, pagination } = payload;
+        if (pagination === "none") return {};
         page = parseInt(page) || 1;
         jump = page > 0 ? page - 1 : 0;
         size = parseInt(limit) || parseInt(size) || 10;
@@ -289,7 +290,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     getResponse(data, action, options) {
-        return data;
+        return Array.isArray(data) ? { total: data.length, data } : data;
     }
 
     /**
@@ -523,6 +524,9 @@ class DataService extends ksdp.integration.Dip {
      * @description read/update/create 
      * @param {Object} payload 
      * @param {Object} payload.data 
+     * @param {String} payload.pagination 
+     * @param {Number} payload.page 
+     * @param {Number} payload.size 
      * @param {Object} payload.where 
      * @param {Object} payload.row 
      * @param {Number} payload.mode 
@@ -535,6 +539,7 @@ class DataService extends ksdp.integration.Dip {
             return null;
         }
         try {
+            payload.pagination = payload.pagination || (!payload.page && !payload.size && "none");
             const row = await this.select(payload, opt);
             if (row?.data) {
                 let where = this.getWhere(payload, opt) || {};
@@ -604,11 +609,14 @@ class DataService extends ksdp.integration.Dip {
         try {
             let model = this.getModel();
             let where = this.getWhere(payload, opt);
-            let config = { ...options, where, transaction };
-            await model.update(data, config);
+            let config = { ...options, where, transaction, returning: true };
+            let [updatedRows, affectedRows] = await model.update(data, config);
             let result = await model.findAll(config);
+            let content = (result?.length && result) || updatedRows || (affectedRows && [{ affectedRows }]);
+            opt = opt || {};
+            opt.action = "update";
             await transaction.commit();
-            return result;
+            return this.getResponse(content, opt.action, payload);
         } catch (error) {
             opt = opt || {};
             opt.error = error;
