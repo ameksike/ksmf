@@ -169,19 +169,28 @@ class DataController extends Controller {
         try {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
             const options = this.srv?.extract(req.query);
-            options.query = options.query || { id };
-            options.query.id = id;
-            const result = await this.srv.update({ data, attributes, ...options }, config);
+            if (!id && !Object.keys(options.where || {}).length && !Object.keys(options.query || {}).length) {
+                return res.status(400).end();
+            }
+            if (id) {
+                options.query = options.query || { id };
+                options.query.id = id;
+            }
+            const tmp = await this.srv.update({ data, attributes, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
                 src: this.module + ":Controller:Data:update",
                 data
             });
-            if (!result || !result?.length) {
+            const result = tmp?.data || tmp;
+            if (!result || (Array.isArray(result) && !result?.length)) {
                 return res.status(404).end();
             }
             res.status(config?.action === "create" ? 201 : 200);
-            res.json(id && result?.length === 1 ? result[0] : result);
+            if (tmp.total && result?.length === 1 && result[0].affectedRows) {
+                tmp.total = result[0].affectedRows;
+            }
+            res.json(id && result?.length === 1 ? result[0] : tmp);
         }
         catch (error) {
             this.logger?.error({

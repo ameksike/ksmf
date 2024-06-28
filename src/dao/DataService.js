@@ -606,11 +606,14 @@ class DataService extends ksdp.integration.Dip {
         try {
             let model = this.getModel();
             let where = this.getWhere(payload, opt);
-            let config = { ...options, where, transaction };
-            await model.update(data, config);
+            let config = { ...options, where, transaction, returning: true };
+            let [updatedRows, affectedRows] = await model.update(data, config);
             let result = await model.findAll(config);
+            let content = (result?.length && result) || updatedRows || (affectedRows && [{ affectedRows }]);
+            opt = opt || {};
+            opt.action = "update";
             await transaction.commit();
-            return result;
+            return this.getResponse(content, opt.action, payload);
         } catch (error) {
             opt = opt || {};
             opt.error = error;
