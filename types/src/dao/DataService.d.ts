@@ -177,12 +177,18 @@ declare class DataService extends DataService_base {
      * @param {String} [option.key]
      * @param {String} [option.defaults]
      * @param {String} [option.model]
+     * @param {Array<String>} [option.avoid]
+     * @param {Array<*>} [option.result]
+     * @param {Object} [option.list]
      * @returns {String|Object|Array}
      */
     getAttrList(option?: {
         key?: string;
         defaults?: string;
         model?: string;
+        avoid?: Array<string>;
+        result?: Array<any>;
+        list?: any;
     }): string | any | any[];
     /**
      * @description get attributes map
@@ -443,6 +449,18 @@ declare class DataService extends DataService_base {
      * @returns {Object}
      */
     asQuery(data: string): any;
+    /**
+     * @description conver to include mode item
+     * @param {Object} item
+     * @returns {Object} model
+     */
+    asIncludeItem(item: any): any;
+    /**
+     * @description Get Include Object
+     * @param {String|Array<Object>} data
+     * @returns {Array<Object>}
+     */
+    asInclude(data: string | Array<any>): Array<any>;
     /**
      * @description Get Logger Object
      * @returns {Object} Logger
