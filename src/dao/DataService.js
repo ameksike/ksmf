@@ -317,12 +317,25 @@ class DataService extends ksdp.integration.Dip {
      * @param {String} [option.key]  
      * @param {String} [option.defaults]  
      * @param {String} [option.model]  
+     * @param {Array<String>} [option.avoid]  
+     * @param {Array<*>} [option.result]  
+     * @param {Object} [option.list] 
      * @returns {String|Object|Array}
      */
     getAttrList(option) {
-        let { key = null, defaults = 'basic', model } = option || {};
-        let list = this.getModel(model)?.attrs || {};
-        return (key ? (list[key] || list[defaults]) : list) || {};
+        let { key = null, defaults = 'basic', model, avoid, list, result } = option || {};
+        list = list || this.getModel(model)?.attrs || {};
+        avoid = avoid || list.avoid;
+        if (key || result) {
+            result = result || list[key] || list[defaults];
+            if (Array.isArray(result) && Array.isArray(avoid)) {
+                let tmp = new Set(avoid);
+                let res = result.filter(item => !tmp.has(item));
+                return res;
+            }
+            return result;
+        }
+        return list || {};
     }
 
     /**
@@ -823,7 +836,8 @@ class DataService extends ksdp.integration.Dip {
     asAttributes(attributes) {
         let list = kscrip.decode(attributes, "json");
         list = Array.isArray(list) ? list : (typeof list === "string" ? list.split(",") : [list]);
-        return list?.map(attr => this.mapAttributeKey[attr] ?? attr);
+        list = list?.map(attr => this.mapAttributeKey[attr] ?? attr);
+        return this.getAttrList({ result: list });
     }
 
     /**
@@ -856,8 +870,8 @@ class DataService extends ksdp.integration.Dip {
         }
         let result = { model };
         let format = item.format && item.format !== 'exclude' ? item.format : 'basic';
-        let attributes = item?.attributes || item?.fields || this.getAttrList({ model: item.model, key: format });
-        if (attributes) {
+        let attributes = this.getAttrList({ model: item.model, key: format, result: item?.attributes || item?.fields });
+        if (attributes?.length || attributes?.exclude) {
             result.attributes = attributes;
         }
         if (item.required !== undefined && item.required !== null) {
@@ -865,6 +879,14 @@ class DataService extends ksdp.integration.Dip {
         }
         if (typeof item.as === "string" && item.as) {
             result.as = item.as;
+        }
+        if (item.where) {
+            let where = this.asQuery(item.where);
+            where && (result.where = where);
+        }
+        if (item.include) {
+            let include = this.asInclude(item.include);
+            include?.length && (result.include = include);
         }
         return result;
     }
