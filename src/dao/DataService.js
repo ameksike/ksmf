@@ -846,7 +846,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     asQuery(data) {
-        data = (new URLSearchParams("val=" + data)).get('val');
+        data = typeof data === "string" ? (new URLSearchParams("val=" + data)).get('val') : data;
         const driver = this.getManager();
         const query = kscrip.decode(data, "json");
         return this.utl.transform(query, {
