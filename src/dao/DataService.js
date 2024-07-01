@@ -846,7 +846,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Object}
      */
     asQuery(data) {
-        data = (new URLSearchParams("val=" + data)).get('val');
+        data = typeof data === "string" ? (new URLSearchParams("val=" + data)).get('val') : data;
         const driver = this.getManager();
         const query = kscrip.decode(data, "json");
         return this.utl.transform(query, {
@@ -897,6 +897,7 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Array<Object>}
      */
     asInclude(data) {
+        data = typeof data === "string" ? (new URLSearchParams("val=" + data)).get('val') : data;
         let tmp = kscrip.decode(data, "json");
         let list = Array.isArray(tmp) ? tmp : [tmp];
         let result = [];
