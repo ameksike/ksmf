@@ -13,6 +13,10 @@ declare class DataController extends Controller {
      */
     srvName: string;
     /**
+     * @type {String}
+     */
+    get modelAlias(): string;
+    /**
      * @description configure action
      * @param {Object} cfg
      * @param {String} [cfg.modelName]
