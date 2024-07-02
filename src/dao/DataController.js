@@ -26,6 +26,12 @@ class DataController extends Controller {
     srvName;
 
     /**
+     * @type {String}
+     */
+    get modelAlias() {
+        return this.srv?.modelName || this.module?.name || typeof this.module === "string" && this.module || this.srvName || "Data";
+    }
+    /**
      * @description configure action 
      * @param {Object} cfg 
      * @param {String} [cfg.modelName] 
@@ -85,7 +91,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:list",
+                src: "Controller:" + this.modelAlias + ":list",
                 error: error.message || error,
                 data: req.query
             });
@@ -113,7 +119,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:select",
+                src: "Controller:" + this.modelAlias + ":select",
                 error: error?.message || error,
                 data: req.query
             });
@@ -135,9 +141,12 @@ class DataController extends Controller {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
             const options = this.srv?.extract(req.query);
             const data = await this.srv.insert({ attributes, data: req.body, ...options }, config);
+            if (config.error) {
+                throw config.error;
+            }
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:insert",
+                src: "Controller:" + this.modelAlias + ":insert",
                 data
             });
             res.status(config?.action === "create" ? 201 : 200);
@@ -146,7 +155,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:insert",
+                src: "Controller:" + this.modelAlias + ":insert",
                 error: error?.message || error,
                 data: req.body
             });
@@ -179,7 +188,7 @@ class DataController extends Controller {
             const tmp = await this.srv.update({ data, attributes, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:update",
+                src: "Controller:" + this.modelAlias + ":update",
                 data
             });
             const result = tmp?.data || tmp;
@@ -195,7 +204,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:update",
+                src: "Controller:" + this.modelAlias + ":update",
                 error: error?.message || error,
                 data: { id, body: data }
             });
@@ -226,7 +235,7 @@ class DataController extends Controller {
             const data = await this.srv.clone(target, params, config);
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:clone",
+                src: "Controller:" + this.modelAlias + ":clone",
                 data
             });
             res.json(data);
@@ -234,7 +243,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:clone",
+                src: "Controller:" + this.modelAlias + ":clone",
                 error: error.message || error,
                 data: { params, target }
             });
@@ -262,7 +271,7 @@ class DataController extends Controller {
             const result = await this.srv.delete({ data, attributes, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:delete",
+                src: "Controller:" + this.modelAlias + ":delete",
                 data: result
             });
             if (!result) {
@@ -273,7 +282,7 @@ class DataController extends Controller {
         catch (error) {
             this.logger?.error({
                 flow: req.flow,
-                src: this.module + ":Controller:Data:delete",
+                src: "Controller:" + this.modelAlias + ":delete",
                 error: error.message || error,
                 data: { id, body: data }
             });
