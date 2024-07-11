@@ -266,8 +266,11 @@ class DataController extends Controller {
         try {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
             const options = this.srv?.extract(req.query);
-            options.query = options.query || { id };
-            options.query.id = id;
+            options.query = options.query || {};
+            id && (options.query.id = id);
+            if (!options?.where && !id) {
+                return res.status(400).end();
+            }
             const result = await this.srv.delete({ data, attributes, ...options }, config);
             this.logger?.info({
                 flow: req.flow,
@@ -298,14 +301,13 @@ class DataController extends Controller {
      */
     clean(req, res) {
         let ids = req.body.ids || req.body;
-        if (!Array.isArray(ids)) {
-            return res.status(400).end();
-        }
-        let pks = this.srv?.getFieldId();
         req.query = req.query || {};
-        pks && (req.query.where = {
-            [pks]: { [this.srv?.dao?.manager?.Op?.in]: ids }
-        });
+        if (Array.isArray(ids)) {
+            let pks = this.srv?.getFieldId();
+            pks && (req.query.where = {
+                [pks]: { [this.srv?.dao?.manager?.Op?.in]: ids }
+            });
+        }
         return this.delete(req, res);
     }
 }
