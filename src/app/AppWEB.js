@@ -253,6 +253,7 @@ class AppWEB extends App {
      * @param {Object} route 
      * @param {String} [route.id]
      * @param {String} [route.name]
+     * @param {String} [route.route]
      * @param {String} [route.action]
      * @param {String} [route.controller]
      * @param {String} [route.module] 

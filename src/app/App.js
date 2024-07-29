@@ -275,7 +275,6 @@ class App {
     /**
      * @description pre initialize a module
      * @param {import('../types').TOption|String} item 
-     * @param {Array} modules 
      * @returns {Object} module
      */
     getModule(item) {
@@ -337,6 +336,7 @@ class App {
      * @returns {Object} module
      */
     initModule(item, modules) {
+        const name = (typeof (item) === 'string') ? item : item.name;
         const obj = this.getModule(item);
         if (obj) {
             modules?.push(obj);
