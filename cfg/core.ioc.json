@@ -6,7 +6,7 @@
   },
   "server": {
     "name": "ksmf-express",
-    "type": "package",
+    "type": "lib",
     "dependency": {
       "helper": "helper"
     }
