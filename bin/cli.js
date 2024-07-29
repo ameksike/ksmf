@@ -19,7 +19,7 @@ try {
     let dir = path.resolve(process.cwd());
     let act = process.argv[2] || 'web';
 
-    switch (act) {
+    switch (act.toLowerCase()) {
         case 'web':
             app = new KsMf.app.WEB({ path: dir });
             break;
