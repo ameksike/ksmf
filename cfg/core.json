@@ -11,7 +11,7 @@
       "helper": "cfg/core.ioc.json"
     },
     "route": {
-      "/": "main"
+      "/": "app"
     },
     "module": {
       "load": [],

@@ -278,57 +278,66 @@ class App {
      * @returns {Object} module
      */
     getModule(item) {
-        const name = (typeof (item) === 'string') ? item : item.name;
-        const options = {
-            // ... EXPRESS APP
-            app: this,
-            // ... extraoptions
-            ...this.initModuleOpts(),
-            // ... DATA ACCESS Object 
-            opt: {
-                // ... CONFIGURE 
-                'cfg': this.cfg.srv,
-                // ... ENV
-                'env': this.cfg.env,
-                'eid': this.cfg.eid,
-                // ... PATH
-                'path': {
-                    'prj': _path.resolve(this.path),
-                    'mod': _path.join(this.cfg.srv.module.path, name),
-                    'app': _path.join(this.cfg.srv.module.path, "app")
-                },
-                // ... NAME
-                'name': name,
-                'prefix': this.cfg.srv?.prefix || ""
+        try {
+            const name = (typeof (item) === 'string') ? item : item.name;
+            const options = {
+                // ... EXPRESS APP
+                app: this,
+                // ... extraoptions
+                ...this.initModuleOpts(),
+                // ... DATA ACCESS Object 
+                opt: {
+                    // ... CONFIGURE 
+                    'cfg': this.cfg.srv,
+                    // ... ENV
+                    'env': this.cfg.env,
+                    'eid': this.cfg.eid,
+                    // ... PATH
+                    'path': {
+                        'prj': _path.resolve(this.path),
+                        'mod': _path.join(this.cfg.srv.module.path, name),
+                        'app': _path.join(this.cfg.srv.module.path, "app")
+                    },
+                    // ... NAME
+                    'name': name,
+                    'prefix': this.cfg.srv?.prefix || ""
+                }
+            };
+            const dependency = { 'helper': 'helper' };
+            if (typeof (item) === 'string') {
+                item = {
+                    options,
+                    dependency,
+                    name,
+                    type: 'module'
+                };
+            } else {
+                item.options = {
+                    ...item.options,
+                    ...item.params,
+                    ...options
+                };
+                item.dependency = {
+                    ...item.dependency,
+                    ...dependency
+                };
             }
-        };
-        const dependency = { 'helper': 'helper' };
-        if (typeof (item) === 'string') {
-            item = {
-                options,
-                dependency,
-                name,
-                type: 'module'
-            };
-        } else {
-            item.options = {
-                ...item.options,
-                ...item.params,
-                ...options
-            };
-            item.dependency = {
-                ...item.dependency,
-                ...dependency
-            };
+            let obj = this.helper.get(item);
+            if (!obj) {
+                item.type = 'lib';
+                obj = this.helper.get(item);
+            }
+            return obj;
         }
-        let obj = this.helper.get(item);
-        if (!obj) {
-            item.type = 'lib';
-            obj = this.helper.get(item);
+        catch (error) {
+            this.logger?.error({
+                src: 'KsMf:App:getModule',
+                error
+            });
+            return null;
         }
-        return obj;
     }
-    
+
     /**
      * @description initialize a module
      * @param {import('../types').TOption|String} item 
