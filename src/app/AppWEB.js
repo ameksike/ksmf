@@ -264,16 +264,27 @@ class AppWEB extends App {
     initRoute(route, pathname) {
         if (route && pathname && this.server?.set instanceof Function) {
             this.server.set({
-                route: pathname,
+                route: pathname || route?.route,
                 method: route.method,
                 handler: (req, res, next) => {
-                    route.path = route.path || 'controller';
-                    route.name = route.name || route.controller;
-                    const controller = this.helper.get(route);
-                    if (!controller || !controller[route.action]) {
-                        this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+                    if (typeof route === "object") {
+                        route.path = route.path || 'controller';
+                        route.name = route.name || route.controller;
+                        const controller = this.helper.get(route);
+                        if (!controller || !controller[route.action]) {
+                            this.setError(`404 on '${route.module}:${route.controller}:${route.action}'`, req, res, next);
+                        }
+                        controller[route.action] instanceof Function && controller[route.action](req, res, next);
+                    } else {
+                        const mod = this.getModule(route)
+                        if (mod?.listen instanceof Function) {
+                            return mod.listen(req, res, next);
+                        } else if (mod instanceof Function) {
+                            return mod(req, res, next);
+                        } else {
+                            this.setError(`404 on '${pathname}'`, req, res, next);
+                        }
                     }
-                    controller[route.action] instanceof Function && controller[route.action](req, res, next);
                 }
             });
             this.emit('onLoadRoutes', [pathname, route, this.server, this]);
