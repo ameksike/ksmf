@@ -273,12 +273,12 @@ class App {
     }
 
     /**
-     * @description initialize a module
+     * @description pre initialize a module
      * @param {import('../types').TOption|String} item 
      * @param {Array} modules 
      * @returns {Object} module
      */
-    initModule(item, modules) {
+    getModule(item) {
         const name = (typeof (item) === 'string') ? item : item.name;
         const options = {
             // ... EXPRESS APP
@@ -327,6 +327,17 @@ class App {
             item.type = 'lib';
             obj = this.helper.get(item);
         }
+        return obj;
+    }
+    
+    /**
+     * @description initialize a module
+     * @param {import('../types').TOption|String} item 
+     * @param {Array} modules 
+     * @returns {Object} module
+     */
+    initModule(item, modules) {
+        const obj = this.getModule(item);
         if (obj) {
             modules?.push(obj);
             this.initModuleSetup(obj, item);
