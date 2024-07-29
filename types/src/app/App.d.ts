@@ -132,6 +132,12 @@ declare class App {
     initModules(): Promise<this>;
     modules: any[];
     /**
+     * @description pre initialize a module
+     * @param {import('../types').TOption|String} item
+     * @returns {Object} module
+     */
+    getModule(item: import("../types").TOption | string): any;
+    /**
      * @description initialize a module
      * @param {import('../types').TOption|String} item
      * @param {Array} modules

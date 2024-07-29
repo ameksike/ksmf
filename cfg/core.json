@@ -10,6 +10,9 @@
       "log": "cfg/core.log.json",
       "helper": "cfg/core.ioc.json"
     },
+    "route": {
+      "/": "app"
+    },
     "module": {
       "load": [],
       "mode": "dev"

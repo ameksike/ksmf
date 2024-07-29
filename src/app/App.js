@@ -273,6 +273,72 @@ class App {
     }
 
     /**
+     * @description pre initialize a module
+     * @param {import('../types').TOption|String} item 
+     * @returns {Object} module
+     */
+    getModule(item) {
+        try {
+            const name = (typeof (item) === 'string') ? item : item.name;
+            const options = {
+                // ... EXPRESS APP
+                app: this,
+                // ... extraoptions
+                ...this.initModuleOpts(),
+                // ... DATA ACCESS Object 
+                opt: {
+                    // ... CONFIGURE 
+                    'cfg': this.cfg.srv,
+                    // ... ENV
+                    'env': this.cfg.env,
+                    'eid': this.cfg.eid,
+                    // ... PATH
+                    'path': {
+                        'prj': _path.resolve(this.path),
+                        'mod': _path.join(this.cfg.srv.module.path, name),
+                        'app': _path.join(this.cfg.srv.module.path, "app")
+                    },
+                    // ... NAME
+                    'name': name,
+                    'prefix': this.cfg.srv?.prefix || ""
+                }
+            };
+            const dependency = { 'helper': 'helper' };
+            if (typeof (item) === 'string') {
+                item = {
+                    options,
+                    dependency,
+                    name,
+                    type: 'module'
+                };
+            } else {
+                item.options = {
+                    ...item.options,
+                    ...item.params,
+                    ...options
+                };
+                item.dependency = {
+                    ...item.dependency,
+                    ...dependency
+                };
+            }
+            let obj = this.helper.get(item);
+            if (!obj) {
+                item.type = 'lib';
+                obj = this.helper.get(item);
+            }
+            return obj;
+        }
+        catch (error) {
+            this.logger?.error({
+                src: 'KsMf:App:getModule',
+                error
+            });
+            return null;
+        }
+    }
+
+    /**
      * @description initialize a module
      * @param {import('../types').TOption|String} item 
      * @param {Array} modules 
@@ -280,53 +346,7 @@ class App {
      */
     initModule(item, modules) {
         const name = (typeof (item) === 'string') ? item : item.name;
-        const options = {
-            // ... EXPRESS APP
-            app: this,
-            // ... extraoptions
-            ...this.initModuleOpts(),
-            // ... DATA ACCESS Object 
-            opt: {
-                // ... CONFIGURE 
-                'cfg': this.cfg.srv,
-                // ... ENV
-                'env': this.cfg.env,
-                'eid': this.cfg.eid,
-                // ... PATH
-                'path': {
-                    'prj': _path.resolve(this.path),
-                    'mod': _path.join(this.cfg.srv.module.path, name),
-                    'app': _path.join(this.cfg.srv.module.path, "app")
-                },
-                // ... NAME
-                'name': name,
-                'prefix': this.cfg.srv?.prefix || ""
-            }
-        };
-        const dependency = { 'helper': 'helper' };
-        if (typeof (item) === 'string') {
-            item = {
-                options,
-                dependency,
-                name,
-                type: 'module'
-            };
-        } else {
-            item.options = {
-                ...item.options,
-                ...item.params,
-                ...options
-            };
-            item.dependency = {
-                ...item.dependency,
-                ...dependency
-            };
-        }
-        let obj = this.helper.get(item);
-        if (!obj) {
-            item.type = 'lib';
-            obj = this.helper.get(item);
-        }
+        const obj = this.getModule(item);
         if (obj) {
             modules?.push(obj);
             this.initModuleSetup(obj, item);
