@@ -21,7 +21,7 @@ It is recommended to create a first module in the **src** directory, it is usual
 |    - package.json
 ```
 
-Each module must have a main file named index.js by naming convention. 
+Each module must have a main file named index.js by naming convention. You can use the following example to create your first module, which will be named as app following the above structure.
 ```js
 module.exports = function (req, res) {
     res?.json({
@@ -34,7 +34,7 @@ module.exports = function (req, res) {
 }
 ```
 
-Make sure your **package.json** include the star command in the script section.
+Make sure your **package.json** include the start command in the script section.
 
 ```json
 {
