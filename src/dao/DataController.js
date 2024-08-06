@@ -1,10 +1,10 @@
 /**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		21/05/2022
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
+ * @author      Antonio Membrides Espinosa
+ * @email       tonykssa@gmail.com
+ * @date        21/05/2022
+ * @copyright   Copyright (c) 2020-2030
+ * @license     GPL
+ * @version     1.0
  **/
 const Controller = require('../app/Controller');
 
@@ -86,7 +86,10 @@ class DataController extends Controller {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
             const options = this.srv?.extract(req.query) || {};
             const data = await this.srv?.select({ flow, attributes, ...options });
-            data ? res.json(data) : res.status(400).end();
+            data ? res.json(data) : res.status(400).json({
+                "error": "bad_request",
+                "error_description": "The server could not understand the request due to invalid syntax or missing parameters."
+            });
         }
         catch (error) {
             this.logger?.error({
@@ -95,7 +98,10 @@ class DataController extends Controller {
                 error: error.message || error,
                 data: req.query
             });
-            res.status(500).end();
+            res.status(500).json({
+                "error": "internal_server_error",
+                "error_description": "The request was not processed correctly."
+            });
         }
     }
 
@@ -114,7 +120,10 @@ class DataController extends Controller {
             const options = this.srv?.extract(req.query) || {};
             options.query.id = req.params['id'];
             const data = await this.srv?.select({ limit: 1, flow, attributes, ...options });
-            data ? res.json(data) : res.status(404).end();
+            data ? res.json(data) : res.status(404).json({
+                "error": "not_found",
+                "error_description": "The target resource was not found."
+            });
         }
         catch (error) {
             this.logger?.error({
@@ -123,7 +132,10 @@ class DataController extends Controller {
                 error: error?.message || error,
                 data: req.query
             });
-            res.status(500).end();
+            res.status(500).json({
+                "error": "internal_server_error",
+                "error_description": "The request was not processed correctly."
+            });
         }
     }
 
@@ -159,7 +171,10 @@ class DataController extends Controller {
                 error: error?.message || error,
                 data: req.body
             });
-            res.status(500).end();
+            res.status(500).json({
+                "error": "internal_server_error",
+                "error_description": "The request was not processed correctly."
+            });
         }
     }
 
@@ -179,7 +194,10 @@ class DataController extends Controller {
             const attributes = this.srv?.getAttrList({ key: format, defaults: 'basic' }) || {};
             const options = this.srv?.extract(req.query);
             if (!id && !Object.keys(options.where || {}).length && !Object.keys(options.query || {}).length) {
-                return res.status(400).end();
+                return res.status(400).json({
+                    "error": "bad_request",
+                    "error_description": "The server could not understand the request due to invalid syntax or missing parameters."
+                });
             }
             if (id) {
                 options.query = options.query || { id };
@@ -193,7 +211,10 @@ class DataController extends Controller {
             });
             const result = tmp?.data || tmp;
             if (!result || (Array.isArray(result) && !result?.length)) {
-                return res.status(404).end();
+                return res.status(404).json({
+                    "error": "not_found",
+                    "error_description": "The target resource was not found."
+                });
             }
             res.status(config?.action === "create" ? 201 : 200);
             if (tmp.total && result?.length === 1 && result[0].affectedRows) {
@@ -208,7 +229,10 @@ class DataController extends Controller {
                 error: error?.message || error,
                 data: { id, body: data }
             });
-            res.status(500).end();
+            res.status(500).json({
+                "error": "internal_server_error",
+                "error_description": "The request was not processed correctly."
+            });
         }
     }
 
@@ -220,7 +244,12 @@ class DataController extends Controller {
      */
     async clone(req, res) {
         const config = { flow: req.flow };
-        const params = this.srv?.extract(req.query);
+        const params = this.srv?.extract(req.query, {
+            clean: true,
+            key: {
+                strict: 'Boolean'
+            }
+        });
         const keypid = this.srv?.getPKs()[0] || "id";
         const exclude = params?.attributes?.exclude || this.srv?.getAttrList({ key: 'exclude' }) || {};
         const target = {
@@ -230,7 +259,7 @@ class DataController extends Controller {
             }
         }
         params.data = req.body;
-        params?.strict && (config.strict = params.strict);
+        params?.query?.strict && (config.strict = params?.query?.strict);
         try {
             const data = await this.srv.clone(target, params, config);
             this.logger?.info({
@@ -238,7 +267,10 @@ class DataController extends Controller {
                 src: "Controller:" + this.modelAlias + ":clone",
                 data
             });
-            res.json(data);
+            data ? res.json(data) : res.status(404).json({
+                "error": "not_found",
+                "error_description": "The target resource was not found."
+            });
         }
         catch (error) {
             this.logger?.error({
@@ -247,7 +279,10 @@ class DataController extends Controller {
                 error: error.message || error,
                 data: { params, target }
             });
-            res.status(500).end();
+            res.status(500).json({
+                "error": "internal_server_error",
+                "error_description": "The request was not processed correctly."
+            });
         }
     }
 
@@ -269,7 +304,10 @@ class DataController extends Controller {
             options.query = options.query || {};
             id && (options.query.id = id);
             if (!options?.where && !id) {
-                return res.status(400).end();
+                return res.status(400).json({
+                    "error": "bad_request",
+                    "error_description": "The server could not understand the request due to invalid syntax or missing parameters."
+                });
             }
             const result = await this.srv.delete({ data, attributes, ...options }, config);
             this.logger?.info({
@@ -278,7 +316,10 @@ class DataController extends Controller {
                 data: result
             });
             if (!result) {
-                return res.status(404).end();
+                return res.status(404).json({
+                    "error": "not_found",
+                    "error_description": "The target resource was not found."
+                });
             }
             res.json(id && result?.length === 1 ? result[0] : result);
         }
@@ -289,7 +330,10 @@ class DataController extends Controller {
                 error: error.message || error,
                 data: { id, body: data }
             });
-            res.status(500).end();
+            res.status(500).json({
+                "error": "internal_server_error",
+                "error_description": "The request was not processed correctly."
+            });
         }
     }
 
