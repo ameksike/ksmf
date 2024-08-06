@@ -180,7 +180,7 @@ class DataService extends ksdp.integration.Dip {
             const map = payload?.where || {};
             if (payload.auto || payload.auto === undefined) {
                 const pks = this.getPKs();
-                const con = this.utl.contains(pks, Object.keys(map));
+                const con = this.utl?.contains(pks, Object.keys(map));
                 if (con.length === pks.length || map[this.modelKeyStr]) {
                     let driver = this.getManager();
                     let mainKey = map[pks[0]];
@@ -671,7 +671,7 @@ class DataService extends ksdp.integration.Dip {
         let contentRow = targetRow?.dataValues || targetRow;
         if (!contentRow && option?.strict) {
             const logger = this.getLogger();
-            logger?.error({
+            logger?.warn({
                 flow: option?.flow,
                 src: "KsMf:DAO:" + this.modelName + ":clone",
                 data: payload,
@@ -849,7 +849,7 @@ class DataService extends ksdp.integration.Dip {
         data = typeof data === "string" ? (new URLSearchParams("val=" + data)).get('val') : data;
         const driver = this.getManager();
         const query = kscrip.decode(data, "json");
-        return this.utl.transform(query, {
+        return this.utl?.transform(query, {
             onKey: (key, value) => this.mapSearchKey[key] ?? driver.Op[key] ?? key,
             onVal: (value, key) => (key === "in" && typeof value === "string") ? value.split(",") : value
         });
@@ -926,7 +926,7 @@ class DataService extends ksdp.integration.Dip {
      * @param {Object} payload 
      * @returns {import("../types").TSearchOption}
      */
-    extract(payload) {
+    extract(payload, options) {
         const req = { ...payload };
         const res = {};
 
@@ -1001,6 +1001,10 @@ class DataService extends ksdp.integration.Dip {
         }
 
         res.query = { ...req };
+        let query = options && res.query && this.utl?.getFrom(res.query, options);
+        res.query = query || res.query;
+
+        options && req.body && (res.body = this.utl?.getFrom(req.body, options));
         return res;
     }
 
