@@ -1,12 +1,4 @@
 export = Controller;
-/**
- * @author		Antonio Membrides Espinosa
- * @email		tonykssa@gmail.com
- * @date		07/03/2020
- * @copyright  	Copyright (c) 2020-2030
- * @license    	GPL
- * @version    	1.0
- **/
 declare class Controller {
     /**
      * @description initialize controller
@@ -16,6 +8,7 @@ declare class Controller {
     opt: any;
     module: any;
     middleware: any;
+    utl: Utl;
     /**
      * @description method called after constructor
      */
@@ -109,3 +102,4 @@ declare class Controller {
         option?: any[];
     }): any;
 }
+import Utl = require("./Utl");
