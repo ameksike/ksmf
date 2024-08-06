@@ -471,7 +471,7 @@ declare class DataService extends DataService_base {
      * @param {Object} payload
      * @returns {import("../types").TSearchOption}
      */
-    extract(payload: any): import("../types").TSearchOption;
+    extract(payload: any, options: any): import("../types").TSearchOption;
     /**
      * @description Create a transaction
      * @returns {Object}
