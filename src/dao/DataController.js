@@ -251,7 +251,7 @@ class DataController extends Controller {
             }
         });
         const keypid = this.srv?.getPKs()[0] || "id";
-        const exclude = params?.attributes?.exclude || this.srv?.getAttrList({ key: 'exclude' }) || {};
+        const exclude = params?.attributes?.exclude || this.srv?.getAttrList({ key: 'exclude', defaults: null }) || {};
         const target = {
             exclude,
             where: {

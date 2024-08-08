@@ -327,7 +327,7 @@ class DataService extends ksdp.integration.Dip {
         list = list || this.getModel(model)?.attrs || {};
         avoid = avoid || list.avoid;
         if (key || result) {
-            result = result || list[key] || list[defaults];
+            result = result || list[key] || (defaults ? list[defaults] : null);
             if (Array.isArray(result) && Array.isArray(avoid)) {
                 let tmp = new Set(avoid);
                 let res = result.filter(item => !tmp.has(item));
