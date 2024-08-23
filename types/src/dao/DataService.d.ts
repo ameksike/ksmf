@@ -254,21 +254,26 @@ declare class DataService extends DataService_base {
     /**
      * @description perform a raw query
      * @param {Object} payload
-     * @param {String} [payload.sql]
+     * @param {String} payload.sql
      * @param {Object} [payload.params]
      * @param {Object} [payload.options]
+     * @param {Object} [payload.options.type]
+     * @param {Object} [payload.options.transaction]
      * @param {String} [payload.src]
      * @param {String} [payload.flow]
-     * @param {Error} [payload.error]
+     * @param {Error|null} [payload.error]
      * @returns {Promise<any>} result
      */
-    query(payload?: {
-        sql?: string;
+    query(payload: {
+        sql: string;
         params?: any;
-        options?: any;
+        options?: {
+            type?: any;
+            transaction?: any;
+        };
         src?: string;
         flow?: string;
-        error?: Error;
+        error?: Error | null;
     }): Promise<any>;
     /**
      * @description read/update/create

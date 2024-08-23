@@ -497,37 +497,43 @@ class DataService extends ksdp.integration.Dip {
     /**
      * @description perform a raw query 
      * @param {Object} payload 
-     * @param {String} [payload.sql]
+     * @param {String} payload.sql
      * @param {Object} [payload.params] 
      * @param {Object} [payload.options] 
+     * @param {Object} [payload.options.type] 
+     * @param {Object} [payload.options.transaction] 
      * @param {String} [payload.src] 
      * @param {String} [payload.flow] 
-     * @param {Error} [payload.error] 
+     * @param {Error|null} [payload.error] 
      * @returns {Promise<any>} result 
      */
-    async query(payload = {}) {
+    async query(payload) {
+        payload = payload || { sql: "" };
         try {
-            payload = payload || {};
-            const driver = this.getDriver();
+            if(!payload.sql) {
+                throw new Error("SQL script is required");
+            }
+            let driver = this.getDriver();
             let sql = payload.sql.replace(/:table/ig, this.getTableName());
             let params = payload.params || {};
-            let options = {
-                replacements: params
+            let opts = {
+                replacements: params,
+                ...payload.options
             };
-            if (/^[\n|\r|\s]*SELECT/ig.test(sql)) {
-                options.type = driver.QueryTypes.SELECT
+            if (!opts.type && /^[\n|\r|\s]*SELECT/ig.test(sql)) {
+                opts.type = driver.QueryTypes.SELECT
             }
             sql = sql.replace(/\n/g, "").replace(/\s\s/g, " ");
-            return await driver.query(sql, payload.options || options);
+            return await driver.query(sql, opts);
         }
         catch (error) {
             payload.error = error;
             const logger = this.getLogger();
             logger?.error({
                 flow: payload.flow,
-                data: payload.params,
+                data: payload,
                 src: "KsMf:DAO:" + this.modelName + ":" + (payload.src || "Query"),
-                error: { message: error?.message || error, stack: error?.stack, sql: payload.sql },
+                error: { message: error?.message || error, stack: error?.stack },
             });
             return null;
         }
