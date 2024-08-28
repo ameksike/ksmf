@@ -117,7 +117,7 @@ class DataService extends ksdp.integration.Dip {
         if (typeof value === "number" || !isNaN(tmp)) {
             return id; // TODO: check this PK selection
         } else if (value && typeof value === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
-            this.modelKeyStr
+            return this.modelKeyStr
         }
         return id;
     }
