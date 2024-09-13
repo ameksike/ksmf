@@ -323,12 +323,12 @@ class DataService extends ksdp.integration.Dip {
      * @returns {String|Object|Array}
      */
     getAttrList(option) {
-        let { key = null, defaults = 'basic', model, avoid, list, result } = option || {};
+        let { key = null, defaults = 'basic', model, avoid, list, result, clean = true } = option || {};
         list = list || this.getModel(model)?.attrs || {};
         avoid = avoid || list.avoid;
         if (key || result) {
             result = result || list[key] || (defaults ? list[defaults] : null);
-            if (Array.isArray(result) && Array.isArray(avoid)) {
+            if (clean && Array.isArray(result) && Array.isArray(avoid)) {
                 let tmp = new Set(avoid);
                 let res = result.filter(item => !tmp.has(item));
                 return res;
