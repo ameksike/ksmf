@@ -53,12 +53,12 @@ declare class App {
      * @description start application
      * @param {import('../types').TAppConfig} [options]
      */
-    start(options?: import('../types').TAppConfig): Promise<void>;
+    start(options?: import("../types").TAppConfig): Promise<void>;
     /**
      * @description stop application
      * @param {import('../types').TAppConfig} [options]
      */
-    stop(options?: import('../types').TAppConfig): Promise<void>;
+    stop(options?: import("../types").TAppConfig): Promise<void>;
     /**
      * @description register a plugin
      * @param {Object|String|Function|Array} plugin
@@ -121,17 +121,17 @@ declare class App {
      * @param {import('../types').TAppConfig} [options]
      * @returns {Promise<App>} self
      */
-    init(options?: import('../types').TAppConfig): Promise<App>;
+    init(options?: import("../types").TAppConfig): Promise<App>;
     /**
      * @description preload configuration file, variables, environments, etc
      * @param {import('../types').TAppConfig} [options]
      */
-    initLoad(options?: import('../types').TAppConfig): void;
+    initLoad(options?: import("../types").TAppConfig): void;
     /**
      * @description initialize configurations
      * @param {import('../types').TAppConfig} [options]
      */
-    initConfig(options?: import('../types').TAppConfig): Promise<this>;
+    initConfig(options?: import("../types").TAppConfig): Promise<this>;
     /**
      * @description initialize event handler
      */
@@ -147,7 +147,7 @@ declare class App {
      * @param {Array} modules
      * @returns {Promise<Object>} module
      */
-    initModule(item: import('../types').TOption | string, modules: any[]): Promise<any>;
+    initModule(item: import("../types").TOption | string, modules: any[]): Promise<any>;
     /**
      * @description initialize the module options
      * @returns {Object}

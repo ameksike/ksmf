@@ -4,7 +4,7 @@ declare class AppCLI extends App {
      * @description start the application
      * @param {import('../types').TAppConfig} [options]
      */
-    start(options?: import('../types').TAppConfig): Promise<any>;
+    start(options?: import("../types").TAppConfig): Promise<any>;
     /**
      * @description search a module by CLI route
      * @param {String|null} route
@@ -44,8 +44,8 @@ declare class AppCLI extends App {
      */
     write(message: string | number | boolean, driver?: {
         end?: string | number | boolean;
-        stdout?: import('../types').TWritableStream;
-        stdin?: import('../types').TReadableStream;
+        stdout?: import("../types").TWritableStream;
+        stdin?: import("../types").TReadableStream;
     }): void;
     /**
      * @description read content from stdin
@@ -60,8 +60,8 @@ declare class AppCLI extends App {
     read(label?: string | number | boolean, driver?: {
         end?: string;
         default?: string | number | boolean;
-        stdout?: import('../types').TWritableStream;
-        stdin?: import('../types').TReadableStream;
+        stdout?: import("../types").TWritableStream;
+        stdin?: import("../types").TReadableStream;
     }): Promise<string | number | boolean>;
 }
 import App = require("./App");

@@ -30,5 +30,13 @@ export type TCLIArgReq = {
     params?: any;
     dependency?: any;
 };
-export type TReadableStream = import('stream').Readable;
-export type TWritableStream = import('stream').Writable;
+export type TReadableStream = import("stream").Readable;
+export type TWritableStream = import("stream").Writable;
+export type TSearchOption = {
+    page?: number;
+    size?: number;
+    order?: any;
+    where?: any;
+    query?: any;
+    attributes?: any;
+};

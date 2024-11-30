@@ -341,11 +341,21 @@ class App {
             };
         }
         item.mode = 'transient';
+        // load common plugins 
         let obj = await this.helper.get(item);
-        if (!obj) {
+        // load npm plugins 
+        if (!obj && this.cfg?.srv?.module?.npm) {
             item.type = 'lib';
             obj = await this.helper.get(item);
         }
+        // load default plugins 
+        if (!obj && this.cfg?.srv?.module?.default) {
+            let cfg = await this.helper.get({ file: _path.join(this.cfg?.srv?.module?.path, name, "package.json") });
+            let tmp = { ...this.cfg?.srv?.module?.default, ...cfg };
+            tmp.options = { ...tmp.options, ...item.options };
+            obj = await this.helper.get(tmp);
+        }
+        // initialize plugins
         if (obj) {
             modules?.push(obj);
             await this.initModuleSetup(obj, item);

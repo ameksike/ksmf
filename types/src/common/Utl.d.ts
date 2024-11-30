@@ -248,5 +248,12 @@ declare class Utl {
         query: any;
         body: any;
     }): any;
+    /**
+     * @description trasform objects using delegates
+     * @param {*} obj
+     * @param {Object} delegate
+     * @returns {*}
+     */
+    transform(obj: any, delegate?: any, key?: any): any;
     #private;
 }

@@ -40,6 +40,9 @@ class DataService extends ksdp.integration.Dip {
      * @param {String} [cfg.modelStatus]
      * @param {Array} [cfg.updateOnDuplicate]
      * @param {Object} [cfg.constant]
+     * @param {Object} [cfg.mapAttributeKey]
+     * @param {Object} [cfg.mapSearchKey]
+     * @param {Object} [cfg.mapOrderKey]
      * @param {Object} [cfg.utl]
      * @param {{ models?: Object; driver?: Object; manager?: Object}} [cfg.dao]
      * @param {Object} [cfg.logger] 
@@ -56,6 +59,9 @@ class DataService extends ksdp.integration.Dip {
         this.dao = cfg?.dao || this.dao || {};
         this.logger = cfg?.logger || this.logger || null;
         this.utl = cfg?.utl || this.utl || null;
+        this.mapSearchKey = cfg?.mapSearchKey || {}
+        this.mapAttributeKey = cfg?.mapSearchKey || {}
+        this.mapOrderKey = cfg?.mapSearchKey || {}
         this.constant = cfg?.constant || this.constant || {
             action: {
                 none: 0,
@@ -111,9 +117,8 @@ class DataService extends ksdp.integration.Dip {
         } else if (typeof query === "string" && this.modelKeyStr && this.hasAttr(this.modelKeyStr)) {
             subFilter[this.modelKeyStr] = query;
         }
-        let subWhere = this.getAttrs(where);
         let subQuery = this.getAttrs(query);
-        return { ...subWhere, ...subQuery, ...subFilter };
+        return { ...where, ...subQuery, ...subFilter };
     }
 
     /**
@@ -149,17 +154,26 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Boolean}
      */
     iSingle(payload, opt) {
-        const map = payload?.where || {};
-        if (payload.auto || payload.auto === undefined) {
-            const pks = this.getPKs();
-            const con = this.utl.contains(pks, Object.keys(map));
-            if (con.length === pks.length || map[this.modelKeyStr]) {
+        try {
+            if (payload?.limit === 1) {
                 return true;
             }
+            const map = payload?.where || {};
+            if (payload.auto || payload.auto === undefined) {
+                const pks = this.getPKs();
+                const con = this.utl.contains(pks, Object.keys(map));
+                if (con.length === pks.length || map[this.modelKeyStr]) {
+                    let driver = this.getManager();
+                    let mainKey = map[pks[0]];
+                    return typeof mainKey === 'object' ? !!mainKey[driver?.Op?.eq] : !!mainKey;
+                }
+            }
+            payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
+            return Boolean(payload.quantity === this.constant?.quantity?.one);
         }
-        payload.quantity = payload?.quantity?.toLocaleLowerCase() || this.constant?.quantity?.all;
-        payload.quantity = payload?.limit === 1 ? this.constant?.quantity?.one : payload.quantity;
-        return Boolean(payload.quantity === this.constant?.quantity?.one);
+        catch (_) {
+            return false;
+        }
     }
 
     /**
@@ -181,8 +195,8 @@ class DataService extends ksdp.integration.Dip {
      * @returns {Promise<any>} row
      */
     async select(payload, opt) {
+        opt = opt || {};
         try {
-            opt = opt || {};
             payload = payload || {};
             payload.tmp = {};
 
@@ -208,7 +222,7 @@ class DataService extends ksdp.integration.Dip {
                 offset: paginator.offset,
                 limit: paginator.limit,
                 where,
-                include
+                include,
             };
             payload.order && (cfg.order = payload.order);
 
@@ -226,6 +240,7 @@ class DataService extends ksdp.integration.Dip {
         }
         catch (error) {
             const logger = this.getLogger();
+            opt.error = error;
             logger?.error({
                 flow: opt?.flow,
                 src: "KsMf:DAO:" + this.modelName + ":Select",
@@ -275,6 +290,20 @@ class DataService extends ksdp.integration.Dip {
     getManager() {
         this.manager = this.dao?.manager;
         return this.manager;
+    }
+
+    /**
+     * @description get attribute list configuration
+     * @param {Object} [option]
+     * @param {String} [option.key]  
+     * @param {String} [option.defaults]  
+     * @param {String} [option.model]  
+     * @returns {String|Object|Array}
+     */
+    getAttrList(option) {
+        let { key = null, defaults = 'basic', model } = option || {};
+        let list = this.getModel(model)?.attrs || {};
+        return (key ? (list[key] || list[defaults]) : list) || {};
     }
 
     /**
@@ -489,7 +518,13 @@ class DataService extends ksdp.integration.Dip {
         }
         try {
             const row = await this.select(payload, opt);
-            return row && await row.destroy();
+            if (row?.data) {
+                let where = this.getWhere(payload, opt) || {};
+                let res = await model.destroy({ where });
+                return res ? row : null;
+            } else {
+                return row && await row.destroy();
+            }
         } catch (error) {
             const logger = this.getLogger();
             logger?.error({
@@ -543,12 +578,30 @@ class DataService extends ksdp.integration.Dip {
      * @param {boolean} [payload.strict] 
      * @param {any[]} [payload.updateOnDuplicate] 
      * @param {Object} [opt] 
-     * @returns {Object} row
+     * @returns {Promise<any>} row
      */
-    update(payload, opt) {
-        payload = payload || {};
-        payload.mode = this.constant?.action?.update;
-        return this.save(payload, opt);
+    async update(payload, opt) {
+        let { data, transaction, ...options } = payload;
+        transaction = transaction || await this.createTransaction();
+        try {
+            let model = this.getModel();
+            await model.update(data, { ...options, transaction });
+            let result = await model.findAll({ ...options, transaction });
+            await transaction.commit();
+            return result;
+        } catch (error) {
+            opt = opt || {};
+            opt.error = error;
+            await transaction?.rollback();
+            const logger = this.getLogger();
+            logger?.error({
+                flow: opt.flow,
+                src: "KsMf:DAO:" + this.modelName + ":Update",
+                data: payload,
+                error: { message: error?.message || error, stack: error?.stack },
+            });
+            return null;
+        }
     }
 
     /**
@@ -625,28 +678,84 @@ class DataService extends ksdp.integration.Dip {
     }
 
     /**
-     * @description get filters as query 
-     *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
-     * @param {Array} filter 
+     * @description get a search vector per item
+     * @param {Object|Array} item 
+     * @returns {Array} vector
      */
-    asQuery(filter) {
-        filter = kscrip.decode(filter, "json");
-        if (!filter) return {};
-        const Sequelize = this.getManager();
-        const model = this.getModel();
-        const where = {};
-        for (let i in filter) {
-            let [field, value, operator = 'eq'] = filter[i];
-            if (model?.tableAttributes?.hasOwnProperty(field)) {
-                value = ['like', 'ilike'].includes((operator || '').toLowerCase()) ? '%' + value + '%' : value;
-                if (Sequelize.Op[operator]) {
-                    where[field] = {
-                        [Sequelize.Op[operator]]: value
-                    }
-                }
+    asFilterItemVector(item) {
+        let [field, value, operator] = Array.isArray(item) ? item : [item?.field, item?.value, item?.operator];
+        operator && typeof operator === 'string' && (operator = operator.toLowerCase());
+        !operator && Array.isArray(value) && (operator = 'in');
+        value = this.asFilterItemValue(value, operator);
+        return [field, value, operator || 'eq'];
+    }
+
+    /**
+     * @description get the vector value
+     * @param {*} value 
+     * @param {String} operator 
+     * @returns {*} value
+     */
+    asFilterItemValue(value, operator) {
+        if (value && typeof value === 'string') {
+            // CSV support 
+            if (operator === 'in') {
+                value = value.split(',');
+            }
+            // auto like support 
+            if (!(value[0] === '%' || value[value.length - 1] === '%') && ['like', 'ilike'].includes(operator)) {
+                value = '%' + value + '%';
             }
         }
-        return where;
+        if (operator === 'and' || operator === 'or') {
+            return this.asFilter(value);
+        }
+        return value;
+    }
+
+    /**
+     * @description get filters from query as JSON format 
+     *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#operators
+     * @param {String} filter 
+     * @returns {Object}
+     * @example 
+     *  filter=[["id", [78,79,80]]]
+     *  filter=[["name", "Ant", "eq"],["age", 12]]
+     *  filter=[{"field":"name", "value":"Ant", "operator":"eq"},["field":"age", "value":12]]
+     *  filter={"field":"name", "value":"Ant", "operator":"eq"}
+     *  filter={"field":"name", "value":"1,5,8", "operator":"in"}
+     *  filter={"field":"name", "value":[1,5,8], "operator":"in"}
+     *  filter={"value":[{"field":"name", "value":"demo1"},{"field":"group", "value":"demo1"}],"operator":"or"}
+     *  filter={"value":[["name", "demo1"],["group", "value"]],"operator":"or"}
+     */
+    asFilter(filter) {
+        try {
+            filter = typeof filter === "string" ? (new URLSearchParams("val=" + filter)).get('val') : filter;
+            let filters = kscrip.decode(filter, "json");
+            if (!filters) return {};
+            filters = Array.isArray(filters) ? filters : [filters];
+            const driver = this.getManager();
+            const model = this.getModel();
+            const where = {};
+            for (let item of filters) {
+                let [field, value, operator] = this.asFilterItemVector(item);
+                if (field) {
+                    if (model?.tableAttributes?.hasOwnProperty(field)) {
+                        if (driver.Op[operator]) {
+                            where[field] = {
+                                [driver.Op[operator]]: value
+                            }
+                        }
+                    }
+                } else {
+                    where[driver.Op[operator]] = value
+                }
+            }
+            return where;
+        }
+        catch (_) {
+            return {};
+        }
     }
 
     /**
@@ -654,12 +763,49 @@ class DataService extends ksdp.integration.Dip {
      *              see: https://sequelize.org/docs/v6/core-concepts/model-querying-basics/#ordering-and-grouping
      * @param {Array} sort 
      * @returns {Array} order options
+     * @example 
+     *  ['title', 'DESC'],
+     *  ['Task', 'createdAt', 'DESC'],
+     *  [{model: Task, as: 'Task'}, 'createdAt', 'DESC'],
      */
     asOrder(sort) {
-        const list = kscrip.decode(sort, "json");
-        if (!list) return [];
-        const model = this.getModel();
-        return list?.filter && list.filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]));
+        try {
+            const list = kscrip.decode(sort, "json");
+            if (!list) return [];
+            const model = this.getModel();
+            return list?.filter && list
+                .filter(item => item && item[0] && model.tableAttributes.hasOwnProperty(item[0]))
+                .map(item => this.mapOrderKey[item[0]] ?? item);
+        }
+        catch (_) {
+            return null;
+        }
+    }
+
+    /**
+     * @description map attributes from service
+     * @param {String} attributes 
+     * @returns {Object}
+     */
+    asAttributes(attributes) {
+        let list = kscrip.decode(attributes, "json");
+        list = Array.isArray(list) ? list : [list];
+        return list?.map(attr => this.mapAttributeKey[attr] ?? attr);
+    }
+
+    /**
+     * @description transform to a query language
+     * @param {String} data 
+     * @returns {Object}
+     */
+    asQuery(data) {
+        data = (new URLSearchParams("val=" + data)).get('val');
+        const driver = this.getManager();
+        const query = kscrip.decode(data, "json");
+        return this.utl.transform(query, {
+            onKey: (key, value) => this.mapSearchKey[key] ?? driver.Op[key] ?? key,
+            onVal: (value, key) => (key === "in" && typeof value === "string") ? value.split(",") : value
+        });
     }
 
     /**
@@ -670,7 +816,6 @@ class DataService extends ksdp.integration.Dip {
         if (this.logger) {
             return this.logger;
         }
-
         if (this.helper) {
             return this.helper.get('logger');
         }
@@ -678,33 +823,82 @@ class DataService extends ksdp.integration.Dip {
 
     /**
      * @description Extract hotkeys from request parameters 
-     * @param {Object} req 
-     * @returns {{ page?: Number; size?: Number; filter?: Object; query?: Object; order?:Array}}
+     * @param {Object} payload 
+     * @returns {import("../types").TSearchOption}
      */
-    extract(req) {
+    extract(payload) {
+        const req = { ...payload };
         const res = {};
-        if (req.page) {
-            res.page = req.page;
+
+        if (req.page || req.offset) {
+            res.page = req.offset;
+            res.page = res.page ?? req.page;
             delete req["page"];
+            delete req["offset"];
         }
+
         if (req.size) {
             res.size = req.size;
             delete req["size"];
         }
-        if (req.filter) {
-            res.where = this.asQuery(req.filter);
-            delete req["filter"];
-        }
-        if (req.order) {
-            res.order = this.asOrder(req.order);
-            delete req["order"];
-        }
+
         if (req.limit) {
             res.limit = parseInt(req.limit);
             delete req["limit"];
         }
+
+        if (req.filter) {
+            if (Array.isArray(req.filter)) {
+                for (let item of req.filter) {
+                    let filterValue = this.asFilter(item);
+                    res.where = res.where ? { ...res.where, ...filterValue } : filterValue;
+                }
+            } else {
+                let filterValue = this.asFilter(req.filter);
+                res.where = res.where ? { ...res.where, ...filterValue } : filterValue;
+            }
+            delete req["filter"];
+        }
+
+        if (req.ql) {
+            if (Array.isArray(req.ql)) {
+                for (let item of req.ql) {
+                    let query = this.asQuery(item);
+                    res.where = res.where ? { ...res.where, ...query } : query;
+                }
+            } else {
+                let query = this.asQuery(req.ql);
+                res.where = res.where ? { ...res.where, ...query } : query;
+            }
+            delete req["ql"];
+        }
+
+        if (req.attributes) {
+            res.attributes = this.asAttributes(req.attributes);
+            delete req["attributes"];
+        }
+
+        if (req.exclude) {
+            res.attributes = { exclude: this.asAttributes(req.exclude) };
+            delete req["exclude"];
+        }
+
+        if (req.order) {
+            res.order = this.asOrder(req.order);
+            delete req["order"];
+        }
+
         res.query = { ...req };
         return res;
+    }
+
+    /**
+     * @description Create a transaction
+     * @returns {Object}
+     */
+    createTransaction(handler) {
+        handler = handler instanceof Function ? handler : undefined;
+        return this.dao.driver.transaction(handler);
     }
 }
 

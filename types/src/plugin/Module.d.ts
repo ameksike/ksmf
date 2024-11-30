@@ -43,7 +43,11 @@ declare class Module {
      * @param {Object} [payload.web]
      * @param {Object} [payload.drv]
      * @param {Object} [payload.opt]
-     * @param {Object} [payload.rest]
+     * @param {String} [payload.opt.name]
+     * @param {String} [payload.opt.prefix]
+     * @param {Array} [payload.opt.routes]
+     * @param {Boolean} [payload.opt.rest]
+     * @param {Boolean} [payload.rest]
      * @param {Object} [payload.server]
      * @param {Object} [payload.routes]
      * @param {Object} [payload.prefix]
@@ -54,8 +58,13 @@ declare class Module {
         app?: any;
         web?: any;
         drv?: any;
-        opt?: any;
-        rest?: any;
+        opt?: {
+            name?: string;
+            prefix?: string;
+            routes?: any[];
+            rest?: boolean;
+        };
+        rest?: boolean;
         server?: any;
         routes?: any;
         prefix?: any;

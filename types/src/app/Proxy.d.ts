@@ -1,4 +1,3 @@
-/// <reference types="node" />
 export = ProxyApp;
 declare class ProxyApp {
     constructor(path: any);
