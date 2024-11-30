@@ -79,7 +79,7 @@ declare class DAOBase extends DAOBase_base {
      * @description format string connection dialect://username:password@host:port/database
      * @param {CfgObj|String} cfg
      */
-    conn2str(cfg: string | {
+    conn2str(cfg: {
         dialect?: string;
         username?: string;
         password?: string;
@@ -87,7 +87,7 @@ declare class DAOBase extends DAOBase_base {
         protocol?: string;
         host?: string;
         port?: string;
-    }): string;
+    } | string): string;
     /**
      * @description dispatch onLoad event
      * @param {String|Number} type
@@ -113,4 +113,4 @@ declare class DAOBase extends DAOBase_base {
 declare namespace DAOBase {
     export { TList };
 }
-type TList = import('../types').TList;
+type TList = import("../types").TList;

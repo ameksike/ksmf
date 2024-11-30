@@ -30,5 +30,5 @@ export type TCLIArgReq = {
     params?: any;
     dependency?: any;
 };
-export type TReadableStream = import('stream').Readable;
-export type TWritableStream = import('stream').Writable;
+export type TReadableStream = import("stream").Readable;
+export type TWritableStream = import("stream").Writable;

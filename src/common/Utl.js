@@ -511,6 +511,32 @@ class Utl {
         }
         return this.#instance;
     }
+
+    /**
+     * @description trasform objects using delegates  
+     * @param {*} obj 
+     * @param {Object} delegate 
+     * @returns {*}
+     */
+    transform(obj, delegate = null, key = null) {
+        if (!delegate) {
+            return obj;
+        }
+        if (Array.isArray(obj)) {
+            return obj.map((item, key) => this.transform(item, delegate, key));
+        } else if (obj !== null && typeof obj === 'object') {
+            return Object.keys(obj).reduce((acc, key) => {
+                let res = delegate?.onKey(key, obj[key]);
+                if (res !== undefined) {
+                    acc[res || key] = this.transform(obj[key], delegate, key);
+                }
+                return acc;
+            }, {});
+        } else {
+            let resVal = delegate?.onVal(obj, key);
+            return resVal !== undefined ? resVal : obj;
+        }
+    }
 }
 
 module.exports = Utl;
